@@ -423,6 +423,186 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Client Portal Authentication Routes
+  app.post("/api/client-portal/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      // Find client by email
+      const client = await storage.getClientByEmail(email);
+      if (!client) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      // In a real app, you'd verify password hash
+      // For demo purposes, we'll accept any password
+      
+      res.json({
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        token: `client_${client.id}_${Date.now()}` // Simple token for demo
+      });
+    } catch (error) {
+      console.error("Client login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/client-portal/magic-link", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      const client = await storage.getClientByEmail(email);
+      if (!client) {
+        return res.status(404).json({ error: "Client not found" });
+      }
+      
+      // In a real app, you'd send an email with a secure token
+      // For demo purposes, we'll just return success
+      console.log(`Magic link would be sent to: ${email}`);
+      
+      res.json({ message: "Magic link sent" });
+    } catch (error) {
+      console.error("Magic link error:", error);
+      res.status(500).json({ error: "Failed to send magic link" });
+    }
+  });
+
+  app.get("/api/client-portal/bookings", async (req, res) => {
+    try {
+      const clientId = parseInt(req.query.clientId as string);
+      const bookings = await storage.getBookings();
+      const clientBookings = bookings.filter(b => b.clientId === clientId);
+      
+      res.json(clientBookings);
+    } catch (error) {
+      console.error("Error fetching client bookings:", error);
+      res.status(500).json({ error: "Failed to fetch bookings" });
+    }
+  });
+
+  app.get("/api/client-portal/galleries", async (req, res) => {
+    try {
+      const clientId = parseInt(req.query.clientId as string);
+      
+      // Mock gallery data - in real app, fetch from database
+      const galleries = [
+        {
+          id: "1",
+          name: "Wedding - Beach Ceremony",
+          clientId: clientId,
+          status: "proofing",
+          coverImage: "/api/placeholder/400/300",
+          photoCount: 156,
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: "2", 
+          name: "Engagement Session",
+          clientId: clientId,
+          status: "ready_for_download",
+          coverImage: "/api/placeholder/400/300",
+          photoCount: 89,
+          createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      
+      res.json(galleries);
+    } catch (error) {
+      console.error("Error fetching client galleries:", error);
+      res.status(500).json({ error: "Failed to fetch galleries" });
+    }
+  });
+
+  app.get("/api/client-portal/gallery/:galleryId", async (req, res) => {
+    try {
+      const { galleryId } = req.params;
+      
+      // Mock gallery with images
+      const gallery = {
+        id: galleryId,
+        name: galleryId === "1" ? "Wedding - Beach Ceremony" : "Engagement Session",
+        status: galleryId === "1" ? "proofing" : "ready_for_download",
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        images: Array.from({ length: 12 }, (_, i) => ({
+          id: `img_${galleryId}_${i + 1}`,
+          url: `/api/placeholder/800/600?random=${galleryId}_${i}`,
+          thumbnailUrl: `/api/placeholder/300/300?random=${galleryId}_${i}`,
+          filename: `IMG_${String(i + 1).padStart(4, '0')}.jpg`
+        }))
+      };
+      
+      res.json(gallery);
+    } catch (error) {
+      console.error("Error fetching gallery:", error);
+      res.status(500).json({ error: "Failed to fetch gallery" });
+    }
+  });
+
+  app.get("/api/client-portal/selections/:galleryId", async (req, res) => {
+    try {
+      const { galleryId } = req.params;
+      const clientId = req.query.clientId;
+      
+      // Mock existing selections
+      const selections = {
+        galleryId,
+        clientId,
+        favorites: ["img_1_3", "img_1_7", "img_1_12"],
+        comments: {
+          "img_1_3": "Love this shot of the ceremony!",
+          "img_1_7": "Perfect lighting here"
+        }
+      };
+      
+      res.json(selections);
+    } catch (error) {
+      console.error("Error fetching selections:", error);
+      res.status(500).json({ error: "Failed to fetch selections" });
+    }
+  });
+
+  app.post("/api/client-portal/selections/:galleryId", async (req, res) => {
+    try {
+      const { galleryId } = req.params;
+      const { clientId, favorites, comments } = req.body;
+      
+      // In a real app, save to database
+      console.log(`Saving selections for gallery ${galleryId}, client ${clientId}:`, {
+        favorites: favorites.length,
+        comments: Object.keys(comments).length
+      });
+      
+      res.json({ message: "Selections saved successfully" });
+    } catch (error) {
+      console.error("Error saving selections:", error);
+      res.status(500).json({ error: "Failed to save selections" });
+    }
+  });
+
+  app.get("/api/client-portal/contracts", async (req, res) => {
+    try {
+      const clientId = parseInt(req.query.clientId as string);
+      
+      // Mock contract data
+      const contracts = [
+        {
+          id: 1,
+          clientId: clientId,
+          title: "Wedding Photography Contract",
+          signedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          downloadUrl: "/api/contracts/wedding-contract.pdf"
+        }
+      ];
+      
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      res.status(500).json({ error: "Failed to fetch contracts" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

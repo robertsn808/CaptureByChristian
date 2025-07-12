@@ -68,6 +68,11 @@ export function Navigation() {
               )}
             </Button>
 
+            <Link href="/client-portal">
+              <Button variant="outline" className="border-bronze text-bronze hover:bg-bronze hover:text-white mr-2">
+                Client Portal
+              </Button>
+            </Link>
             <Link href="/booking">
               <Button className="btn-bronze">
                 Book Now
