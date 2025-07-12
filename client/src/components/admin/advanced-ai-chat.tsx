@@ -38,7 +38,7 @@ export function AdvancedAIChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "👋 I'm your advanced AI business consultant for Christian Picaso Photography. I can analyze your business performance, suggest marketing strategies, predict booking trends, optimize pricing, and provide strategic insights. I have access to all your business data including clients, bookings, revenue, and market analytics. What would you like to explore?",
+      content: "👋 I'm your advanced AI business consultant for Captured by Christian. I can analyze your business performance, suggest marketing strategies, predict booking trends, optimize pricing, provide strategic insights, and discuss social media content ideas and industry trends. I have access to all your business data including clients, bookings, revenue, and market analytics. What would you like to explore?",
       timestamp: Date.now(),
       type: 'normal'
     }
@@ -243,6 +243,48 @@ Current booking performance:
           actionable: true
         }
       };
+    } else if (lowerMessage.includes('social') || lowerMessage.includes('instagram') || lowerMessage.includes('content') || lowerMessage.includes('trend')) {
+      response = {
+        role: 'assistant',
+        content: `📱 **Social Media Content Strategy for Captured by Christian**
+
+**🔥 Trending Content Ideas:**
+• Golden hour drone shots with dramatic Hawaii sunsets
+• Before/after editing process reels - show RAW vs final
+• "Day in the life" of a Hawaii photographer stories
+• Client testimonial videos with breathtaking backdrops
+• Time-lapse setup videos at iconic locations
+
+**📸 Content Pillars for January 2025:**
+1. **Portfolio Showcases** (40%): Best work from recent sessions
+2. **Behind-the-Scenes** (25%): Equipment, locations, process
+3. **Educational** (20%): Photography tips, drone regulations
+4. **Personal Brand** (15%): Your story as FAA-certified pilot
+
+**🎯 Hawaii-Specific Hashtag Strategy:**
+• #CapturedByChristian #HawaiiPhotographer #AerialHawaii
+• #HawaiiWedding #DronePhotography #FAAcertified
+• #OahuPhotographer #SunsetVibes #IslandLife
+• #HawaiiPortrait #TropicalWedding #VisitHawaii
+
+**📊 Optimal Posting Schedule:**
+• Instagram: 6-7am HST (before sunrise shoots)
+• Stories: 12-1pm HST (lunch break engagement)
+• Reels: 5-6pm HST (golden hour content)
+
+**🚀 Viral Content Opportunities:**
+• Drone shots of hidden Hawaii beaches
+• Wedding proposal captures (trending Jan 2025)
+• "Only in Hawaii" photography moments
+• FAA drone safety education content`,
+        timestamp: Date.now(),
+        type: 'recommendation',
+        metadata: {
+          confidence: 91,
+          category: 'social-media',
+          actionable: true
+        }
+      };
     } else {
       response = {
         role: 'assistant',
@@ -262,13 +304,19 @@ I'm analyzing your photography business with advanced AI capabilities. I can hel
 • Geographic market opportunities
 • Seasonal business planning
 
+**📱 Social Media & Content:**
+• Instagram and TikTok content strategies
+• Viral content ideas and trending hashtags
+• Social media posting schedules and engagement tactics
+• Brand storytelling and visual identity development
+
 **💡 Operational Insights:**
 • Workflow optimization suggestions
 • Client satisfaction improvement strategies
 • Technology integration opportunities
 • Cost reduction and efficiency improvements
 
-What specific aspect of your business would you like me to analyze? I have access to all your current data and can provide actionable insights with confidence ratings.`,
+What specific aspect of your business would you like me to analyze? I can discuss social media trends, content strategies, or dive into your business analytics with actionable insights.`,
         timestamp: Date.now(),
         type: 'normal'
       };
@@ -305,9 +353,9 @@ What specific aspect of your business would you like me to analyze? I have acces
 
   const quickActions = [
     { label: "Analyze Revenue", prompt: "Analyze my revenue performance and suggest improvements", icon: DollarSign },
-    { label: "Client Insights", prompt: "Provide insights about my clients and their behavior patterns", icon: User },
-    { label: "Market Analysis", prompt: "How is my business positioned in the Hawaii photography market?", icon: Target },
-    { label: "Booking Optimization", prompt: "Analyze my booking patterns and suggest optimizations", icon: Calendar },
+    { label: "Social Media Strategy", prompt: "Give me social media content ideas and trending strategies for Instagram", icon: Target },
+    { label: "Market Analysis", prompt: "How is my business positioned in the Hawaii photography market?", icon: TrendingUp },
+    { label: "Content Ideas", prompt: "What viral content trends should I follow for photography in 2025?", icon: Lightbulb },
   ];
 
   const getMessageIcon = (message: ChatMessage) => {

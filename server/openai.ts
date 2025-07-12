@@ -2,7 +2,7 @@
 
 // Photography business context and knowledge base
 const PHOTOGRAPHY_CONTEXT = `
-You are Christian Picaso's AI booking assistant for his Hawaii-based photography business. You specialize in:
+You are the AI booking assistant for Captured by Christian, a Hawaii-based photography business. You specialize in:
 
 SERVICES & PRICING:
 - Wedding Photography: $2,500 (8 hours coverage, drone shots, 500+ edited photos)
@@ -165,7 +165,7 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
   
   // General greetings and introductions
   if (lastMessage.includes('hello') || lastMessage.includes('hi') || lastMessage.includes('hey') || lastMessage.includes('aloha')) {
-    return "Aloha! I'm Christian's AI booking assistant for Christian Picaso Photography. I specialize in helping you find the perfect photography package for your Hawaii experience. Whether you're planning a wedding, portrait session, or need aerial photography, I can provide detailed information about our services, pricing, and availability. What brings you here today?";
+    return "Aloha! I'm the AI booking assistant for Captured by Christian. I specialize in helping you find the perfect photography package for your Hawaii experience. Whether you're planning a wedding, portrait session, or need aerial photography, I can provide detailed information about our services, pricing, and availability. What brings you here today?";
   }
   
   // Questions about the photographer
