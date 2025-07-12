@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --background: hsl(0, 0%, 99%);
+  --foreground: hsl(30, 15%, 18%);
+  --muted: hsl(33, 12%, 95%);
+  --muted-foreground: hsl(30, 8%, 44%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(30, 15%, 18%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(30, 15%, 18%);
+  --border: hsl(30, 10%, 88%);
+  --input: hsl(30, 10%, 88%);
+  --primary: hsl(25, 65%, 45%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(33, 12%, 95%);
+  --secondary-foreground: hsl(30, 15%, 18%);
+  --accent: hsl(33, 12%, 95%);
+  --accent-foreground: hsl(30, 15%, 18%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(25, 65%, 45%);
+  --radius: 0.5rem;
+  
+  /* Custom photographer theme colors */
+  --cream: hsl(60, 9%, 98%);
+  --charcoal: hsl(0, 0%, 18%);
+  --ultra-black: hsl(0, 0%, 4%);
+  --sandstone: hsl(42, 33%, 77%);
+  --bronze: hsl(25, 65%, 45%);
+  --teal: hsl(180, 100%, 27%);
+}
+
+.dark {
+  --background: hsl(0, 0%, 4%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(0, 0%, 15%);
+  --muted-foreground: hsl(0, 0%, 65%);
+  --popover: hsl(0, 0%, 4%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(0, 0%, 4%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 15%);
+  --input: hsl(0, 0%, 15%);
+  --primary: hsl(25, 65%, 45%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(0, 0%, 15%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(0, 0%, 15%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 63%, 31%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(25, 65%, 45%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-inter antialiased bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
+}
+
+@layer components {
+  .glass-morphism {
+    background: rgba(254, 254, 254, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .glass-morphism {
+    background: rgba(10, 10, 10, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .parallax-bg {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .gallery-masonry {
+    column-count: 3;
+    column-gap: 1rem;
+    break-inside: avoid;
+  }
+
+  @media (max-width: 768px) {
+    .gallery-masonry {
+      column-count: 2;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .gallery-masonry {
+      column-count: 1;
+    }
+  }
+
+  .btn-bronze {
+    @apply bg-[var(--bronze)] hover:bg-[var(--bronze)]/90 text-white;
+  }
+
+  .text-bronze {
+    color: var(--bronze);
+  }
+
+  .text-teal {
+    color: var(--teal);
+  }
+
+  .bg-cream {
+    background-color: var(--cream);
+  }
+
+  .bg-charcoal {
+    background-color: var(--charcoal);
+  }
+
+  .bg-ultra-black {
+    background-color: var(--ultra-black);
+  }
+
+  .bg-sandstone {
+    background-color: var(--sandstone);
+  }
+
+  .bg-bronze {
+    background-color: var(--bronze);
+  }
+
+  .bg-teal {
+    background-color: var(--teal);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+
+  .animate-parallax {
+    animation: parallax 20s linear infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes parallax {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100px); }
+}
