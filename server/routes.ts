@@ -7,7 +7,7 @@ import {
   insertAiChatSchema
 } from "@shared/schema";
 import { z } from "zod";
-import { generateBookingResponse, analyzeImage } from "./openai";
+import { generateBookingResponse, analyzeImage } from "./replit-agent";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Client routes
@@ -83,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/bookings", async (req, res) => {
     try {
       const bookingData = insertBookingSchema.parse(req.body);
-      
+
       // Create or find existing client
       let client = await storage.getClientByEmail(req.body.clientEmail);
       if (!client) {
@@ -143,9 +143,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const startDate = new Date(start as string);
       const endDate = new Date(end as string);
-      
+
       const bookings = await storage.getBookingsByDateRange(startDate, endDate);
-      
+
       // Return availability data
       res.json({
         bookings: bookings.map(b => ({
@@ -215,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/gallery", async (req, res) => {
     try {
       const imageData = insertGalleryImageSchema.parse(req.body);
-      
+
       // Analyze image with AI if URL provided
       if (imageData.url) {
         try {
@@ -241,14 +241,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai-chat", async (req, res) => {
     try {
       const { sessionId, message, clientEmail } = req.body;
-      
+
       if (!sessionId || !message) {
         return res.status(400).json({ error: "Session ID and message are required" });
       }
 
       // Get or create chat session
       let chat = await storage.getAiChat(sessionId);
-      
+
       if (!chat) {
         chat = await storage.createAiChat({
           sessionId,
@@ -270,7 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate AI response
       const aiResponse = await generateBookingResponse(messages, chat.bookingData);
-      
+
       // Add AI response
       messages.push({
         role: 'assistant' as const,
