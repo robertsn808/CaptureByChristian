@@ -12,6 +12,7 @@ import { PredictiveIntelligence } from "@/components/admin/predictive-intelligen
 import { InvoiceGenerator } from "@/components/admin/invoice-generator";
 import { AdminInbox } from "@/components/admin/inbox";
 import { ClientCredentials } from "@/components/admin/client-credentials";
+import { ProfileManagement } from "@/components/admin/profile-management";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +77,12 @@ const menuSections = [
       { id: "gallery", label: "Portfolio Management", icon: Camera },
       { id: "portal", label: "Client Portal", icon: Settings },
       { id: "credentials", label: "Client Credentials", icon: Key },
+    ]
+  },
+  {
+    title: "Settings & Configuration", 
+    items: [
+      { id: "profile", label: "Profile", icon: Settings },
     ]
   }
 ];
@@ -402,6 +409,8 @@ export default function Admin() {
         );
       case "credentials":
         return <ClientCredentials />;
+      case "profile":
+        return <ProfileManagement />;
       default:
         return <AdminDashboard />;
     }

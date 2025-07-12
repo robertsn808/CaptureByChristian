@@ -332,7 +332,7 @@ export default function Home() {
           {/* Contact Form */}
           <div className="text-center mb-12">
             <ContactForm trigger={
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-charcoal">
+              <Button size="lg" variant="outline" className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background h-11 rounded-md px-8 border-white hover:bg-white hover:text-charcoal text-[#2e2e2e]">
                 <Mail className="mr-2 h-5 w-5" />
                 Send Us a Message
               </Button>

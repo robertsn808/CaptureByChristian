@@ -1488,6 +1488,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile Management API
+  app.get("/api/profile", async (req, res) => {
+    try {
+      const profile = await storage.getProfile();
+      if (!profile) {
+        // Return default profile if none exists
+        const defaultProfile = {
+          id: 1,
+          name: "Christian Picaso",
+          title: "Professional Photographer & FAA Certified Drone Pilot",
+          bio: "Capturing Hawaii's natural beauty through both traditional and aerial photography. With over 8 years of experience and FAA certification for drone operations, I specialize in creating stunning visual stories that showcase the islands' unique landscapes and special moments.",
+          phone: "(808) 555-PHOTO",
+          email: "christian@picaso.photography",
+          address: "Honolulu, Hawaii",
+          headshot: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=1000",
+          socialMedia: {
+            instagram: "@christianpicaso",
+            facebook: "ChristianPicasoPhotography",
+            youtube: "ChristianPicasoHawaii"
+          },
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        res.json(defaultProfile);
+      } else {
+        res.json(profile);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+
+  app.put("/api/profile", async (req, res) => {
+    try {
+      const profileData = req.body;
+      const updatedProfile = await storage.updateProfile(profileData);
+      res.json(updatedProfile);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

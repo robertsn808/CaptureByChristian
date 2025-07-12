@@ -1,10 +1,11 @@
 import { 
-  users, clients, services, bookings, contracts, invoices, galleryImages, aiChats, contactMessages, clientPortalSessions, clientMessages,
+  users, clients, services, bookings, contracts, invoices, galleryImages, aiChats, contactMessages, clientPortalSessions, clientMessages, profiles,
   type User, type InsertUser, type Client, type InsertClient, 
   type Service, type InsertService, type Booking, type InsertBooking,
   type Contract, type InsertContract, type Invoice, type InsertInvoice,
   type GalleryImage, type InsertGalleryImage, type AiChat, type InsertAiChat,
-  type ContactMessage, type InsertContactMessage, type ClientMessage, type InsertClientMessage
+  type ContactMessage, type InsertContactMessage, type ClientMessage, type InsertClientMessage,
+  type Profile, type InsertProfile
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -77,6 +78,11 @@ export interface IStorage {
   // Client Messages
   getClientMessages(clientId: number): Promise<ClientMessage[]>;
   createClientMessage(message: InsertClientMessage): Promise<ClientMessage>;
+
+  // Profile Management
+  getProfile(): Promise<Profile | undefined>;
+  updateProfile(profile: Partial<InsertProfile>): Promise<Profile>;
+  createProfile(profile: InsertProfile): Promise<Profile>;
 
   // Client Portal Sessions
   getClientPortalSessions(): Promise<any[]>;
@@ -509,6 +515,30 @@ export class DatabaseStorage implements IStorage {
   async createClientMessage(insertMessage: InsertClientMessage): Promise<ClientMessage> {
     const [message] = await db.insert(clientMessages).values(insertMessage).returning();
     return message;
+  }
+
+  async getProfile(): Promise<Profile | undefined> {
+    const profileList = await db.select().from(profiles).where(eq(profiles.isActive, true)).limit(1);
+    return profileList[0];
+  }
+
+  async updateProfile(updateProfile: Partial<InsertProfile>): Promise<Profile> {
+    const existingProfile = await this.getProfile();
+    if (existingProfile) {
+      const [profile] = await db.update(profiles)
+        .set({ ...updateProfile, updatedAt: new Date() })
+        .where(eq(profiles.id, existingProfile.id))
+        .returning();
+      return profile;
+    } else {
+      // Create new profile if none exists
+      return this.createProfile(updateProfile as InsertProfile);
+    }
+  }
+
+  async createProfile(insertProfile: InsertProfile): Promise<Profile> {
+    const [profile] = await db.insert(profiles).values(insertProfile).returning();
+    return profile;
   }
 }
 
