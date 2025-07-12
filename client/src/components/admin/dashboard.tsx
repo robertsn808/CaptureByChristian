@@ -43,6 +43,12 @@ export function AdminDashboard() {
     );
   }
 
+  // Calculate total revenue first
+  const totalRevenue = bookings?.reduce((sum: number, booking: any) => 
+    booking.status === 'confirmed' || booking.status === 'completed' 
+      ? sum + parseFloat(booking.totalPrice) 
+      : sum, 0) || 0;
+
   const stats = [
     {
       title: "Total Bookings",
@@ -92,10 +98,6 @@ export function AdminDashboard() {
 
   const upcomingBookings = getUpcomingBookings();
   const pendingActions = getPendingActions();
-  const totalRevenue = bookings?.reduce((sum: number, booking: any) => 
-    booking.status === 'confirmed' || booking.status === 'completed' 
-      ? sum + parseFloat(booking.totalPrice) 
-      : sum, 0) || 0;
 
   return (
     <div className="space-y-6">
