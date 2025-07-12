@@ -83,130 +83,169 @@ export default function Admin() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border transition-all duration-300 flex flex-col`}>
-        {/* Sidebar Header */}
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            {!sidebarCollapsed && (
-              <div className="flex items-center space-x-3">
+    <div className="min-h-screen bg-background">
+      {/* Main Navigation Header */}
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism backdrop-blur-md border-b border-white/20 transition-all duration-300">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/">
+              <div className="flex items-center space-x-3 hover-lift cursor-pointer">
                 <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
-                  <Camera className="h-5 w-5 text-white" />
+                  <Camera className="h-6 w-6 text-white" />
                 </div>
-                <span className="font-playfair text-lg font-bold gradient-text">
-                  Admin Panel
+                <span className="font-playfair text-xl font-bold gradient-text">
+                  Captured by Christian
                 </span>
               </div>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="h-8 w-8 p-0"
-            >
-              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            </Button>
-          </div>
-        </div>
+            </Link>
 
-        {/* Navigation Menu */}
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-6">
-            {menuSections.map((section) => (
-              <div key={section.title}>
-                {!sidebarCollapsed && (
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    {section.title}
-                  </h3>
-                )}
-                <div className="space-y-1">
-                  {section.items.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant={activeTab === item.id ? "default" : "ghost"}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`w-full justify-start h-10 ${
-                        activeTab === item.id
-                          ? 'bg-bronze text-white hover:bg-bronze/90'
-                          : 'hover:bg-muted'
-                      } ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
-                      title={sidebarCollapsed ? item.label : undefined}
-                    >
-                      <item.icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
-                      {!sidebarCollapsed && (
-                        <span className="truncate">{item.label}</span>
-                      )}
-                    </Button>
-                  ))}
-                </div>
-                {!sidebarCollapsed && <Separator className="mt-4" />}
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="/">
+                <span className="text-foreground hover:text-bronze transition-colors duration-200 cursor-pointer">
+                  Home
+                </span>
+              </Link>
+              <a href="/#portfolio" className="text-foreground hover:text-bronze transition-colors duration-200">
+                Portfolio
+              </a>
+              <a href="/#services" className="text-foreground hover:text-bronze transition-colors duration-200">
+                Services
+              </a>
+              <a href="/#about" className="text-foreground hover:text-bronze transition-colors duration-200">
+                About
+              </a>
 
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-border">
-          <div className="space-y-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className={`w-full justify-start ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
-              title={sidebarCollapsed ? 'Toggle theme' : undefined}
-            >
-              {theme === "light" ? (
-                <Moon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
-              ) : (
-                <Sun className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
-              )}
-              {!sidebarCollapsed && 'Toggle Theme'}
-            </Button>
-            
-            <Link href="/">
               <Button
                 variant="ghost"
                 size="sm"
-                className={`w-full justify-start ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
-                title={sidebarCollapsed ? 'Back to website' : undefined}
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="mr-2"
               >
-                <Home className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
-                {!sidebarCollapsed && 'Back to Website'}
+                {theme === "light" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
               </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Header */}
-        <div className="bg-card border-b border-border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-playfair text-2xl font-bold">
-                {menuSections.flatMap(s => s.items).find(item => item.id === activeTab)?.label || 'Dashboard'}
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                Manage your photography business with AI-powered tools
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="text-sm">
-                <Activity className="h-3 w-3 mr-1" />
-                Live Updates
-              </Badge>
-              <Badge variant="secondary" className="text-sm">
-                <Zap className="h-3 w-3 mr-1" />
-                AI Enhanced
-              </Badge>
+              <Link href="/client-portal">
+                <Button variant="outline" size="sm">
+                  Client Portal
+                </Button>
+              </Link>
+
+              <Link href="/book">
+                <Button className="bg-gradient-to-r from-bronze to-teal hover:from-bronze/90 hover:to-teal/90">
+                  Book Now
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
+      </nav>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-auto p-6">{renderContent()}</div>
+      {/* Admin Layout with Sidebar */}
+      <div className="flex pt-16">
+        {/* Sidebar */}
+        <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border transition-all duration-300 flex flex-col min-h-screen`}>
+          {/* Sidebar Header */}
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center justify-between">
+              {!sidebarCollapsed && (
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="font-playfair text-lg font-bold gradient-text">
+                    Admin Panel
+                  </span>
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="h-8 w-8 p-0"
+              >
+                {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+
+          {/* Navigation Menu */}
+          <ScrollArea className="flex-1 p-4">
+            <div className="space-y-6">
+              {menuSections.map((section) => (
+                <div key={section.title}>
+                  {!sidebarCollapsed && (
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                      {section.title}
+                    </h3>
+                  )}
+                  <div className="space-y-1">
+                    {section.items.map((item) => (
+                      <Button
+                        key={item.id}
+                        variant={activeTab === item.id ? "default" : "ghost"}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full justify-start h-10 ${
+                          activeTab === item.id
+                            ? 'bg-bronze text-white hover:bg-bronze/90'
+                            : 'hover:bg-muted'
+                        } ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
+                        title={sidebarCollapsed ? item.label : undefined}
+                      >
+                        <item.icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+                        {!sidebarCollapsed && (
+                          <span className="truncate">{item.label}</span>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                  {!sidebarCollapsed && <Separator className="mt-4" />}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* Sidebar Footer */}
+          <div className="p-4 border-t border-border">
+            <Badge variant="outline" className="w-full justify-center text-xs">
+              Admin Dashboard
+            </Badge>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Top Header */}
+          <div className="bg-card border-b border-border p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="font-playfair text-2xl font-bold">
+                  {menuSections.flatMap(s => s.items).find(item => item.id === activeTab)?.label || 'Dashboard'}
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  Manage your photography business with AI-powered tools
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Badge variant="outline" className="text-sm">
+                  <Activity className="h-3 w-3 mr-1" />
+                  Live Updates
+                </Badge>
+                <Badge variant="secondary" className="text-sm">
+                  <Zap className="h-3 w-3 mr-1" />
+                  AI Enhanced
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Area */}
+          <div className="flex-1 overflow-auto p-6">{renderContent()}</div>
+        </div>
       </div>
     </div>
   );
