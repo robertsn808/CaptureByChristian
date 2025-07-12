@@ -284,12 +284,15 @@ export function GalleryViewer({ galleryId, clientId }: GalleryViewerProps) {
 
       {/* Lightbox Modal */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-w-5xl h-[90vh] p-0">
+        <DialogContent className="max-w-5xl h-[90vh] p-0" aria-describedby="lightbox-description">
           <div className="relative h-full flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center space-x-4">
                 <h3 className="font-semibold">Photo {currentImageIndex + 1} of {gallery.images?.length}</h3>
+                <div id="lightbox-description" className="sr-only">
+                  Full size view of photo {currentImageIndex + 1} from {gallery.name} gallery
+                </div>
                 {gallery.status === 'proofing' && (
                   <Button
                     size="sm"

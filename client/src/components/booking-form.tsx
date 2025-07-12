@@ -92,9 +92,49 @@ export function BookingForm() {
     const totalAddOnPrice = selectedAddOnDetails.reduce((sum: number, addon: any) => sum + addon.price, 0);
     const totalPrice = parseFloat(selectedService.price) + totalAddOnPrice;
 
+    // Parse time safely from format like "6:00 AM - Morning"
+    let timeString = data.time;
+    if (timeString.includes(" - ")) {
+      timeString = timeString.split(" - ")[0].trim();
+    }
+    
+    // Convert 12-hour to 24-hour format
+    const time24 = timeString.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (time24) {
+      let hours = parseInt(time24[1]);
+      const minutes = time24[2];
+      const period = time24[3].toUpperCase();
+      
+      if (period === 'PM' && hours !== 12) hours += 12;
+      if (period === 'AM' && hours === 12) hours = 0;
+      
+      timeString = `${hours.toString().padStart(2, '0')}:${minutes}`;
+    }
+    
+    // Create date object with error handling
+    let bookingDate;
+    try {
+      const dateTimeString = data.date + "T" + timeString + ":00";
+      console.log("Creating date from:", dateTimeString);
+      bookingDate = new Date(dateTimeString);
+      
+      if (isNaN(bookingDate.getTime())) {
+        throw new Error("Invalid date created");
+      }
+    } catch (error) {
+      console.error("Date parsing error:", error);
+      console.log("Original data:", { date: data.date, time: data.time, timeString });
+      toast({
+        title: "Invalid Date/Time",
+        description: "Please check your date and time selection.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const bookingData = {
       serviceId: parseInt(data.serviceId),
-      date: new Date(data.date + "T" + data.time.split(" - ")[0]).toISOString(),
+      date: bookingDate.toISOString(),
       duration: selectedService.duration,
       location: data.location,
       totalPrice: totalPrice.toString(),
