@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Navigation } from "@/components/navigation";
 import { AdminDashboard } from "@/components/admin/dashboard";
 import { AdminCalendar } from "@/components/admin/calendar";
 import { ClientManagement } from "@/components/admin/client-management";
@@ -14,7 +13,11 @@ import { InvoiceGenerator } from "@/components/admin/invoice-generator";
 import { AdminInbox } from "@/components/admin/inbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Link } from "wouter";
+import { useTheme } from "@/components/theme-provider";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -25,132 +28,218 @@ import {
   Settings,
   Upload,
   Brain,
-  Mail
+  Mail,
+  Home,
+  Moon,
+  Sun,
+  ChevronLeft,
+  ChevronRight,
+  Activity,
+  Target,
+  TrendingUp,
+  Zap,
+  LogOut
 } from "lucide-react";
 
-const adminTabs = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "ai-insights", label: "AI Insights", icon: Brain },
-  { id: "ai-chat", label: "AI Chat", icon: Brain },
-  { id: "predictive", label: "Predictive", icon: Brain },
-  { id: "real-time", label: "Real-Time", icon: BarChart3 },
-  { id: "calendar", label: "Calendar", icon: Calendar },
-  { id: "clients", label: "Clients", icon: Users },
-  { id: "leads", label: "Leads", icon: Users },
-  { id: "gallery", label: "Portfolio", icon: Camera },
-  { id: "portal", label: "Client Portal", icon: Settings },
-  { id: "inbox", label: "Inbox", icon: Mail },
-  { id: "invoices", label: "Invoices", icon: FileText },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
+const menuSections = [
+  {
+    title: "Overview",
+    items: [
+      { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { id: "real-time", label: "Real-Time Analytics", icon: Activity },
+      { id: "analytics", label: "Advanced Analytics", icon: BarChart3 },
+    ]
+  },
+  {
+    title: "AI Intelligence",
+    items: [
+      { id: "ai-insights", label: "Business Insights", icon: Brain },
+      { id: "ai-chat", label: "AI Assistant", icon: Brain },
+      { id: "predictive", label: "Predictive Analysis", icon: Target },
+    ]
+  },
+  {
+    title: "Business Operations",
+    items: [
+      { id: "calendar", label: "Calendar", icon: Calendar },
+      { id: "clients", label: "Client Management", icon: Users },
+      { id: "leads", label: "Lead Management", icon: TrendingUp },
+      { id: "inbox", label: "Messages", icon: Mail },
+      { id: "invoices", label: "Invoices", icon: FileText },
+    ]
+  },
+  {
+    title: "Content & Portfolio",
+    items: [
+      { id: "gallery", label: "Portfolio Management", icon: Camera },
+      { id: "portal", label: "Client Portal", icon: Settings },
+    ]
+  }
 ];
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      {/* Admin Header */}
-      <div className="bg-charcoal text-white pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border transition-all duration-300 flex flex-col`}>
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-playfair text-3xl font-bold">Admin Dashboard</h1>
-              <p className="text-white/70 mt-2">Manage your photography business with AI-powered tools</p>
-            </div>
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="text-center">
-                <div className="text-lg font-bold">Today</div>
-                <div className="text-white/70">3 bookings</div>
+            {!sidebarCollapsed && (
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
+                  <Camera className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-playfair text-lg font-bold gradient-text">
+                  Admin Panel
+                </span>
               </div>
-              <div className="text-center">
-                <div className="text-lg font-bold">This Month</div>
-                <div className="text-white/70">$12,450</div>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="h-8 w-8 p-0"
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <ScrollArea className="flex-1 p-4">
+          <div className="space-y-6">
+            {menuSections.map((section) => (
+              <div key={section.title}>
+                {!sidebarCollapsed && (
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                    {section.title}
+                  </h3>
+                )}
+                <div className="space-y-1">
+                  {section.items.map((item) => (
+                    <Button
+                      key={item.id}
+                      variant={activeTab === item.id ? "default" : "ghost"}
+                      onClick={() => setActiveTab(item.id)}
+                      className={`w-full justify-start h-10 ${
+                        activeTab === item.id
+                          ? 'bg-bronze text-white hover:bg-bronze/90'
+                          : 'hover:bg-muted'
+                      } ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
+                      title={sidebarCollapsed ? item.label : undefined}
+                    >
+                      <item.icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+                      {!sidebarCollapsed && (
+                        <span className="truncate">{item.label}</span>
+                      )}
+                    </Button>
+                  ))}
+                </div>
+                {!sidebarCollapsed && <Separator className="mt-4" />}
               </div>
-              <div className="text-center">
-                <div className="text-lg font-bold">AI Predictions</div>
-                <div className="text-white/70">89% confidence</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold">Live Visitors</div>
-                <div className="text-white/70">8 active</div>
-              </div>
-            </div>
+            ))}
+          </div>
+        </ScrollArea>
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-border">
+          <div className="space-y-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className={`w-full justify-start ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
+              title={sidebarCollapsed ? 'Toggle theme' : undefined}
+            >
+              {theme === "light" ? (
+                <Moon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+              ) : (
+                <Sun className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+              )}
+              {!sidebarCollapsed && 'Toggle Theme'}
+            </Button>
+            
+            <Link href="/">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`w-full justify-start ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
+                title={sidebarCollapsed ? 'Back to website' : undefined}
+              >
+                <Home className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+                {!sidebarCollapsed && 'Back to Website'}
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Admin Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          {/* Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 xl:grid-cols-10 gap-2 h-auto p-2">
-            {adminTabs.map((tab) => (
-              <TabsTrigger 
-                key={tab.id} 
-                value={tab.id}
-                className="flex flex-col items-center space-y-1 p-3 data-[state=active]:bg-bronze data-[state=active]:text-white"
-              >
-                <tab.icon className="h-4 w-4" />
-                <span className="text-xs">{tab.label}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top Header */}
+        <div className="bg-card border-b border-border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-playfair text-2xl font-bold">
+                {menuSections.flatMap(s => s.items).find(item => item.id === activeTab)?.label || 'Dashboard'}
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage your photography business with AI-powered tools
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="outline" className="text-sm">
+                <Activity className="h-3 w-3 mr-1" />
+                Live Updates
+              </Badge>
+              <Badge variant="secondary" className="text-sm">
+                <Zap className="h-3 w-3 mr-1" />
+                AI Enhanced
+              </Badge>
+            </div>
+          </div>
+        </div>
 
-          {/* Dashboard Tab */}
-          <TabsContent value="dashboard" className="space-y-6">
-            <AdminDashboard />
-          </TabsContent>
+        {/* Content Area */}
+        <div className="flex-1 overflow-auto p-6">{renderContent()}</div>
+      </div>
+    </div>
+  );
 
-          {/* AI Business Insights Tab */}
-          <TabsContent value="ai-insights" className="space-y-6">
-            <AIBusinessInsights />
-          </TabsContent>
-
-          {/* AI Chat Tab */}
-          <TabsContent value="ai-chat" className="space-y-6">
-            <AdvancedAIChat />
-          </TabsContent>
-
-          {/* Predictive Intelligence Tab */}
-          <TabsContent value="predictive" className="space-y-6">
-            <PredictiveIntelligence />
-          </TabsContent>
-
-          {/* Real-Time Analytics Tab */}
-          <TabsContent value="real-time" className="space-y-6">
-            <RealTimeAnalytics />
-          </TabsContent>
-
-          {/* Calendar Tab */}
-          <TabsContent value="calendar" className="space-y-6">
-            <AdminCalendar />
-          </TabsContent>
-
-          {/* Clients Tab */}
-          <TabsContent value="clients" className="space-y-6">
-            <ClientManagement />
-          </TabsContent>
-
-          {/* Leads Tab */}
-          <TabsContent value="leads" className="space-y-6">
-            <LeadManagement />
-          </TabsContent>
-
-          {/* Portfolio Tab */}
-          <TabsContent value="gallery" className="space-y-6">
-            <PortfolioManagement />
-          </TabsContent>
-
-          {/* Inbox Tab */}
-          <TabsContent value="inbox" className="space-y-6">
-            <AdminInbox />
-          </TabsContent>
-
-          {/* Client Portal Tab */}
-          <TabsContent value="portal" className="space-y-6">
-            <Card>
+  function renderContent() {
+    switch (activeTab) {
+      case "dashboard":
+        return <AdminDashboard />;
+      case "ai-insights":
+        return <AIBusinessInsights />;
+      case "ai-chat":
+        return <AdvancedAIChat />;
+      case "predictive":
+        return <PredictiveIntelligence />;
+      case "real-time":
+        return <RealTimeAnalytics />;
+      case "calendar":
+        return <AdminCalendar />;
+      case "clients":
+        return <ClientManagement />;
+      case "leads":
+        return <LeadManagement />;
+      case "gallery":
+        return <PortfolioManagement />;
+      case "inbox":
+        return <AdminInbox />;
+      case "invoices":
+        return <InvoiceGenerator />;
+      case "analytics":
+        return <AdvancedAnalytics />;
+      case "portal":
+        return (
+          <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Settings className="h-5 w-5 mr-2" />
@@ -268,19 +357,9 @@ export default function Admin() {
                 </Card>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* Invoice Generator Tab */}
-          <TabsContent value="invoices" className="space-y-6">
-            <InvoiceGenerator />
-          </TabsContent>
-
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <AdvancedAnalytics />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
+        );
+      default:
+        return <AdminDashboard />;
+    }
+  }
 }
