@@ -800,6 +800,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get client credentials for admin management
+  app.get("/api/client-credentials", async (req, res) => {
+    try {
+      const clients = await storage.getClients();
+      
+      // Convert clients to credentials format with portal access info
+      const credentials = clients.map(client => ({
+        id: client.id,
+        clientId: client.id,
+        clientName: client.name,
+        clientEmail: client.email,
+        hasPassword: false, // Default to false since we don't store password flags yet
+        passwordSet: false,
+        lastLogin: null, // Would come from session tracking
+        magicLinkSent: false,
+        portalAccess: true, // Default to true for existing clients
+        createdAt: client.createdAt || new Date().toISOString()
+      }));
+      
+      res.json(credentials);
+    } catch (error) {
+      console.error("Error fetching client credentials:", error);
+      res.status(500).json({ error: "Failed to fetch client credentials" });
+    }
+  });
+
   app.post("/api/admin/client-credentials/toggle-access", async (req, res) => {
     try {
       const { clientId, enabled } = req.body;
@@ -825,6 +851,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching invoice stats:", error);
       res.status(500).json({ error: "Failed to fetch invoice stats" });
+    }
+  });
+
+  // Get all invoices
+  app.get("/api/invoices", async (req, res) => {
+    try {
+      // Get real invoices from database
+      const bookings = await storage.getBookings();
+      const invoicesList = [];
+      
+      // Convert completed bookings to invoices format for display
+      for (const booking of bookings) {
+        if (booking.status === 'completed' || booking.status === 'confirmed') {
+          const invoice = {
+            id: `INV-${booking.id}`,
+            bookingId: booking.id,
+            clientName: booking.client?.name || 'Unknown Client',
+            clientEmail: booking.client?.email || '',
+            invoiceNumber: `INV-${booking.id}-${new Date(booking.date).getFullYear()}`,
+            amount: Number(booking.service?.price || 0),
+            status: 'pending',
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+            createdDate: booking.createdAt || new Date().toISOString(),
+            items: [{
+              description: booking.service?.name || 'Photography Service',
+              quantity: 1,
+              rate: Number(booking.service?.price || 0),
+              amount: Number(booking.service?.price || 0)
+            }],
+            notes: `Photography session for ${booking.client?.name || 'client'} on ${new Date(booking.date).toLocaleDateString()}`
+          };
+          invoicesList.push(invoice);
+        }
+      }
+      
+      res.json(invoicesList);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ error: "Failed to fetch invoices" });
+    }
+  });
+
+  // Create new invoice
+  app.post("/api/invoices", async (req, res) => {
+    try {
+      const invoiceData = req.body;
+      
+      // In a real implementation, save to database using storage.createInvoice()
+      const newInvoice = {
+        id: `INV-${Date.now()}`,
+        invoiceNumber: `INV-${Date.now()}`,
+        createdDate: new Date().toISOString(),
+        status: 'pending',
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        ...invoiceData
+      };
+      
+      console.log("Created invoice:", newInvoice);
+      
+      res.json(newInvoice);
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      res.status(500).json({ error: "Failed to create invoice" });
     }
   });
 

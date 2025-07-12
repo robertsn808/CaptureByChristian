@@ -52,9 +52,9 @@ export function ClientCredentials() {
 
   // Fetch all clients with credential info
   const { data: clientCredentials = [], isLoading } = useQuery({
-    queryKey: ['/api/admin/client-credentials'],
+    queryKey: ['/api/client-credentials'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/client-credentials');
+      const response = await fetch('/api/client-credentials');
       if (!response.ok) throw new Error('Failed to fetch client credentials');
       return response.json();
     }
@@ -76,7 +76,7 @@ export function ClientCredentials() {
         title: "Password Set",
         description: "Client portal password has been successfully set.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/client-credentials'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/client-credentials'] });
       setNewPassword("");
       setSelectedClient(null);
     },
@@ -105,7 +105,7 @@ export function ClientCredentials() {
         title: "Magic Link Sent",
         description: "Secure login link has been sent to the client's email.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/client-credentials'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/client-credentials'] });
     },
     onError: () => {
       toast({
@@ -132,7 +132,7 @@ export function ClientCredentials() {
         title: "Portal Access Updated",
         description: "Client portal access has been updated.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/client-credentials'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/client-credentials'] });
     }
   });
 
