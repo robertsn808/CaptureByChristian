@@ -1,0 +1,177 @@
+🧾 1. Invoice HTML Template (Branded + Responsive)
+This is a clean and modern template, built with inline CSS (for PDF rendering), and fully dynamic placeholders.
+
+html
+Copy
+Edit
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      margin: 40px;
+      color: #333;
+    }
+    .invoice-box {
+      max-width: 800px;
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 10px rgba(0,0,0,.15);
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      line-height: 1.5;
+      border-collapse: collapse;
+    }
+    td, th {
+      padding: 8px;
+      vertical-align: top;
+    }
+    .item-row {
+      border-bottom: 1px solid #eee;
+    }
+    .total {
+      font-weight: bold;
+      border-top: 2px solid #333;
+    }
+    .right {
+      text-align: right;
+    }
+    .logo {
+      max-width: 120px;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-box">
+    <table>
+      <tr>
+        <td>
+          <h1>Invoice</h1>
+          <p><strong>Invoice #: </strong>{{invoice_id}}</p>
+          <p><strong>Date: </strong>{{invoice_date}}</p>
+        </td>
+        <td class="right">
+          <img src="{{logo_url}}" class="logo" alt="Your Logo">
+        </td>
+      </tr>
+    </table>
+
+    <p><strong>Billed To:</strong><br>{{client_name}}<br>{{client_email}}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th class="right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#items}}
+        <tr class="item-row">
+          <td>{{description}}</td>
+          <td class="right">${{amount}}</td>
+        </tr>
+        {{/items}}
+        <tr>
+          <td>Subtotal</td>
+          <td class="right">${{subtotal}}</td>
+        </tr>
+        <tr>
+          <td>Tax</td>
+          <td class="right">${{tax}}</td>
+        </tr>
+        <tr>
+          <td>Discount</td>
+          <td class="right">- ${{discount}}</td>
+        </tr>
+        <tr class="total">
+          <td>Total</td>
+          <td class="right">${{total}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Notes:</strong><br>{{notes}}</p>
+
+    <p style="margin-top: 40px; font-size: 12px; color: #888;">
+      Thank you for your business! Please make payment by {{due_date}}.
+    </p>
+  </div>
+</body>
+</html>
+🧩 Template placeholders like {{client_name}} can be filled with Python (Jinja2), Node (Handlebars/EJS), or your preferred language.
+
+🧱 2. PDF Exporter in Python using pdfkit + Jinja2
+📦 Requirements:
+bash
+Copy
+Edit
+pip install pdfkit jinja2
+Make sure you also install wkhtmltopdf:
+
+macOS: brew install wkhtmltopdf
+
+Ubuntu: sudo apt install wkhtmltopdf
+
+Windows: https://wkhtmltopdf.org/downloads.html
+
+🐍 generate_invoice_pdf.py
+python
+Copy
+Edit
+import pdfkit
+from jinja2 import Environment, FileSystemLoader
+import os
+
+def generate_invoice_pdf(invoice_data, output_path="invoice.pdf"):
+    # Setup paths
+    env = Environment(loader=FileSystemLoader('.'))
+    template = env.get_template("invoice_template.html")
+
+    # Render HTML with data
+    html_out = template.render(invoice_data)
+
+    # Generate PDF
+    pdfkit.from_string(html_out, output_path)
+    print(f"Invoice saved to {output_path}")
+🧪 Example Usage
+python
+Copy
+Edit
+invoice_data = {
+    "invoice_id": "INV-1009",
+    "invoice_date": "2025-07-12",
+    "client_name": "Marlon Barut",
+    "client_email": "mbarut1975@outlook.com",
+    "logo_url": "https://yourdomain.com/logo.png",
+    "items": [
+        {"description": "Portrait Session - 2 hours", "amount": "400"},
+        {"description": "Extra Retouching (x5)", "amount": "75"},
+    ],
+    "subtotal": "475",
+    "tax": "42.75",
+    "discount": "25",
+    "total": "492.75",
+    "notes": "Please pay within 7 days of receiving this invoice.",
+    "due_date": "2025-07-19"
+}
+
+generate_invoice_pdf(invoice_data, output_path="client_invoice.pdf")
+🏁 Result
+Fully branded, professional PDF invoice
+
+Can be:
+
+Attached to emails
+
+Shared as secure download links
+
+Uploaded to client dashboards

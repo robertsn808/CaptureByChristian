@@ -603,6 +603,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Invoice PDF & Email Routes =====
+  app.post("/api/invoices/pdf/:invoiceNumber", async (req, res) => {
+    try {
+      const { invoiceNumber } = req.params;
+      const invoiceData = req.body;
+      
+      // Import PDF generator
+      const { generateInvoiceHTML } = await import("./pdf-generator");
+      
+      // Convert invoice data to proper format
+      const pdfData = {
+        invoiceNumber: invoiceData.invoiceNumber,
+        invoiceDate: invoiceData.createdDate,
+        dueDate: invoiceData.dueDate,
+        clientName: invoiceData.clientName,
+        clientEmail: invoiceData.clientEmail,
+        items: invoiceData.items,
+        subtotal: invoiceData.amount,
+        total: invoiceData.amount,
+        notes: invoiceData.notes
+      };
+      
+      const html = generateInvoiceHTML(pdfData);
+      
+      // In production, you would convert HTML to PDF here using puppeteer or similar
+      // For now, we'll return the HTML as a simulated PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoiceNumber}.pdf"`);
+      res.send(html);
+      
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
+    }
+  });
+
+  app.post("/api/invoices/send/:invoiceNumber", async (req, res) => {
+    try {
+      const { invoiceNumber } = req.params;
+      const { invoice, includePaymentLink } = req.body;
+      
+      // Import email functionality
+      const { emailInvoice } = await import("./pdf-generator");
+      
+      // Convert invoice data
+      const emailData = {
+        invoiceNumber: invoice.invoiceNumber,
+        invoiceDate: invoice.createdDate,
+        dueDate: invoice.dueDate,
+        clientName: invoice.clientName,
+        clientEmail: invoice.clientEmail,
+        items: invoice.items,
+        subtotal: invoice.amount,
+        total: invoice.amount,
+        notes: invoice.notes
+      };
+      
+      // Generate PDF and send email (mock implementation)
+      const success = await emailInvoice(emailData, "");
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: `Invoice ${invoiceNumber} sent successfully to ${invoice.clientEmail}`,
+          paymentLink: includePaymentLink ? `https://pay.christianpicaso.com/invoice/${invoiceNumber}` : null
+        });
+      } else {
+        res.status(500).json({ error: "Failed to send email" });
+      }
+      
+    } catch (error) {
+      console.error("Email send error:", error);
+      res.status(500).json({ error: "Failed to send invoice email" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

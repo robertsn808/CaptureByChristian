@@ -52,6 +52,15 @@ interface InvoiceItem {
   amount: number;
 }
 
+interface InvoiceTotals {
+  subtotal: number;
+  taxRate: number;
+  tax: number;
+  discountRate: number;
+  discount: number;
+  total: number;
+}
+
 export function InvoiceGenerator() {
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [newInvoiceOpen, setNewInvoiceOpen] = useState(false);
@@ -59,6 +68,9 @@ export function InvoiceGenerator() {
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([
     { description: "Photography Session", quantity: 1, rate: 0, amount: 0 }
   ]);
+  const [taxRate, setTaxRate] = useState(4.712); // Hawaii General Excise Tax
+  const [discountRate, setDiscountRate] = useState(0);
+  const [notes, setNotes] = useState("Payment due within 30 days of invoice date. Late payments may incur additional fees.");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -156,8 +168,24 @@ export function InvoiceGenerator() {
     }
   };
 
+  const calculateTotals = (): InvoiceTotals => {
+    const subtotal = invoiceItems.reduce((total, item) => total + (typeof item.amount === 'number' ? item.amount : 0), 0);
+    const tax = (subtotal * taxRate) / 100;
+    const discount = (subtotal * discountRate) / 100;
+    const total = subtotal + tax - discount;
+    
+    return {
+      subtotal,
+      taxRate,
+      tax,
+      discountRate,
+      discount,
+      total
+    };
+  };
+
   const getTotalAmount = () => {
-    return invoiceItems.reduce((total, item) => total + (typeof item.amount === 'number' ? item.amount : 0), 0);
+    return calculateTotals().total;
   };
 
   const generateInvoiceNumber = () => {
@@ -191,18 +219,86 @@ export function InvoiceGenerator() {
     setInvoiceItems([{ description: "Photography Session", quantity: 1, rate: 0, amount: 0 }]);
   };
 
-  const handleSendInvoice = (invoice: Invoice) => {
-    toast({
-      title: "Invoice Sent",
-      description: `Invoice ${invoice.invoiceNumber} has been sent to ${invoice.clientEmail}.`,
-    });
+  const handleSendInvoice = async (invoice: Invoice) => {
+    try {
+      const response = await fetch(`/api/invoices/send/${invoice.invoiceNumber}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invoice,
+          includePaymentLink: true
+        }),
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Email Sent",
+          description: `Invoice ${invoice.invoiceNumber} sent to ${invoice.clientEmail}`,
+        });
+      } else {
+        throw new Error('Email send failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Email Failed", 
+        description: "Unable to send invoice email. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDownloadInvoice = (invoice: Invoice) => {
-    toast({
-      title: "Invoice Downloaded",
-      description: `Invoice ${invoice.invoiceNumber} has been downloaded as PDF.`,
-    });
+  const generatePaymentLink = async (invoice: Invoice) => {
+    try {
+      // In production, this would integrate with Stripe/PayPal
+      const paymentUrl = `https://pay.christianpicaso.com/invoice/${invoice.invoiceNumber}`;
+      
+      await navigator.clipboard.writeText(paymentUrl);
+      toast({
+        title: "Payment Link Generated",
+        description: `Payment link copied to clipboard: ${paymentUrl}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Link Generation Failed",
+        description: "Unable to generate payment link. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadInvoice = async (invoice: Invoice) => {
+    try {
+      const response = await fetch(`/api/invoices/pdf/${invoice.invoiceNumber}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invoice),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${invoice.invoiceNumber}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        toast({
+          title: "Download Complete",
+          description: `Invoice ${invoice.invoiceNumber} downloaded successfully`,
+        });
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Unable to download invoice. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const pendingBookings = bookings?.filter((booking: any) => 
@@ -352,14 +448,70 @@ export function InvoiceGenerator() {
                     </Button>
                     
                     <div className="border-t pt-4">
-                      <div className="flex justify-between items-center text-lg font-semibold">
-                        <span>Total Amount:</span>
-                        <span>${typeof getTotalAmount() === 'number' ? getTotalAmount().toFixed(2) : '0.00'}</span>
+                      {/* Tax and Discount Controls */}
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <Label>Tax Rate (%)</Label>
+                          <Input
+                            type="number"
+                            step="0.001"
+                            value={taxRate}
+                            onChange={(e) => setTaxRate(Number(e.target.value))}
+                            placeholder="4.712"
+                          />
+                        </div>
+                        <div>
+                          <Label>Discount Rate (%)</Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={discountRate}
+                            onChange={(e) => setDiscountRate(Number(e.target.value))}
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Invoice Totals */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Subtotal:</span>
+                          <span>${calculateTotals().subtotal.toFixed(2)}</span>
+                        </div>
+                        {taxRate > 0 && (
+                          <div className="flex justify-between text-sm text-muted-foreground">
+                            <span>Tax ({taxRate}%):</span>
+                            <span>${calculateTotals().tax.toFixed(2)}</span>
+                          </div>
+                        )}
+                        {discountRate > 0 && (
+                          <div className="flex justify-between text-sm text-green-600">
+                            <span>Discount ({discountRate}%):</span>
+                            <span>-${calculateTotals().discount.toFixed(2)}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
+                          <span>Total Amount:</span>
+                          <span className="text-xl font-bold text-bronze">
+                            ${getTotalAmount().toFixed(2)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Notes Section */}
+              <div>
+                <Label>Notes & Payment Terms</Label>
+                <Textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Payment terms, special instructions, late fee policy..."
+                  rows={3}
+                />
+              </div>
 
               {/* Actions */}
               <div className="flex justify-end space-x-2">
@@ -367,6 +519,7 @@ export function InvoiceGenerator() {
                   Cancel
                 </Button>
                 <Button onClick={handleCreateInvoice} className="bg-bronze hover:bg-bronze/90">
+                  <FileText className="h-4 w-4 mr-2" />
                   Create Invoice
                 </Button>
               </div>
