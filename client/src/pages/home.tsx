@@ -96,12 +96,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6">About Kai</h2>
+              <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6">About Christian</h2>
               <p className="text-xl text-muted-foreground mb-6">
-                Born and raised in Hawaii, I've spent over a decade capturing the islands' natural beauty and the precious moments of those who choose to celebrate here.
+                Born and raised in Hawaii, Christian has spent over a decade mastering the art of photography across the Hawaiian Islands. His passion for capturing life's most precious moments stems from a deep connection to the islands' natural beauty and cultural richness.
               </p>
               <p className="text-lg text-muted-foreground mb-8">
-                As an FAA-certified drone pilot and AI-enhanced photographer, I bring both traditional artistry and cutting-edge technology to every shoot. My work has been featured in Pacific Weddings, Hawaii Magazine, and countless social media feeds worldwide.
+                As an FAA-certified drone pilot and AI-enhanced photographer, Christian brings both traditional artistry and cutting-edge technology to every shoot. His work has been featured in Pacific Weddings, Hawaii Magazine, and has garnered international recognition across social media platforms worldwide.
               </p>
               
               {/* Certifications */}
@@ -190,7 +190,7 @@ export default function Home() {
                 <Mail className="h-8 w-8" />
               </div>
               <h3 className="font-bold text-xl mb-2">Email</h3>
-              <p className="text-white/70">kai@nakamura.photography</p>
+              <p className="text-white/70">christian@picaso.photography</p>
             </div>
             <div className="text-center">
               <div className="bg-bronze rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">

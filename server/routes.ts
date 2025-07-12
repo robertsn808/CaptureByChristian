@@ -16,7 +16,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const clients = await storage.getClients();
       res.json(clients);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch clients" });
+      console.error("Error fetching clients:", error);
+      res.status(500).json({ error: "Failed to fetch clients", details: error.message });
     }
   });
 
@@ -76,7 +77,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookings = await storage.getBookings();
       res.json(bookings);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch bookings" });
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ error: "Failed to fetch bookings", details: error.message });
     }
   });
 
