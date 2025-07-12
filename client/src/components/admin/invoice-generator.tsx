@@ -613,65 +613,66 @@ export function InvoiceGenerator() {
 
       {/* Invoice Preview Dialog */}
       <Dialog open={!!previewInvoice} onOpenChange={() => setPreviewInvoice(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Invoice Preview</DialogTitle>
           </DialogHeader>
           
           {previewInvoice && (
-            <div className="space-y-6 p-6 border rounded-lg bg-white">
+            <div className="space-y-8 p-8 border-2 rounded-lg bg-white text-gray-900 shadow-lg">
               {/* Invoice Header */}
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start border-b-2 border-gray-200 pb-6">
                 <div>
-                  <h2 className="text-2xl font-bold">INVOICE</h2>
-                  <p className="text-muted-foreground">Christian Picaso Photography</p>
-                  <p className="text-sm text-muted-foreground">Honolulu, Hawaii</p>
+                  <h2 className="text-4xl font-bold text-bronze mb-2">INVOICE</h2>
+                  <p className="text-lg font-semibold text-gray-800">Captured by Christian</p>
+                  <p className="text-base text-gray-700">Professional Photography Services</p>
+                  <p className="text-sm text-gray-600">Honolulu, Hawaii</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-semibold">{previewInvoice.invoiceNumber}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-2xl font-bold text-gray-900">{previewInvoice.invoiceNumber}</div>
+                  <div className="text-base font-medium text-gray-800 mt-2">
                     Date: {new Date(previewInvoice.createdDate).toLocaleDateString()}
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-base font-medium text-gray-800">
                     Due: {new Date(previewInvoice.dueDate).toLocaleDateString()}
                   </div>
                 </div>
               </div>
 
               {/* Client Info */}
-              <div>
-                <h3 className="font-semibold mb-2">Bill To:</h3>
-                <div className="text-sm">
-                  <div>{previewInvoice.clientName}</div>
-                  <div>{previewInvoice.clientEmail}</div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Bill To:</h3>
+                <div className="text-base text-gray-800">
+                  <div className="font-semibold">{previewInvoice.clientName}</div>
+                  <div className="text-gray-700">{previewInvoice.clientEmail}</div>
                 </div>
               </div>
 
               {/* Invoice Items */}
               <div>
-                <table className="w-full border-collapse">
+                <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Description</th>
-                      <th className="text-right p-2">Qty</th>
-                      <th className="text-right p-2">Rate</th>
-                      <th className="text-right p-2">Amount</th>
+                    <tr className="bg-gray-100 border-b-2 border-gray-300">
+                      <th className="text-left p-4 font-bold text-gray-900">Description</th>
+                      <th className="text-right p-4 font-bold text-gray-900">Qty</th>
+                      <th className="text-right p-4 font-bold text-gray-900">Rate</th>
+                      <th className="text-right p-4 font-bold text-gray-900">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {previewInvoice.items.map((item, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="p-2">{item.description}</td>
-                        <td className="text-right p-2">{item.quantity}</td>
-                        <td className="text-right p-2">${item.rate.toFixed(2)}</td>
-                        <td className="text-right p-2">${item.amount.toFixed(2)}</td>
+                      <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                        <td className="p-4 text-gray-800 font-medium">{item.description}</td>
+                        <td className="text-right p-4 text-gray-800">{item.quantity}</td>
+                        <td className="text-right p-4 text-gray-800">${item.rate.toFixed(2)}</td>
+                        <td className="text-right p-4 text-gray-800 font-semibold">${item.amount.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="border-t-2">
-                      <td colSpan={3} className="text-right p-2 font-semibold">Total:</td>
-                      <td className="text-right p-2 font-semibold text-lg">
+                    <tr className="bg-bronze/10 border-t-2 border-bronze">
+                      <td colSpan={3} className="text-right p-4 font-bold text-gray-900 text-lg">Total:</td>
+                      <td className="text-right p-4 font-bold text-gray-900 text-xl">
                         ${previewInvoice.amount.toFixed(2)}
                       </td>
                     </tr>
@@ -681,16 +682,19 @@ export function InvoiceGenerator() {
 
               {/* Notes */}
               {previewInvoice.notes && (
-                <div>
-                  <h3 className="font-semibold mb-2">Notes:</h3>
-                  <p className="text-sm text-muted-foreground">{previewInvoice.notes}</p>
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <h3 className="font-bold text-gray-900 mb-2 text-lg">Notes:</h3>
+                  <p className="text-base text-gray-800">{previewInvoice.notes}</p>
                 </div>
               )}
 
               {/* Payment Terms */}
-              <div className="border-t pt-4">
-                <p className="text-sm text-muted-foreground">
+              <div className="border-t-2 border-gray-300 pt-6">
+                <p className="text-base text-gray-700 font-medium">
                   Payment terms: Net 30 days. Thank you for your business!
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Questions? Contact us at info@capturedbychristian.com
                 </p>
               </div>
             </div>

@@ -166,7 +166,10 @@ export function AdvancedAnalytics() {
 
   const COLORS = ['#D4A574', '#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
 
-  const formatCurrency = (value: number) => `$${value.toLocaleString()}`;
+  const formatCurrency = (value: number | undefined | null) => {
+    if (value === undefined || value === null || isNaN(value)) return '$0';
+    return `$${Number(value).toLocaleString()}`;
+  };
 
   const getMetricIcon = (metric: string) => {
     switch (metric) {
@@ -414,19 +417,19 @@ export function AdvancedAnalytics() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Repeat Client Rate</span>
-                  <span className="font-medium">{Math.round((clientMetrics.repeatClients / clientMetrics.totalClients) * 100)}%</span>
+                  <span className="font-medium">{displayClientMetrics.totalClients > 0 ? Math.round((displayClientMetrics.repeatClients / displayClientMetrics.totalClients) * 100) : 0}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Avg Lifetime Value</span>
-                  <span className="font-medium">{formatCurrency(clientMetrics.avgLifetimeValue)}</span>
+                  <span className="font-medium">{formatCurrency(displayClientMetrics.avgLifetimeValue)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Churn Rate</span>
-                  <span className="font-medium">{clientMetrics.churnRate}%</span>
+                  <span className="font-medium">{displayClientMetrics.churnRate || 0}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Booking Frequency</span>
-                  <span className="font-medium">{businessKPIs.bookingFrequency}x/year</span>
+                  <span className="font-medium">{displayBusinessKPIs.bookingFrequency || 0}x/year</span>
                 </div>
               </div>
             </div>
@@ -436,19 +439,19 @@ export function AdvancedAnalytics() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Monthly Recurring Revenue</span>
-                  <span className="font-medium">{formatCurrency(businessKPIs.monthlyRecurringRevenue)}</span>
+                  <span className="font-medium">{formatCurrency(displayBusinessKPIs.monthlyRecurringRevenue)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Profit Margin</span>
-                  <span className="font-medium">{businessKPIs.profitMargin}%</span>
+                  <span className="font-medium">{displayBusinessKPIs.profitMargin || 0}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Seasonality Index</span>
-                  <span className="font-medium">{businessKPIs.seasonalityIndex}</span>
+                  <span className="font-medium">{displayBusinessKPIs.seasonalityIndex || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Market Position</span>
-                  <span className="font-medium">{businessKPIs.competitorAnalysis}</span>
+                  <span className="font-medium">{displayBusinessKPIs.competitorAnalysis || 'N/A'}</span>
                 </div>
               </div>
             </div>
