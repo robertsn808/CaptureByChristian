@@ -48,6 +48,7 @@ export function ClientCredentials() {
   const [newPassword, setNewPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
+  const [loadingStates, setLoadingStates] = useState<{[key: number]: boolean}>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -90,32 +91,32 @@ export function ClientCredentials() {
     }
   });
 
-  // Send magic link mutation
-  const sendMagicLinkMutation = useMutation({
-    mutationFn: async (clientId: number) => {
+  // Send magic link function with individual loading states
+  const sendMagicLink = async (clientId: number) => {
+    setLoadingStates(prev => ({ ...prev, [clientId]: true }));
+    try {
       const response = await fetch('/api/admin/client-credentials/magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientId }),
       });
       if (!response.ok) throw new Error('Failed to send magic link');
-      return response.json();
-    },
-    onSuccess: () => {
+      
       toast({
         title: "Magic Link Sent",
         description: "Secure login link has been sent to the client's email.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/client-credentials'] });
-    },
-    onError: () => {
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to send magic link.",
         variant: "destructive",
       });
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [clientId]: false }));
     }
-  });
+  };
 
   // Toggle portal access mutation
   const togglePortalAccessMutation = useMutation({
@@ -305,11 +306,11 @@ export function ClientCredentials() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => sendMagicLinkMutation.mutate(credential.clientId)}
-                          disabled={sendMagicLinkMutation.isPending}
+                          onClick={() => sendMagicLink(credential.clientId)}
+                          disabled={loadingStates[credential.clientId] || false}
                         >
                           <Send className="h-3 w-3 mr-1" />
-                          {sendMagicLinkMutation.isPending ? 'Sending...' : 'Magic Link'}
+                          {loadingStates[credential.clientId] ? 'Sending...' : 'Magic Link'}
                         </Button>
 
                         {/* Toggle Access */}
