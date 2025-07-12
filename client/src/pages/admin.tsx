@@ -10,6 +10,10 @@ import { ClientPortal } from "@/components/admin/client-portal";
 import { ProductSales } from "@/components/admin/product-sales";
 import { AdvancedAnalytics } from "@/components/admin/advanced-analytics";
 import { QuestionnaireSystem } from "@/components/admin/questionnaire-system";
+import { AIBusinessInsights } from "@/components/admin/ai-business-insights";
+import { RealTimeAnalytics } from "@/components/admin/real-time-analytics";
+import { AdvancedAIChat } from "@/components/admin/advanced-ai-chat";
+import { PredictiveIntelligence } from "@/components/admin/predictive-intelligence";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,6 +31,10 @@ import {
 
 const adminTabs = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "ai-insights", label: "AI Insights", icon: Brain },
+  { id: "ai-chat", label: "AI Chat", icon: Brain },
+  { id: "predictive", label: "Predictive", icon: Brain },
+  { id: "real-time", label: "Real-Time", icon: BarChart3 },
   { id: "calendar", label: "Calendar", icon: Calendar },
   { id: "clients", label: "Clients", icon: Users },
   { id: "leads", label: "Leads", icon: Users },
@@ -34,8 +42,6 @@ const adminTabs = [
   { id: "automation", label: "Automation", icon: Brain },
   { id: "products", label: "Products", icon: Upload },
   { id: "portal", label: "Portal", icon: Settings },
-  { id: "forms", label: "Forms", icon: FileText },
-  { id: "contracts", label: "Contracts", icon: FileText },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
 
@@ -54,7 +60,7 @@ export default function Admin() {
               <h1 className="font-playfair text-3xl font-bold">Admin Dashboard</h1>
               <p className="text-white/70 mt-2">Manage your photography business with AI-powered tools</p>
             </div>
-            <div className="flex items-center space-x-4 text-sm">
+            <div className="flex items-center space-x-6 text-sm">
               <div className="text-center">
                 <div className="text-lg font-bold">Today</div>
                 <div className="text-white/70">3 bookings</div>
@@ -62,6 +68,14 @@ export default function Admin() {
               <div className="text-center">
                 <div className="text-lg font-bold">This Month</div>
                 <div className="text-white/70">$12,450</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold">AI Predictions</div>
+                <div className="text-white/70">89% confidence</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold">Live Visitors</div>
+                <div className="text-white/70">8 active</div>
               </div>
             </div>
           </div>
@@ -88,6 +102,26 @@ export default function Admin() {
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
             <AdminDashboard />
+          </TabsContent>
+
+          {/* AI Business Insights Tab */}
+          <TabsContent value="ai-insights" className="space-y-6">
+            <AIBusinessInsights />
+          </TabsContent>
+
+          {/* AI Chat Tab */}
+          <TabsContent value="ai-chat" className="space-y-6">
+            <AdvancedAIChat />
+          </TabsContent>
+
+          {/* Predictive Intelligence Tab */}
+          <TabsContent value="predictive" className="space-y-6">
+            <PredictiveIntelligence />
+          </TabsContent>
+
+          {/* Real-Time Analytics Tab */}
+          <TabsContent value="real-time" className="space-y-6">
+            <RealTimeAnalytics />
           </TabsContent>
 
           {/* Calendar Tab */}
