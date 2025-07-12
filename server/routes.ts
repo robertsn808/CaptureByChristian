@@ -779,21 +779,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!client) {
         return res.status(404).json({ error: "Client not found" });
       }
+
+      if (!client.phone) {
+        return res.status(400).json({ error: "Client phone number is required for SMS delivery" });
+      }
       
-      // In a real implementation, you would:
-      // 1. Generate a secure token
-      // 2. Store it with expiration time
-      // 3. Send email with the magic link
-      
+      // Generate secure token with expiration
       const token = `magic_${clientId}_${Date.now()}`;
       const magicLink = `${process.env.REPL_URL || 'http://localhost:5000'}/client-portal?token=${token}`;
       
-      console.log(`Magic link for ${client.email}: ${magicLink}`);
+      // Import SMS functionality
+      const { sendMagicLinkSMS, isTwilioConfigured } = await import('./twilio');
       
-      res.json({ 
-        message: "Magic link sent successfully",
-        link: magicLink // In production, don't return the link
-      });
+      if (!isTwilioConfigured()) {
+        console.log(`Magic link for ${client.email}: ${magicLink}`);
+        return res.json({ 
+          message: "Twilio not configured - magic link logged to console",
+          link: magicLink,
+          method: "console"
+        });
+      }
+
+      // Send magic link via SMS
+      const smsSuccess = await sendMagicLinkSMS(client.name, client.phone, magicLink);
+      
+      if (smsSuccess) {
+        res.json({ 
+          message: "Magic link sent via SMS successfully",
+          method: "sms",
+          phone: client.phone
+        });
+      } else {
+        // Fallback to console logging if SMS fails
+        console.log(`SMS failed - Magic link for ${client.email}: ${magicLink}`);
+        res.json({ 
+          message: "SMS failed - magic link logged to console",
+          link: magicLink,
+          method: "console_fallback"
+        });
+      }
     } catch (error) {
       console.error("Error sending magic link:", error);
       res.status(500).json({ error: "Failed to send magic link" });
