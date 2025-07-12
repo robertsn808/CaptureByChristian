@@ -14,69 +14,35 @@ const categories = [
   { id: 'landscape', label: 'Landscape' },
 ];
 
-// Sample portfolio images for demonstration
-const sampleImages = [
-  {
-    id: 1,
-    url: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    category: "wedding",
-    title: "Beach Wedding Ceremony",
-    featured: true,
-  },
-  {
-    id: 2,
-    url: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    category: "portrait",
-    title: "Professional Portrait",
-    featured: false,
-  },
-  {
-    id: 3,
-    url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    category: "aerial",
-    title: "Drone Coastline Photography",
-    featured: true,
-  },
-  {
-    id: 4,
-    url: "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    category: "landscape",
-    title: "Hawaii Waterfall",
-    featured: false,
-  },
-  {
-    id: 5,
-    url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    category: "wedding",
-    title: "Romantic Beach Wedding",
-    featured: true,
-  },
-  {
-    id: 6,
-    url: "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    category: "aerial",
-    title: "Resort Aerial View",
-    featured: false,
-  },
-];
+// Portfolio categories mapping for real gallery
+const categoryMapping: Record<string, string> = {
+  'all': 'all',
+  'wedding': 'wedding',
+  'portrait': 'portrait',
+  'aerial': 'aerial',
+  'landscape': 'real_estate'
+};
 
 export function Portfolio() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState<typeof sampleImages[0] | null>(null);
+  const [currentImage, setCurrentImage] = useState<{url: string, title: string, category: string} | null>(null);
 
   const { data: galleryImages, isLoading } = useQuery({
     queryKey: ['/api/gallery'],
     queryFn: () => fetchGalleryImages(),
-    initialData: sampleImages, // Use sample data as fallback
   });
 
   const filteredImages = galleryImages?.filter((image: any) => 
-    activeFilter === 'all' || image.category === activeFilter
+    activeFilter === 'all' || image.category === categoryMapping[activeFilter] || image.category === activeFilter
   ) || [];
 
-  const openLightbox = (image: typeof sampleImages[0]) => {
-    setCurrentImage(image);
+  const openLightbox = (image: any) => {
+    setCurrentImage({
+      url: image.url,
+      title: image.originalName || image.filename,
+      category: image.category
+    });
     setLightboxOpen(true);
   };
 

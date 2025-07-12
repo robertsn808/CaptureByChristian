@@ -28,11 +28,7 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
-const addOns = [
-  { id: "drone", name: "Drone Coverage", price: 350 },
-  { id: "extended", name: "Extended Hours", price: 150 },
-  { id: "rush", name: "Rush Editing", price: 200 },
-];
+// Add-ons will be dynamically loaded from selected service
 
 const timeSlots = [
   "6:00 AM - Morning",
@@ -91,8 +87,9 @@ export function BookingForm() {
     const selectedService = services?.find((s: any) => s.id.toString() === data.serviceId);
     if (!selectedService) return;
 
-    const selectedAddOnDetails = addOns.filter(addon => selectedAddOns.includes(addon.id));
-    const totalAddOnPrice = selectedAddOnDetails.reduce((sum, addon) => sum + addon.price, 0);
+    const serviceAddOns = selectedService.addOns || [];
+    const selectedAddOnDetails = serviceAddOns.filter((addon: any) => selectedAddOns.includes(addon.id));
+    const totalAddOnPrice = selectedAddOnDetails.reduce((sum: number, addon: any) => sum + addon.price, 0);
     const totalPrice = parseFloat(selectedService.price) + totalAddOnPrice;
 
     const bookingData = {
@@ -123,13 +120,16 @@ export function BookingForm() {
   const calculateTotal = () => {
     const selectedService = services?.find((s: any) => s.id.toString() === form.watch("serviceId"));
     if (!selectedService) return 0;
+    
+    const serviceAddOns = selectedService.addOns || [];
+    const selectedAddOnDetails = serviceAddOns.filter((addon: any) => selectedAddOns.includes(addon.id));
+    const totalAddOnPrice = selectedAddOnDetails.reduce((sum: number, addon: any) => sum + addon.price, 0);
+    return parseFloat(selectedService.price) + totalAddOnPrice;
+  };
 
-    const basePrice = parseFloat(selectedService.price);
-    const addOnPrice = addOns
-      .filter(addon => selectedAddOns.includes(addon.id))
-      .reduce((sum, addon) => sum + addon.price, 0);
-
-    return basePrice + addOnPrice;
+  const getAvailableAddOns = () => {
+    const selectedService = services?.find((s: any) => s.id.toString() === form.watch("serviceId"));
+    return selectedService?.addOns || [];
   };
 
   if (servicesLoading) {
@@ -240,7 +240,7 @@ export function BookingForm() {
             {/* Add-ons */}
             <div className="space-y-3">
               <FormLabel>Add-ons</FormLabel>
-              {addOns.map((addOn) => (
+              {getAvailableAddOns().map((addOn: any) => (
                 <div key={addOn.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={addOn.id}

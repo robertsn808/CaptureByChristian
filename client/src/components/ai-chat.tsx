@@ -15,8 +15,8 @@ export function AIChat() {
   const [sessionId] = useState(generateSessionId);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      role: 'assistant',
-      content: "Hi! I'm Christian's AI assistant. I can help you find the perfect photography package, check availability, and answer any questions. What kind of shoot are you planning?",
+      role: 'assistant', 
+      content: "Aloha! I'm Christian's AI booking assistant for Christian Picaso Photography. I can help you find the perfect photography package, check availability, and answer questions about our services. Whether you're planning a wedding, portrait session, or need aerial photography, I'm here to help. What brings you here today?",
       timestamp: Date.now(),
     }
   ]);

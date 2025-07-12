@@ -7,46 +7,27 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Award, Brain, Palette, MessageSquare } from "lucide-react";
 import { Link } from "wouter";
 
-// Sample services for demonstration
-const sampleServices = [
-  {
-    id: 1,
-    name: "Wedding Photography",
-    description: "Romantic moments captured forever in Hawaii's most beautiful locations.",
-    price: "2500.00",
-    category: "wedding",
-    duration: 480,
-    features: ["8 hours coverage", "500+ edited photos", "Online gallery", "Print release"],
-    image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-  },
-  {
-    id: 2,
-    name: "Portrait Sessions",
-    description: "Personal branding and family portraits with Hawaiian flair.",
-    price: "450.00",
-    category: "portrait",
-    duration: 120,
-    features: ["2 hours session", "50+ edited photos", "Location scouting", "Styling consultation"],
-    image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-  },
-  {
-    id: 3,
-    name: "Aerial Photography",
-    description: "Licensed drone operations for breathtaking aerial perspectives.",
-    price: "350.00",
-    category: "aerial",
-    duration: 240,
-    features: ["4K video & stills", "Legal airspace access", "Insurance coverage", "Weather backup"],
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-    certified: true,
-  },
-];
+// Service features mapping for display
+const serviceFeatures: Record<string, string[]> = {
+  'wedding': ["8 hours of coverage", "500+ professionally edited photos", "FAA-certified drone photography", "Online gallery with download rights", "Print release for all images", "Backup photographer available", "Weather contingency planning"],
+  'portrait': ["1-2 hours of shooting", "50+ professionally edited photos", "Multiple outfit changes", "Location scouting included", "Styling consultation", "Online gallery access", "Print release included"],
+  'aerial': ["FAA Part 107 certified pilot", "4K video and high-resolution stills", "Legal airspace navigation", "Commercial insurance coverage", "Weather backup scheduling", "Raw file delivery option"],
+  'event': ["Professional event coverage", "Candid and posed photography", "Same-day preview images", "Online gallery within 48 hours", "Group photo coordination", "Low-light expertise"],
+  'real_estate': ["Interior and exterior shots", "HDR processing for optimal lighting", "Drone aerial views (where permitted)", "Virtual tour compatibility", "MLS-ready sizing", "24-hour delivery"]
+};
+
+const serviceImages: Record<string, string> = {
+  'wedding': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400',
+  'portrait': 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400',
+  'aerial': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400',
+  'event': 'https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400',
+  'real_estate': 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400'
+};
 
 export function Services() {
   const { data: services, isLoading } = useQuery({
     queryKey: ['/api/services'],
     queryFn: fetchServices,
-    initialData: sampleServices,
   });
 
   if (isLoading) {
@@ -77,11 +58,11 @@ export function Services() {
             <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="relative">
                 <img
-                  src={service.image}
+                  src={serviceImages[service.category] || serviceImages['portrait']}
                   alt={service.name}
                   className="w-full h-48 object-cover"
                 />
-                {service.certified && (
+                {service.category === 'aerial' && (
                   <Badge className="absolute top-4 left-4 bg-bronze text-white">
                     <Award className="h-3 w-3 mr-1" />
                     FAA Certified
@@ -96,7 +77,7 @@ export function Services() {
 
               <CardContent>
                 <ul className="space-y-2 mb-6">
-                  {service.features?.map((feature: string, index: number) => (
+                  {serviceFeatures[service.category]?.map((feature: string, index: number) => (
                     <li key={index} className="flex items-center">
                       <Check className="h-4 w-4 text-bronze mr-2" />
                       <span className="text-sm">{feature}</span>
