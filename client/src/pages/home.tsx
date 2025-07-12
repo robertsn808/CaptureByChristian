@@ -42,28 +42,68 @@ export default function Home() {
       {/* Services Section */}
       <Services />
       
-      {/* Booking CTA Section */}
-      <section id="booking" className="py-20 bg-cream dark:bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6">Ready to Capture Your Story?</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Let's create something beautiful together. Book your session or chat with our AI assistant for instant help.
+      {/* Enhanced Booking CTA Section */}
+      <section id="booking" className="py-24 bg-gradient-to-br from-cream via-white to-cream/80 dark:from-background dark:via-background dark:to-background/80 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-bronze to-teal rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-teal to-bronze rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="inline-block mb-6">
+              <div className="bg-gradient-to-r from-bronze to-teal rounded-full p-1">
+                <div className="bg-white dark:bg-background rounded-full px-6 py-2">
+                  <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-transparent">
+                    Ready to Get Started?
+                  </span>
+                </div>
+              </div>
+            </div>
+            <h2 className="font-playfair text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-charcoal via-bronze to-charcoal bg-clip-text text-transparent">
+              Ready to Capture Your Story?
+            </h2>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Let's create something beautiful together. Choose your preferred way to get started with 
+              <span className="text-bronze font-medium"> professional photography services</span>.
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {/* Quick Booking Card */}
-            <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-8">
+          <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            {/* Enhanced Quick Booking Card */}
+            <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-cream/50 dark:from-background dark:to-background/50">
+              <div className="absolute inset-0 bg-gradient-to-br from-bronze/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <CardContent className="p-10 relative z-10">
                 <div className="text-center">
-                  <Camera className="h-16 w-16 text-bronze mx-auto mb-4" />
-                  <h3 className="font-playfair text-2xl font-bold mb-4">Book Your Session</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Complete booking system with calendar integration, contract management, and payment processing.
+                  <div className="relative mb-6">
+                    <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-2xl p-6 w-24 h-24 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                      <Camera className="h-12 w-12 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                  </div>
+                  <h3 className="font-playfair text-3xl font-bold mb-6 text-charcoal dark:text-white">Book Your Session</h3>
+                  <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+                    Complete booking system with calendar integration, contract management, and secure payment processing. Professional workflow from start to finish.
                   </p>
+                  <div className="space-y-3 mb-8">
+                    <div className="flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
+                      Instant availability check
+                    </div>
+                    <div className="flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
+                      Digital contract signing
+                    </div>
+                    <div className="flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
+                      Secure payment gateway
+                    </div>
+                  </div>
                   <Link href="/booking">
-                    <Button size="lg" className="btn-bronze w-full">
+                    <Button size="lg" className="btn-bronze w-full py-4 text-lg font-medium group-hover:shadow-lg transition-all duration-300">
                       Start Booking Process
                     </Button>
                   </Link>
@@ -71,17 +111,39 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* AI Assistant Card */}
-            <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-8">
+            {/* Enhanced AI Assistant Card */}
+            <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-teal/5 dark:from-background dark:to-background/50">
+              <div className="absolute inset-0 bg-gradient-to-br from-teal/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <CardContent className="p-10 relative z-10">
                 <div className="text-center">
-                  <Brain className="h-16 w-16 text-teal mx-auto mb-4" />
-                  <h3 className="font-playfair text-2xl font-bold mb-4">AI Booking Assistant</h3>
-                  <p className="text-muted-foreground mb-6">
-                    24/7 intelligent chat assistant to help with questions, availability, and custom quotes.
+                  <div className="relative mb-6">
+                    <div className="bg-gradient-to-br from-teal to-teal/80 rounded-2xl p-6 w-24 h-24 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                      <Brain className="h-12 w-12 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center animate-pulse">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                  </div>
+                  <h3 className="font-playfair text-3xl font-bold mb-6 text-charcoal dark:text-white">AI Booking Assistant</h3>
+                  <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+                    24/7 intelligent chat assistant powered by advanced AI. Get instant answers, availability checks, and custom quotes tailored to your needs.
                   </p>
+                  <div className="space-y-3 mb-8">
+                    <div className="flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-teal rounded-full mr-3"></div>
+                      Instant responses 24/7
+                    </div>
+                    <div className="flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-teal rounded-full mr-3"></div>
+                      Smart recommendation engine
+                    </div>
+                    <div className="flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="w-2 h-2 bg-teal rounded-full mr-3"></div>
+                      Custom quote generation
+                    </div>
+                  </div>
                   <Link href="/booking">
-                    <Button size="lg" variant="outline" className="border-teal text-teal hover:bg-teal hover:text-white w-full">
+                    <Button size="lg" variant="outline" className="border-2 border-teal text-teal hover:bg-teal hover:text-white w-full py-4 text-lg font-medium transition-all duration-300">
                       Chat with AI Assistant
                     </Button>
                   </Link>
@@ -89,58 +151,123 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-20 text-center">
+            <div className="inline-flex items-center space-x-8 bg-white/80 dark:bg-background/80 backdrop-blur-sm rounded-full px-8 py-4 border border-white/20">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                <span className="text-sm font-medium text-muted-foreground">SSL Secured</span>
+              </div>
+              <div className="w-px h-4 bg-muted-foreground/30"></div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                <span className="text-sm font-medium text-muted-foreground">GDPR Compliant</span>
+              </div>
+              <div className="w-px h-4 bg-muted-foreground/30"></div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-bronze rounded-full"></div>
+                <span className="text-sm font-medium text-muted-foreground">Instant Confirmation</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6">About Christian</h2>
-              <p className="text-xl text-muted-foreground mb-6">
-                Born and raised in Hawaii, Christian has spent over a decade mastering the art of photography across the Hawaiian Islands. His passion for capturing life's most precious moments stems from a deep connection to the islands' natural beauty and cultural richness.
-              </p>
-              <p className="text-lg text-muted-foreground mb-8">
-                As an FAA-certified drone pilot and AI-enhanced photographer, Christian brings both traditional artistry and cutting-edge technology to every shoot. His work has been featured in Pacific Weddings, Hawaii Magazine, and has garnered international recognition across social media platforms worldwide.
-              </p>
+      {/* Enhanced About Section */}
+      <section id="about" className="py-24 bg-gradient-to-b from-muted/20 to-cream/30 dark:from-muted/10 dark:to-background/50 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-bronze/10 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-teal/8 to-transparent rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1">
+              <div className="mb-8">
+                <div className="inline-block bg-gradient-to-r from-bronze to-teal rounded-full p-1 mb-6">
+                  <div className="bg-white dark:bg-background rounded-full px-4 py-2">
+                    <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-transparent">
+                      Meet the Artist
+                    </span>
+                  </div>
+                </div>
+                <h2 className="font-playfair text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-charcoal via-bronze to-charcoal bg-clip-text text-transparent">
+                  About Christian
+                </h2>
+              </div>
               
-              {/* Certifications */}
-              <div className="grid md:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center space-x-3">
-                  <Badge className="bg-bronze text-white p-2">
-                    <Award className="h-4 w-4" />
-                  </Badge>
-                  <div>
-                    <div className="font-bold">FAA Part 107 Certified</div>
-                    <div className="text-sm text-muted-foreground">Licensed Drone Operator</div>
+              <div className="space-y-6 mb-10">
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  Born and raised in Hawaii, Christian has spent over a decade mastering the art of photography across the Hawaiian Islands. His passion for capturing life's most precious moments stems from a deep connection to the islands' natural beauty and cultural richness.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  As an FAA-certified drone pilot and AI-enhanced photographer, Christian brings both traditional artistry and cutting-edge technology to every shoot. His work has been featured in Pacific Weddings, Hawaii Magazine, and has garnered international recognition across social media platforms worldwide.
+                </p>
+              </div>
+              
+              {/* Enhanced Certifications Grid */}
+              <div className="grid md:grid-cols-2 gap-6 mb-10">
+                <div className="group bg-gradient-to-br from-white to-bronze/5 dark:from-background dark:to-bronze/10 rounded-xl p-6 border border-bronze/20 hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-lg p-3 group-hover:scale-110 transition-transform duration-300">
+                      <Award className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg text-charcoal dark:text-white">FAA Part 107 Certified</div>
+                      <div className="text-sm text-muted-foreground">Licensed Drone Operator</div>
+                      <div className="mt-2 flex items-center">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                        <span className="text-xs text-green-600 font-medium">Active License</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Badge className="bg-bronze text-white p-2">
-                    <Award className="h-4 w-4" />
-                  </Badge>
-                  <div>
-                    <div className="font-bold">Professional Photographer</div>
-                    <div className="text-sm text-muted-foreground">10+ Years Experience</div>
+                
+                <div className="group bg-gradient-to-br from-white to-bronze/5 dark:from-background dark:to-bronze/10 rounded-xl p-6 border border-bronze/20 hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-lg p-3 group-hover:scale-110 transition-transform duration-300">
+                      <Award className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg text-charcoal dark:text-white">Professional Photographer</div>
+                      <div className="text-sm text-muted-foreground">10+ Years Experience</div>
+                      <div className="mt-2 flex items-center">
+                        <div className="w-2 h-2 bg-bronze rounded-full mr-2"></div>
+                        <span className="text-xs text-bronze font-medium">Expert Level</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Badge className="bg-bronze text-white p-2">
-                    <Shield className="h-4 w-4" />
-                  </Badge>
-                  <div>
-                    <div className="font-bold">Fully Insured</div>
-                    <div className="text-sm text-muted-foreground">Equipment & Liability</div>
+                
+                <div className="group bg-gradient-to-br from-white to-teal/5 dark:from-background dark:to-teal/10 rounded-xl p-6 border border-teal/20 hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-gradient-to-br from-teal to-teal/80 rounded-lg p-3 group-hover:scale-110 transition-transform duration-300">
+                      <Shield className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg text-charcoal dark:text-white">Fully Insured</div>
+                      <div className="text-sm text-muted-foreground">Equipment & Liability</div>
+                      <div className="mt-2 flex items-center">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+                        <span className="text-xs text-blue-600 font-medium">$2M Coverage</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Badge className="bg-bronze text-white p-2">
-                    <Brain className="h-4 w-4" />
-                  </Badge>
-                  <div>
-                    <div className="font-bold">AI-Enhanced</div>
-                    <div className="text-sm text-muted-foreground">Smart Photo Processing</div>
+                
+                <div className="group bg-gradient-to-br from-white to-teal/5 dark:from-background dark:to-teal/10 rounded-xl p-6 border border-teal/20 hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-gradient-to-br from-teal to-teal/80 rounded-lg p-3 group-hover:scale-110 transition-transform duration-300">
+                      <Brain className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg text-charcoal dark:text-white">AI-Enhanced</div>
+                      <div className="text-sm text-muted-foreground">Smart Photo Processing</div>
+                      <div className="mt-2 flex items-center">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></div>
+                        <span className="text-xs text-purple-600 font-medium">Latest Tech</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
