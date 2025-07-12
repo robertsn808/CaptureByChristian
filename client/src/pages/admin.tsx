@@ -10,6 +10,7 @@ import { AIBusinessInsights } from "@/components/admin/ai-business-insights";
 import { RealTimeAnalytics } from "@/components/admin/real-time-analytics";
 import { AdvancedAIChat } from "@/components/admin/advanced-ai-chat";
 import { PredictiveIntelligence } from "@/components/admin/predictive-intelligence";
+import { InvoiceGenerator } from "@/components/admin/invoice-generator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -264,128 +265,7 @@ export default function Admin() {
 
           {/* Invoice Generator Tab */}
           <TabsContent value="invoices" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileText className="h-5 w-5 mr-2" />
-                  Invoice & Contract Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid lg:grid-cols-3 gap-6">
-                  {/* Quick Actions */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Quick Actions</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <Button className="w-full bg-bronze hover:bg-bronze/90">
-                        <FileText className="h-4 w-4 mr-2" />
-                        Generate New Invoice
-                      </Button>
-                      <Button variant="outline" className="w-full">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Create Contract
-                      </Button>
-                      <Button variant="outline" className="w-full">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Template
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Recent Invoices */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Recent Invoices</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">#INV-2024-089</div>
-                          <div className="text-sm text-muted-foreground">Sarah Johnson - $2,500</div>
-                        </div>
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700">Paid</Button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">#INV-2024-090</div>
-                          <div className="text-sm text-muted-foreground">Mike Chen - $1,800</div>
-                        </div>
-                        <Button size="sm" variant="secondary">Pending</Button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">#INV-2024-091</div>
-                          <div className="text-sm text-muted-foreground">Lisa Wong - $3,200</div>
-                        </div>
-                        <Button size="sm" className="bg-red-600 hover:bg-red-700">Overdue</Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Revenue Summary */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Revenue Summary</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">$24,650</div>
-                        <div className="text-sm text-muted-foreground">This Month</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-medium">$18,400</div>
-                          <div className="text-xs text-muted-foreground">Paid</div>
-                        </div>
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-medium">$6,250</div>
-                          <div className="text-xs text-muted-foreground">Pending</div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Payment Rate</span>
-                          <span className="font-medium">74.6%</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span>Avg. Invoice</span>
-                          <span className="font-medium">$2,188</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Invoice Management Tools */}
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Management Tools</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-4 gap-4">
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <FileText className="h-6 w-6 mb-2" />
-                        Template Editor
-                      </Button>
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <Mail className="h-6 w-6 mb-2" />
-                        Payment Reminders
-                      </Button>
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <BarChart3 className="h-6 w-6 mb-2" />
-                        Payment Analytics
-                      </Button>
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <Settings className="h-6 w-6 mb-2" />
-                        Tax Settings
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
+            <InvoiceGenerator />
           </TabsContent>
 
           {/* Analytics Tab */}
