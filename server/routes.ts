@@ -7,7 +7,7 @@ import {
   insertAiChatSchema
 } from "@shared/schema";
 import { z } from "zod";
-import { generateBookingResponse, analyzeImage } from "./replit-agent";
+import { generateBookingResponse, analyzeImage } from "./openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Client routes
