@@ -35,7 +35,7 @@ export function Navigation() {
               <Camera className="h-6 w-6 text-white" />
             </div>
             <span className="font-playfair text-xl font-bold gradient-text">
-              Christian Picaso
+              Captured by Christian
             </span>
           </div>
 
