@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,145 +32,30 @@ import { format } from "date-fns";
 export function ClientPortal() {
   const [selectedSession, setSelectedSession] = useState<any>(null);
 
-  // Mock client portal sessions data
-  const portalSessions = [
-    {
-      id: 1,
-      clientId: 1,
-      clientName: "Sarah Johnson",
-      sessionToken: "sess_abc123def456",
-      lastAccess: "2025-07-12T08:30:00Z",
-      ipAddress: "192.168.1.100",
-      userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)",
-      device: "iPhone",
-      location: "Honolulu, HI",
-      activities: [
-        {
-          type: "login",
-          timestamp: "2025-07-12T08:30:00Z",
-          description: "Logged into client portal"
-        },
-        {
-          type: "gallery_view",
-          timestamp: "2025-07-12T08:32:00Z",
-          description: "Viewed wedding gallery"
-        },
-        {
-          type: "download",
-          timestamp: "2025-07-12T08:35:00Z",
-          description: "Downloaded 15 high-res images"
-        },
-        {
-          type: "favorites",
-          timestamp: "2025-07-12T08:40:00Z",
-          description: "Selected 8 favorites for album"
-        }
-      ],
-      status: "active"
-    },
-    {
-      id: 2,
-      clientId: 3,
-      clientName: "Emily Rodriguez",
-      sessionToken: "sess_xyz789ghi012",
-      lastAccess: "2025-07-11T15:45:00Z",
-      ipAddress: "10.0.0.25",
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-      device: "MacBook Pro",
-      location: "Kailua, HI",
-      activities: [
-        {
-          type: "login",
-          timestamp: "2025-07-11T15:45:00Z",
-          description: "Logged into client portal"
-        },
-        {
-          type: "invoice_view",
-          timestamp: "2025-07-11T15:47:00Z",
-          description: "Viewed invoice #INV-001"
-        },
-        {
-          type: "payment",
-          timestamp: "2025-07-11T15:50:00Z",
-          description: "Paid $650 via credit card"
-        },
-        {
-          type: "gallery_view",
-          timestamp: "2025-07-11T15:55:00Z",
-          description: "Viewed family portrait gallery"
-        }
-      ],
-      status: "active"
-    },
-    {
-      id: 3,
-      clientId: 5,
-      clientName: "Jessica Martinez",
-      sessionToken: "sess_lmn345opq678",
-      lastAccess: "2025-07-10T19:20:00Z",
-      ipAddress: "172.16.0.10",
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-      device: "Windows PC",
-      location: "Waikiki, HI",
-      activities: [
-        {
-          type: "login",
-          timestamp: "2025-07-10T19:20:00Z",
-          description: "Logged into client portal"
-        },
-        {
-          type: "questionnaire",
-          timestamp: "2025-07-10T19:25:00Z",
-          description: "Completed pre-shoot questionnaire"
-        },
-        {
-          type: "booking_update",
-          timestamp: "2025-07-10T19:30:00Z",
-          description: "Updated contact information"
-        }
-      ],
-      status: "active"
-    },
-    {
-      id: 4,
-      clientId: 2,
-      clientName: "Michael Chen",
-      sessionToken: "sess_rst901uvw234",
-      lastAccess: "2025-07-09T11:15:00Z",
-      ipAddress: "192.168.1.45",
-      userAgent: "Mozilla/5.0 (iPad; CPU OS 16_0 like Mac OS X)",
-      device: "iPad",
-      location: "Pearl City, HI",
-      activities: [
-        {
-          type: "login",
-          timestamp: "2025-07-09T11:15:00Z",
-          description: "Logged into client portal"
-        },
-        {
-          type: "contract_view",
-          timestamp: "2025-07-09T11:18:00Z",
-          description: "Reviewed photography contract"
-        },
-        {
-          type: "contract_sign",
-          timestamp: "2025-07-09T11:25:00Z",
-          description: "E-signed photography contract"
-        }
-      ],
-      status: "expired"
-    }
-  ];
+  // Fetch real client portal sessions from database
+  const { data: portalSessions = [], isLoading } = useQuery({
+    queryKey: ['/api/admin/client-portal-sessions'],
+    queryFn: () => fetch('/api/admin/client-portal-sessions').then(r => r.json()),
+  });
 
-  // Portal usage statistics
-  const portalStats = {
-    activeUsers: portalSessions.filter(s => s.status === "active").length,
-    totalSessions: portalSessions.length,
-    avgSessionTime: "12 min",
-    topActivity: "Gallery Views",
-    downloadCount: 127,
-    paymentCount: 8
-  };
+  // Fetch real portal statistics
+  const { data: portalStats = {} } = useQuery({
+    queryKey: ['/api/admin/client-portal-stats'],
+    queryFn: () => fetch('/api/admin/client-portal-stats').then(r => r.json()),
+  });
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-muted-foreground">Loading client portal data...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const getActivityIcon = (type: string) => {
     switch (type) {

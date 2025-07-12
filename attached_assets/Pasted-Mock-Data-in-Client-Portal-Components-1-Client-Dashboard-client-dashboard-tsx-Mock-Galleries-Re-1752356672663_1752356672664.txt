@@ -1,0 +1,49 @@
+Mock Data in Client Portal Components
+1. Client Dashboard (client-dashboard.tsx)
+Mock Galleries Response: The component fetches real data but has fallback empty states
+Progress Calculation: Uses mock status-to-percentage mapping (pending=25%, confirmed=50%, etc.)
+Status Color Mapping: Hardcoded color schemes for booking statuses
+2. Gallery Viewer (gallery-viewer.tsx)
+Mock Selections: In the existingSelections query, returns hardcoded favorites and comments:
+favorites: ["img_1_3", "img_1_7", "img_1_12"]
+comments: {
+  "img_1_3": "Love this shot of the ceremony!",
+  "img_1_7": "Perfect lighting here"
+}
+3. Client Login (client-login.tsx)
+Magic Link Simulation: The magic link functionality appears to be implemented but may not have real backend processing
+4. Admin Client Portal Management (admin/client-portal.tsx)
+Extensive Mock Session Data: Complete mock client portal sessions including:
+
+Mock client sessions with fake IDs, tokens, IP addresses
+Simulated user activities (login, gallery_view, download, favorites)
+Mock device information (iPhone, MacBook Pro)
+Fake location data (Honolulu, HI, Kailua, HI)
+Simulated timestamps and user agents
+Mock Portal Statistics:
+
+Hardcoded active sessions count
+Mock download counts
+Fake payment statistics
+Simulated activity types
+5. Server Routes (server/routes.ts)
+Mock Gallery Selections API: The selections endpoints return and accept mock data:
+selections = {
+  galleryId,
+  clientId,
+  favorites: ["img_1_3", "img_1_7", "img_1_12"],
+  comments: { ... }
+}
+Mock Gallery Data: Gallery endpoints may return mock image data
+Mock Client Authentication: Login endpoints may have simplified mock authentication
+6. General Mock Features
+Placeholder Images: Uses /api/placeholder/ URLs for gallery covers
+Demo Watermarks: Proof galleries show "© Christian Picaso Photography • PROOF" overlays
+Mock Download Counts: Gallery cards show mock photo counts
+Simulated Progress Bars: Booking progress uses hardcoded percentage calculations
+7. Missing Real Integrations
+Messages Tab: Shows "Messaging feature coming soon" placeholder
+Downloads Tab: Shows "No downloads available yet" placeholder
+Magic Link Verification: May not have complete backend verification
+Real Image Storage: May be using placeholder images instead of real file storage
+The client portal appears to be a functional demo with significant mock data, particularly in the admin monitoring section and gallery selection functionality. The core structure is there, but much of the data and some features are simulated rather than fully integrated with real backend services.

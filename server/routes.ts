@@ -550,15 +550,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { galleryId } = req.params;
       const clientId = req.query.clientId;
       
-      // Mock existing selections
+      // Get real gallery selections from database
+      // For now, return empty selections since we haven't implemented selection storage yet
       const selections = {
         galleryId,
         clientId,
-        favorites: ["img_1_3", "img_1_7", "img_1_12"],
-        comments: {
-          "img_1_3": "Love this shot of the ceremony!",
-          "img_1_7": "Perfect lighting here"
-        }
+        favorites: [],
+        comments: {}
       };
       
       res.json(selections);
@@ -612,6 +610,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching contracts:", error);
       res.status(500).json({ error: "Failed to fetch contracts" });
+    }
+  });
+
+  // ===== Admin Client Portal API Routes =====
+  app.get("/api/admin/client-portal-sessions", async (req, res) => {
+    try {
+      const sessions = await storage.getClientPortalSessions();
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching client portal sessions:", error);
+      res.status(500).json({ error: "Failed to fetch client portal sessions" });
+    }
+  });
+
+  app.get("/api/admin/client-portal-stats", async (req, res) => {
+    try {
+      const stats = await storage.getClientPortalStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching client portal stats:", error);
+      res.status(500).json({ error: "Failed to fetch client portal stats" });
     }
   });
 

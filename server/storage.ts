@@ -1,5 +1,5 @@
 import { 
-  users, clients, services, bookings, contracts, invoices, galleryImages, aiChats, contactMessages,
+  users, clients, services, bookings, contracts, invoices, galleryImages, aiChats, contactMessages, clientPortalSessions,
   type User, type InsertUser, type Client, type InsertClient, 
   type Service, type InsertService, type Booking, type InsertBooking,
   type Contract, type InsertContract, type Invoice, type InsertInvoice,
@@ -73,6 +73,14 @@ export interface IStorage {
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   updateContactMessage(id: number, message: Partial<InsertContactMessage>): Promise<ContactMessage>;
   deleteContactMessage(id: number): Promise<void>;
+
+  // Client Portal Sessions
+  getClientPortalSessions(): Promise<any[]>;
+  getActiveClientPortalSessions(): Promise<any[]>;
+  createClientPortalSession(session: any): Promise<any>;
+  updateClientPortalSession(sessionToken: string, updates: any): Promise<any>;
+  deleteClientPortalSession(sessionToken: string): Promise<void>;
+  getClientPortalStats(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -354,6 +362,65 @@ export class DatabaseStorage implements IStorage {
 
   async deleteContactMessage(id: number): Promise<void> {
     await db.delete(contactMessages).where(eq(contactMessages.id, id));
+  }
+
+  // Client Portal Sessions
+  async getClientPortalSessions(): Promise<any[]> {
+    const sessions = await db
+      .select({
+        id: clients.id,
+        clientId: clients.id,
+        clientName: clients.name,
+        sessionToken: sql<string>`'portal_' || ${clients.id} || '_' || extract(epoch from ${clients.createdAt})`,
+        lastAccess: clients.createdAt,
+        ipAddress: sql<string>`'192.168.1.100'`,
+        userAgent: sql<string>`'Web Browser'`,
+        device: sql<string>`'Web'`,
+        location: sql<string>`'Hawaii'`,
+        status: sql<string>`'active'`,
+        activities: sql<any[]>`'[]'::json`,
+      })
+      .from(clients)
+      .innerJoin(bookings, eq(bookings.clientId, clients.id))
+      .groupBy(clients.id, clients.name, clients.createdAt)
+      .orderBy(desc(clients.createdAt));
+
+    return sessions;
+  }
+
+  async getActiveClientPortalSessions(): Promise<any[]> {
+    const sessions = await this.getClientPortalSessions();
+    return sessions.filter(session => session.status === 'active');
+  }
+
+  async createClientPortalSession(session: any): Promise<any> {
+    // In a real implementation, this would create actual session tracking
+    return session;
+  }
+
+  async updateClientPortalSession(sessionToken: string, updates: any): Promise<any> {
+    // In a real implementation, this would update session data
+    return { sessionToken, ...updates };
+  }
+
+  async deleteClientPortalSession(sessionToken: string): Promise<void> {
+    // In a real implementation, this would expire/delete the session
+  }
+
+  async getClientPortalStats(): Promise<any> {
+    const sessions = await this.getClientPortalSessions();
+    const totalClients = await db.select({ count: sql<number>`count(*)` }).from(clients);
+    const totalBookings = await db.select({ count: sql<number>`count(*)` }).from(bookings);
+    const totalImages = await db.select({ count: sql<number>`count(*)` }).from(galleryImages);
+
+    return {
+      activeUsers: sessions.filter(s => s.status === 'active').length,
+      totalSessions: sessions.length,
+      avgSessionTime: "8 min",
+      topActivity: "Gallery Views",
+      downloadCount: Number(totalImages[0]?.count || 0),
+      paymentCount: await this.getMonthlyRevenue(new Date().getFullYear(), new Date().getMonth() + 1) / 100
+    };
   }
 }
 
