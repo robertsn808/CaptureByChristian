@@ -37,53 +37,69 @@ export function PredictiveIntelligence() {
   const [predictions, setPredictions] = useState<PredictionModel[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Fetch business data for predictions
-  const { data: bookingsData } = useQuery({
+  // Fetch real business data for predictions
+  const { data: bookingsData = [] } = useQuery({
     queryKey: ['/api/bookings'],
+    queryFn: async () => {
+      const response = await fetch('/api/bookings');
+      if (!response.ok) throw new Error('Failed to fetch bookings');
+      return response.json();
+    }
   });
 
-  const { data: analyticsData } = useQuery({
-    queryKey: ['/api/analytics/stats'],
+  const { data: clientsData = [] } = useQuery({
+    queryKey: ['/api/clients'],
+    queryFn: async () => {
+      const response = await fetch('/api/clients');
+      if (!response.ok) throw new Error('Failed to fetch clients');
+      return response.json();
+    }
   });
 
   const generatePredictions = async () => {
     setIsAnalyzing(true);
     
-    // Simulate advanced AI prediction models
+    // Analyze real business data for predictions
     await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Calculate real metrics
+    const totalRevenue = bookingsData.reduce((sum: number, booking: any) => sum + (booking.totalPrice || 0), 0);
+    const avgBookingValue = bookingsData.length > 0 ? totalRevenue / bookingsData.length : 0;
+    const confirmedBookings = bookingsData.filter((b: any) => b.status === 'confirmed').length;
+    const quarterlyProjection = totalRevenue * 3; // Simple projection based on current data
     
     const predictiveModels: PredictionModel[] = [
       {
         type: "revenue_forecast",
-        title: "Q2 Revenue Prediction",
-        prediction: "$28,500 (+67% vs Q1)",
-        probability: 89,
+        title: "Quarterly Revenue Projection",
+        prediction: `$${quarterlyProjection.toLocaleString()} (based on current ${bookingsData.length} bookings)`,
+        probability: bookingsData.length > 0 ? 85 : 45,
         impact: 'High',
         timeframe: "Next 90 days",
-        confidence: 92,
+        confidence: Math.min(90, bookingsData.length * 15),
         factors: [
-          "Wedding season surge (Mar-Jun)",
-          "Hawaii tourism recovery 85%",
-          "FAA drone certification advantage",
-          "Current booking velocity 34% above average"
+          `Current booking value: $${totalRevenue.toLocaleString()}`,
+          `Average booking: $${avgBookingValue.toFixed(0)}`,
+          `Confirmed bookings: ${confirmedBookings}`,
+          `Total clients: ${clientsData.length}`
         ],
-        recommendation: "Increase pricing 20% for peak season bookings and add premium aerial packages"
+        recommendation: bookingsData.length > 0 ? "Focus on converting pending bookings to increase revenue" : "Generate more leads to build predictive accuracy"
       },
       {
         type: "demand_patterns",
-        title: "Booking Demand Surge",
-        prediction: "156% increase in aerial photography requests",
-        probability: 94,
-        impact: 'High',
-        timeframe: "May-August 2025",
-        confidence: 87,
+        title: "Service Demand Analysis",
+        prediction: `Current demand shows ${bookingsData.length} active bookings`,
+        probability: 70,
+        impact: bookingsData.length > 3 ? 'High' : 'Medium',
+        timeframe: "Current period",
+        confidence: Math.min(85, bookingsData.length * 10),
         factors: [
-          "Real estate market boom in Hawaii",
-          "Instagram aerial photography trending +340%",
-          "Only 3 competitors with FAA certification",
-          "Luxury vacation rental market expansion"
+          `Total active bookings: ${bookingsData.length}`,
+          `Confirmed bookings: ${confirmedBookings}`,
+          `Client engagement: ${clientsData.length} clients`,
+          `Average value: $${avgBookingValue.toFixed(0)}`
         ],
-        recommendation: "Partner with real estate agencies and luxury rental companies immediately"
+        recommendation: bookingsData.length > 5 ? "Scale operations to handle increased demand" : "Focus on lead generation and client acquisition"
       },
       {
         type: "client_behavior",

@@ -111,12 +111,12 @@ export function AIBusinessInsights() {
         color: urgentMessages > 0 ? "text-red-600" : "text-blue-600"
       },
       {
-        type: "seasonal_prediction",
-        title: "Seasonal Demand Forecast",
-        insight: "Wedding season approaching (Mar-Oct). Based on Hawaii tourism data, expect 40% increase in bookings. Current capacity will be exceeded by June.",
-        confidence: 87,
-        impact: "High",
-        action: "Consider hiring assistant photographer or premium pricing strategy",
+        type: "business_performance",
+        title: "Current Business Performance",
+        insight: `Your business has ${bookingsData.length} active bookings generating $${totalRevenue.toLocaleString()} in revenue. ${confirmedBookings > 0 ? `${confirmedBookings} bookings are confirmed` : 'Focus on confirming pending bookings'}.`,
+        confidence: 95,
+        impact: bookingsData.length > 5 ? "High" : "Medium",
+        action: bookingsData.length > 5 ? "Scale operations to handle growth" : "Focus on lead generation and booking confirmations",
         icon: Calendar,
         color: "text-purple-600"
       },

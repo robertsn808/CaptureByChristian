@@ -69,6 +69,24 @@ export function AdvancedAnalytics() {
     }
   });
 
+  const { data: businessKPIs = {} } = useQuery({
+    queryKey: ['/api/analytics/business-kpis'],
+    queryFn: async () => {
+      const response = await fetch('/api/analytics/business-kpis');
+      if (!response.ok) throw new Error('Failed to fetch business KPIs');
+      return response.json();
+    }
+  });
+
+  const { data: clientMetrics = {} } = useQuery({
+    queryKey: ['/api/analytics/clients'],
+    queryFn: async () => {
+      const response = await fetch('/api/analytics/clients');
+      if (!response.ok) throw new Error('Failed to fetch client metrics');
+      return response.json();
+    }
+  });
+
   // Calculate real analytics from database data
   const calculateAnalytics = () => {
     if (!bookings.length) return { revenueData: [], serviceBreakdown: [], leadSourceData: [] };
@@ -148,22 +166,24 @@ export function AdvancedAnalytics() {
     { source: "Website", leads: clients.length, converted: clients.filter((c: any) => c.status === 'active').length, rate: clients.length > 0 ? Math.round((clients.filter((c: any) => c.status === 'active').length / clients.length) * 100) : 0, cost: 0.00 }
   ];
 
-  const clientMetrics = {
-    totalClients: 247,
-    newThisMonth: 23,
-    repeatClients: 89,
-    avgLifetimeValue: 1847,
-    churnRate: 8.5,
-    satisfactionScore: 94.2
+  // Use real data with fallbacks for display purposes only
+  const displayClientMetrics = {
+    totalClients: clientMetrics.totalClients || 0,
+    newThisMonth: clientMetrics.newThisMonth || 0,
+    repeatClients: clientMetrics.repeatClients || 0,
+    avgLifetimeValue: clientMetrics.avgLifetimeValue || 0,
+    churnRate: 0, // Not calculated yet
+    satisfactionScore: 0 // Not calculated yet
   };
 
-  const businessKPIs = {
-    monthlyRecurringRevenue: 18500,
-    averageBookingValue: 1265,
-    profitMargin: 68.2,
-    bookingFrequency: 2.4,
-    seasonalityIndex: 1.3,
-    competitorAnalysis: "Leading by 23%"
+  const displayBusinessKPIs = {
+    monthlyRecurringRevenue: businessKPIs.monthlyRecurringRevenue || 0,
+    averageBookingValue: bookings.length > 0 ? 
+      Math.round(bookings.reduce((sum: number, b: any) => sum + (b.totalPrice || 0), 0) / bookings.length) : 0,
+    profitMargin: 0, // Not calculated yet
+    bookingFrequency: 0, // Not calculated yet
+    seasonalityIndex: 0, // Not calculated yet
+    competitorAnalysis: "Data not available"
   };
 
   const COLORS = ['#D4A574', '#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
@@ -209,10 +229,10 @@ export function AdvancedAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Active Clients</p>
-                <p className="text-2xl font-bold">{clientMetrics.totalClients}</p>
+                <p className="text-2xl font-bold">{displayClientMetrics.totalClients}</p>
                 <div className="flex items-center mt-1">
                   <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                  <span className="text-sm text-green-600">+{clientMetrics.newThisMonth} this month</span>
+                  <span className="text-sm text-green-600">+{displayClientMetrics.newThisMonth} this month</span>
                 </div>
               </div>
               <Users className="h-8 w-8 text-blue-500" />
@@ -225,7 +245,7 @@ export function AdvancedAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Avg Booking Value</p>
-                <p className="text-2xl font-bold">{formatCurrency(businessKPIs.averageBookingValue)}</p>
+                <p className="text-2xl font-bold">{formatCurrency(displayBusinessKPIs.averageBookingValue)}</p>
                 <div className="flex items-center mt-1">
                   <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
                   <span className="text-sm text-green-600">+12.3%</span>
@@ -241,7 +261,7 @@ export function AdvancedAnalytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Client Satisfaction</p>
-                <p className="text-2xl font-bold">{clientMetrics.satisfactionScore}%</p>
+                <p className="text-2xl font-bold">{displayClientMetrics.satisfactionScore || 'N/A'}</p>
                 <div className="flex items-center mt-1">
                   <Star className="h-3 w-3 text-yellow-500 mr-1" />
                   <span className="text-sm text-yellow-600">Excellent</span>

@@ -1,0 +1,48 @@
+Mock Features in Admin Dashboard Components:
+1. Invoice Generator (rag://rag_source_10)
+Pending Payments: Shows hardcoded $6,250
+Overdue Amount: Shows hardcoded $3,200
+Payment Rate: Shows hardcoded 74.6%
+These should connect to real invoice/payment tracking APIs
+2. Product Sales (rag://rag_source_14)
+Complete mock product catalog with hardcoded:
+Digital Download Package ($150, 67 sales, $10,050 revenue)
+Portrait Session Prints ($75, 31 sales, $2,325 revenue)
+Mock variants and SKUs
+No real product management API integration
+3. Questionnaire System (rag://rag_source_15)
+Complete mock questionnaire data including:
+Wedding Photography Questionnaire with hardcoded questions
+Mock form fields and options
+No real questionnaire creation/management API
+4. AI Business Insights (rag://rag_source_7, [rag://rag_source_8], [rag://rag_source_9])
+Mock AI insights with hardcoded recommendations like:
+"Clients spend 23% more when they see AI-enhanced portfolio previews"
+"Wedding season approaching (Mar-Oct). Based on Hawaii tourism data, expect 40% increase"
+Generate AI Insights button that shows mock data instead of real AI analysis
+5. Predictive Intelligence (rag://rag_source_0)
+Complete mock prediction models with hardcoded:
+Q2 Revenue Prediction: "$28,500 (+67% vs Q1)"
+Booking Demand Surge: "156% increase in aerial photography requests"
+Market indicators like "Hawaii Tourism Recovery: 87%"
+Refresh Predictions button generates mock data
+6. Advanced Analytics (rag://rag_source_2)
+Mock client metrics including:
+Total Clients: 247, New This Month: 23
+Repeat Clients: 89, Avg Lifetime Value: $1,847
+Mock business KPIs like Monthly Recurring Revenue: $18,500
+Hardcoded chart data for revenue trends and service breakdowns
+7. Automation Workflows (rag://rag_source_13)
+While it uses some real booking data for calculations, it still contains:
+Mock workflow templates with hardcoded email sequences
+Mock workflow statistics and performance metrics
+Missing API Endpoints Needed:
+/api/invoices/stats - Real payment tracking
+/api/products - Product catalog management
+/api/questionnaires - Form creation and management
+/api/ai/insights - Real AI business analysis
+/api/predictions - Actual predictive analytics
+/api/analytics/clients - Real client metrics
+/api/analytics/business-kpis - Actual business intelligence
+/api/workflows/templates - Real workflow management
+These components show impressive mock functionality but need real database integration and API endpoints to become fully functional business tools.

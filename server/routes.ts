@@ -634,6 +634,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Invoice Analytics API Routes =====
+  app.get("/api/invoices/stats", async (req, res) => {
+    try {
+      const stats = await storage.getInvoiceStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching invoice stats:", error);
+      res.status(500).json({ error: "Failed to fetch invoice stats" });
+    }
+  });
+
+  app.get("/api/analytics/business-kpis", async (req, res) => {
+    try {
+      const kpis = await storage.getBusinessKPIs();
+      res.json(kpis);
+    } catch (error) {
+      console.error("Error fetching business KPIs:", error);
+      res.status(500).json({ error: "Failed to fetch business KPIs" });
+    }
+  });
+
+  app.get("/api/analytics/clients", async (req, res) => {
+    try {
+      const metrics = await storage.getClientMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching client metrics:", error);
+      res.status(500).json({ error: "Failed to fetch client metrics" });
+    }
+  });
+
   // ===== Contact Messages API Routes =====
   app.get("/api/contact-messages", async (req, res) => {
     try {

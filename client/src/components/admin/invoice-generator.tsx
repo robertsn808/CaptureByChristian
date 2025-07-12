@@ -84,6 +84,11 @@ export function InvoiceGenerator() {
     queryFn: fetchClients,
   });
 
+  const { data: invoiceStats = {} } = useQuery({
+    queryKey: ['/api/invoices/stats'],
+    queryFn: () => fetch('/api/invoices/stats').then(r => r.json()),
+  });
+
   // Fetch real invoices from database
   const { data: invoicesData } = useQuery({
     queryKey: ['/api/invoices'],
@@ -507,7 +512,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Pending Payments</p>
-                <p className="text-2xl font-bold text-yellow-600">$6,250</p>
+                <p className="text-2xl font-bold text-yellow-600">${invoiceStats.pendingAmount?.toLocaleString() || '0'}</p>
               </div>
               <Calendar className="h-8 w-8 text-yellow-600" />
             </div>
@@ -519,7 +524,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Overdue Amount</p>
-                <p className="text-2xl font-bold text-red-600">$3,200</p>
+                <p className="text-2xl font-bold text-red-600">${invoiceStats.overdueAmount?.toLocaleString() || '0'}</p>
               </div>
               <FileText className="h-8 w-8 text-red-600" />
             </div>
@@ -531,7 +536,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Payment Rate</p>
-                <p className="text-2xl font-bold text-blue-600">74.6%</p>
+                <p className="text-2xl font-bold text-blue-600">{invoiceStats.paymentRate || '0'}%</p>
               </div>
               <User className="h-8 w-8 text-blue-600" />
             </div>

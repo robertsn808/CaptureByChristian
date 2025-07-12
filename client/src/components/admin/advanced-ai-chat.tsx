@@ -135,8 +135,8 @@ Based on your actual business data:
 • Average booking value: $${avgBookingValue.toFixed(0)}
 • Confirmed bookings: ${confirmedBookings}
 • Pending bookings: ${pendingBookings} 
-• Highest revenue service: Aerial Photography ($3,500 avg)
-• Revenue growth opportunity: 67% of bookings are portraits - expanding aerial marketing could increase revenue by 40%
+• Highest revenue service: ${topService?.name || 'N/A'} ($${topService?.avgValue?.toFixed(0) || '0'} avg)
+• Top service bookings: ${topService?.bookings || 0} (${servicePerformance.length > 0 ? Math.round((topService?.bookings || 0) / totalRevenue * 100) : 0}% of total)
 
 **Strategic Recommendations:**
 1. Increase aerial photography marketing to luxury real estate agents
@@ -158,16 +158,16 @@ Your FAA certification gives you a significant competitive advantage. Only 12% o
         content: `👥 **Client Intelligence Report**
 
 Current client portfolio analysis:
-• 5 active clients with 89% satisfaction rate
-• Average client lifetime value: $3,850
-• Repeat booking rate: 45% (industry avg: 23%)
-• Geographic distribution: 60% local, 40% tourism
+• ${clientsData.length} active clients
+• Average booking value: $${avgBookingValue.toFixed(0)}
+• Conversion rate: ${conversionRate.toFixed(1)}%
+• Total bookings processed: ${totalBookings}
 
 **Client Behavior Insights:**
-• Peak inquiry times: 6-8PM weekdays (67% higher conversion)
-• Most popular service: Wedding photography (40% of bookings)
-• Highest satisfaction: North Shore locations (4.9/5 rating)
-• Client referral rate: 34% (excellent indicator)
+• Most popular service: ${topService?.name || 'N/A'} (${topService?.bookings || 0} bookings)
+• Service revenue leader: $${topService?.revenue?.toLocaleString() || '0'}
+• Active messages: ${unreadMessages} unread, ${urgentMessages} urgent
+• Business efficiency: ${totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0}% booking confirmation
 
 **Growth Opportunities:**
 1. Target luxury vacation rental owners for property photography
@@ -194,9 +194,9 @@ Your competitive positioning in Hawaii photography market:
 
 **Competitive Intelligence:**
 • Top competitors charge $200-400 more for aerial packages
-• Instagram engagement rate: 23% above industry average
-• Google review rating: 4.8/5 (top 5% in Hawaii)
-• Booking conversion rate: 68% vs industry 23%
+• Current client base: ${clientsData.length} active clients
+• Average service value: $${avgBookingValue.toFixed(0)}
+• Business conversion: ${conversionRate.toFixed(1)}% booking success rate
 
 **Strategic Recommendations:**
 1. Increase pricing to match premium market positioning
@@ -216,20 +216,20 @@ Your competitive positioning in Hawaii photography market:
         content: `📅 **Booking Intelligence Dashboard**
 
 Current booking performance:
-• 5 active bookings with $12,450 total value
-• 2 pending confirmations, 3 confirmed sessions
+• ${totalBookings} total bookings with $${totalRevenue.toLocaleString()} total value
+• ${pendingBookings} pending confirmations, ${confirmedBookings} confirmed sessions
 • Average booking lead time: 23 days
-• Booking success rate: 68% (industry-leading)
+• Booking confirmation rate: ${conversionRate.toFixed(1)}%
 
-**Seasonal Predictions:**
-• Wedding season (Mar-Oct): Expect 40% booking increase
-• Peak months: June-September (book early!)
-• Optimal pricing windows: +30% during sunset season
+**Current Performance:**
+• Total active revenue: $${totalRevenue.toLocaleString()}
+• Service distribution: ${servicePerformance.length} active service types
+• Client portfolio growth: ${clientsData.length} total clients
 
 **Capacity Analysis:**
-• Current utilization: 65% of optimal capacity
-• Revenue optimization: You can handle 8 more bookings this month
-• Time slots with highest conversion: Golden hour sessions (6-7PM)
+• Current active bookings: ${totalBookings}
+• Revenue per booking: $${avgBookingValue.toFixed(0)}
+• Outstanding confirmations: ${pendingBookings} pending
 
 **AI Recommendations:**
 1. Block high-demand sunset slots for premium pricing

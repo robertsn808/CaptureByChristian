@@ -81,6 +81,11 @@ export interface IStorage {
   updateClientPortalSession(sessionToken: string, updates: any): Promise<any>;
   deleteClientPortalSession(sessionToken: string): Promise<void>;
   getClientPortalStats(): Promise<any>;
+
+  // Invoice Analytics
+  getInvoiceStats(): Promise<any>;
+  getBusinessKPIs(): Promise<any>;
+  getClientMetrics(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -420,6 +425,73 @@ export class DatabaseStorage implements IStorage {
       topActivity: "Gallery Views",
       downloadCount: Number(totalImages[0]?.count || 0),
       paymentCount: await this.getMonthlyRevenue(new Date().getFullYear(), new Date().getMonth() + 1) / 100
+    };
+  }
+
+  // Invoice Analytics
+  async getInvoiceStats(): Promise<any> {
+    const allInvoices = await db.select().from(invoices);
+    const allBookings = await db.select().from(bookings).where(eq(bookings.status, 'completed'));
+    
+    const pendingInvoices = allInvoices.filter(inv => inv.status === 'pending');
+    const overdueInvoices = allInvoices.filter(inv => 
+      inv.status === 'pending' && new Date(inv.dueDate || '') < new Date()
+    );
+    const paidInvoices = allInvoices.filter(inv => inv.status === 'paid');
+    
+    const pendingAmount = pendingInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0);
+    const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0);
+    const totalAmount = allInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0);
+    const paymentRate = totalAmount > 0 ? (paidInvoices.length / allInvoices.length) * 100 : 0;
+
+    return {
+      pendingAmount,
+      overdueAmount,
+      paymentRate: Math.round(paymentRate * 10) / 10
+    };
+  }
+
+  async getBusinessKPIs(): Promise<any> {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    
+    const totalClients = await db.select({ count: sql<number>`count(*)` }).from(clients);
+    const monthlyRevenue = await this.getMonthlyRevenue(currentYear, currentMonth);
+    const totalBookings = await db.select({ count: sql<number>`count(*)` }).from(bookings);
+    const completedBookings = await db.select({ count: sql<number>`count(*)` })
+      .from(bookings).where(eq(bookings.status, 'completed'));
+
+    return {
+      monthlyRecurringRevenue: monthlyRevenue,
+      totalClients: Number(totalClients[0]?.count || 0),
+      totalBookings: Number(totalBookings[0]?.count || 0),
+      completionRate: totalBookings[0]?.count > 0 ? 
+        (Number(completedBookings[0]?.count || 0) / Number(totalBookings[0]?.count)) * 100 : 0
+    };
+  }
+
+  async getClientMetrics(): Promise<any> {
+    const allClients = await db.select().from(clients);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const newClientsThisMonth = allClients.filter(client => 
+      new Date(client.createdAt) >= thirtyDaysAgo
+    );
+    
+    const clientsWithMultipleBookings = await db
+      .select({ clientId: bookings.clientId, count: sql<number>`count(*)` })
+      .from(bookings)
+      .groupBy(bookings.clientId)
+      .having(sql`count(*) > 1`);
+    
+    const avgLifetimeValue = await this.getMonthlyRevenue(new Date().getFullYear(), new Date().getMonth() + 1) / allClients.length || 0;
+
+    return {
+      totalClients: allClients.length,
+      newThisMonth: newClientsThisMonth.length,
+      repeatClients: clientsWithMultipleBookings.length,
+      avgLifetimeValue: Math.round(avgLifetimeValue)
     };
   }
 }
