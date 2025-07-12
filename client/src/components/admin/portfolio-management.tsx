@@ -31,6 +31,10 @@ export function PortfolioManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploadCategory, setUploadCategory] = useState("portfolio");
+  const [uploadDescription, setUploadDescription] = useState("");
   const queryClient = useQueryClient();
 
   const { data: images, isLoading } = useQuery({
@@ -39,6 +43,72 @@ export function PortfolioManagement() {
   });
 
   const categories = ["all", "wedding", "portrait", "aerial", "real_estate", "event"];
+
+  // Upload mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await fetch('/api/gallery/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) throw new Error('Upload failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      setUploadDialogOpen(false);
+      setSelectedFiles([]);
+      setUploadDescription("");
+    },
+  });
+
+  // Delete image mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (imageId: number) => {
+      const response = await fetch(`/api/gallery/${imageId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Delete failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+    },
+  });
+
+  // Toggle featured mutation
+  const toggleFeaturedMutation = useMutation({
+    mutationFn: async ({ imageId, featured }: { imageId: number; featured: boolean }) => {
+      const response = await fetch(`/api/gallery/${imageId}/featured`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ featured }),
+      });
+      if (!response.ok) throw new Error('Update failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+    },
+  });
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files);
+  };
+
+  const handleUpload = () => {
+    if (selectedFiles.length === 0) return;
+
+    const formData = new FormData();
+    selectedFiles.forEach(file => {
+      formData.append('images', file);
+    });
+    formData.append('category', uploadCategory);
+    formData.append('description', uploadDescription);
+
+    uploadMutation.mutate(formData);
+  };
 
   const filteredImages = images?.filter((image: any) => {
     const matchesSearch = image.originalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,10 +180,70 @@ export function PortfolioManagement() {
               <Camera className="h-5 w-5 mr-2" />
               Portfolio Management
             </CardTitle>
-            <Button className="btn-bronze">
-              <Plus className="h-4 w-4 mr-1" />
-              Upload Photos
-            </Button>
+            <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="btn-bronze">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Upload Photos
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Upload Portfolio Images</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Select Images</label>
+                    <Input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="mb-2"
+                    />
+                    {selectedFiles.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        {selectedFiles.length} file(s) selected
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Category</label>
+                    <Select value={uploadCategory} onValueChange={setUploadCategory}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="portfolio">Portfolio</SelectItem>
+                        <SelectItem value="wedding">Wedding</SelectItem>
+                        <SelectItem value="portrait">Portrait</SelectItem>
+                        <SelectItem value="aerial">Aerial</SelectItem>
+                        <SelectItem value="real_estate">Real Estate</SelectItem>
+                        <SelectItem value="event">Event</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Description (Optional)</label>
+                    <Input
+                      placeholder="Image description..."
+                      value={uploadDescription}
+                      onChange={(e) => setUploadDescription(e.target.value)}
+                    />
+                  </div>
+                  
+                  <Button 
+                    onClick={handleUpload}
+                    disabled={selectedFiles.length === 0 || uploadMutation.isPending}
+                    className="w-full"
+                  >
+                    {uploadMutation.isPending ? 'Uploading...' : 'Upload Images'}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardHeader>
         <CardContent>
@@ -228,8 +358,10 @@ export function PortfolioManagement() {
                   {selectedImage && (
                     <ImageDetailView 
                       image={selectedImage} 
-                      onToggleFeatured={toggleFeatured}
-                      onDelete={deleteImage}
+                      onToggleFeatured={(id, featured) => toggleFeaturedMutation.mutate({ imageId: id, featured })}
+                      onDelete={(id) => deleteMutation.mutate(id)}
+                      toggleFeaturedMutation={toggleFeaturedMutation}
+                      deleteMutation={deleteMutation}
                     />
                   )}
                 </DialogContent>
@@ -256,11 +388,15 @@ export function PortfolioManagement() {
 function ImageDetailView({ 
   image, 
   onToggleFeatured, 
-  onDelete 
+  onDelete,
+  toggleFeaturedMutation,
+  deleteMutation
 }: { 
   image: any; 
   onToggleFeatured: (id: number, featured: boolean) => void;
   onDelete: (id: number) => void;
+  toggleFeaturedMutation: any;
+  deleteMutation: any;
 }) {
   return (
     <div className="grid lg:grid-cols-2 gap-6">
@@ -278,23 +414,45 @@ function ImageDetailView({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onToggleFeatured(image.id, image.featured)}
+            onClick={() => onToggleFeatured(image.id, !image.featured)}
+            disabled={toggleFeaturedMutation.isPending}
           >
             <Star className={`h-4 w-4 mr-1 ${image.featured ? 'fill-current text-yellow-500' : ''}`} />
             {image.featured ? 'Remove from Featured' : 'Add to Featured'}
           </Button>
           
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              const link = document.createElement('a');
+              link.href = image.url;
+              link.download = image.filename;
+              link.click();
+            }}
+          >
             <Download className="h-4 w-4 mr-1" />
             Download
           </Button>
           
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              navigator.clipboard.writeText(image.url);
+              // Could add toast notification here
+            }}
+          >
             <Share className="h-4 w-4 mr-1" />
-            Share
+            Copy Link
           </Button>
           
-          <Button variant="destructive" size="sm" onClick={() => onDelete(image.id)}>
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            onClick={() => onDelete(image.id)}
+            disabled={deleteMutation.isPending}
+          >
             <Trash2 className="h-4 w-4 mr-1" />
             Delete
           </Button>

@@ -76,7 +76,6 @@ const menuSections = [
       { id: "gallery", label: "Portfolio Management", icon: Camera },
       { id: "portal", label: "Client Portal", icon: Settings },
       { id: "credentials", label: "Client Credentials", icon: Key },
-      { id: "credentials", label: "Client Credentials", icon: Key },
     ]
   }
 ];

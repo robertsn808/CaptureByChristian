@@ -341,15 +341,33 @@ export function ClientCredentials() {
         </CardHeader>
         <CardContent>
           <div className="flex space-x-4">
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => {
+                // Send welcome emails to all clients with portal access
+                console.log("Sending welcome emails to all clients...");
+              }}
+            >
               <Mail className="h-4 w-4 mr-2" />
               Send Welcome Emails
             </Button>
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => {
+                // Reset all active client portal sessions
+                console.log("Resetting all client portal sessions...");
+              }}
+            >
               <RefreshCw className="h-4 w-4 mr-2" />
               Reset All Sessions
             </Button>
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => {
+                // Open portal configuration settings
+                console.log("Opening portal settings...");
+              }}
+            >
               <Settings className="h-4 w-4 mr-2" />
               Portal Settings
             </Button>

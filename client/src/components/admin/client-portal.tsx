@@ -174,7 +174,13 @@ export function ClientPortal() {
               <Globe className="h-5 w-5 mr-2" />
               Client Portal Activity
             </span>
-            <Button className="btn-bronze">
+            <Button 
+              className="btn-bronze"
+              onClick={() => {
+                // Open portal settings dialog or navigate to settings page
+                console.log("Opening portal settings...");
+              }}
+            >
               <Settings className="h-4 w-4 mr-2" />
               Portal Settings
             </Button>

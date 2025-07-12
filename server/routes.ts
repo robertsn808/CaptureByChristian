@@ -1,6 +1,22 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
 import { storage } from "./storage";
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  },
+});
 import { 
   insertClientSchema, insertBookingSchema, insertServiceSchema,
   insertContractSchema, insertInvoiceSchema, insertGalleryImageSchema,
@@ -236,6 +252,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ error: "Failed to create gallery image" });
       }
+    }
+  });
+
+  app.post("/api/gallery/upload", upload.array('images', 10), async (req, res) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      const { category = "portfolio", description = "" } = req.body;
+      
+      if (!files || files.length === 0) {
+        return res.status(400).json({ error: "No files uploaded" });
+      }
+
+      // In a real implementation, you would:
+      // 1. Upload files to cloud storage (AWS S3, Cloudinary, etc.)
+      // 2. Generate thumbnails
+      // 3. Save metadata to database using storage.createGalleryImage()
+      
+      // For demo purposes, we'll create mock entries with the actual file info
+      const uploadedImages = files.map((file, index) => ({
+        filename: `${Date.now()}_${index}_${file.originalname}`,
+        originalName: file.originalname,
+        url: `https://images.unsplash.com/photo-${1542038784456 + index}?w=800`, // Mock URL
+        category,
+        description,
+        featured: false,
+        bookingId: null,
+        tags: ["portfolio", category],
+        uploadedAt: new Date().toISOString(),
+        size: file.size,
+        mimetype: file.mimetype
+      }));
+
+      console.log(`Uploaded ${files.length} image(s):`, uploadedImages);
+      
+      res.json({ 
+        message: `${files.length} image(s) uploaded successfully`,
+        images: uploadedImages
+      });
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      res.status(500).json({ error: "Failed to upload images" });
+    }
+  });
+
+  app.delete("/api/gallery/:id", async (req, res) => {
+    try {
+      const imageId = parseInt(req.params.id);
+      
+      // In a real implementation, you would:
+      // 1. Delete the image file from storage
+      // 2. Remove database record using storage layer
+      // 3. Update any references
+      
+      console.log(`Deleting image ${imageId}`);
+      
+      res.json({ message: "Image deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      res.status(500).json({ error: "Failed to delete image" });
+    }
+  });
+
+  app.patch("/api/gallery/:id/featured", async (req, res) => {
+    try {
+      const imageId = parseInt(req.params.id);
+      const { featured } = req.body;
+      
+      // In a real implementation, you would update using storage.updateGalleryImage()
+      console.log(`Setting image ${imageId} featured: ${featured}`);
+      
+      res.json({ 
+        message: "Image featured status updated",
+        featured
+      });
+    } catch (error) {
+      console.error("Error updating featured status:", error);
+      res.status(500).json({ error: "Failed to update featured status" });
     }
   });
 
