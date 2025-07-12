@@ -39,114 +39,61 @@ export function LeadManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
-  // Mock data for demonstration - in real app, fetch from API
-  const leads = [
-    {
-      id: 1,
-      clientId: 6,
-      source: "instagram",
-      medium: "organic",
-      campaign: "hawaii_wedding_showcase",
-      formData: {
-        name: "Ashley & Ryan Thompson",
-        email: "ashley.ryan@email.com",
-        phone: "+1 (808) 555-0987",
-        eventType: "wedding",
-        preferredDate: "2025-08-15",
-        guestCount: 150,
-        budget: "$4000-6000",
-        message: "Looking for drone coverage for our beach wedding in Maui"
-      },
-      score: 85,
-      temperature: "hot",
-      qualification: "qualified",
-      createdAt: "2025-07-10T14:30:00Z"
-    },
-    {
-      id: 2,
-      clientId: null,
-      source: "website",
-      medium: "organic",
-      campaign: "seo_portrait_session",
-      formData: {
-        name: "Marcus Johnson",
-        email: "marcus.j.photos@gmail.com",
-        phone: "+1 (808) 555-0654",
-        eventType: "corporate",
-        company: "Pacific Tech Solutions",
-        teamSize: 12,
-        budget: "$1500-2500",
-        message: "Need headshots for entire team, flexible on timing"
-      },
-      score: 70,
-      temperature: "warm",
-      qualification: "qualified",
-      createdAt: "2025-07-09T10:15:00Z"
-    },
-    {
-      id: 3,
-      clientId: null,
-      source: "referral",
-      medium: "word_of_mouth",
-      campaign: "client_referral_program",
-      formData: {
-        name: "Sophie Martinez",
-        email: "sophie.hawaii@outlook.com",
-        phone: "+1 (808) 555-0321",
-        eventType: "maternity",
-        preferredDate: "2025-07-25",
-        location: "Oahu beaches",
-        budget: "$800-1200",
-        message: "Referred by Jessica Martinez - need maternity photos before baby arrives"
-      },
-      score: 90,
-      temperature: "hot",
-      qualification: "qualified",
-      createdAt: "2025-07-08T16:45:00Z"
-    },
-    {
-      id: 4,
-      clientId: null,
-      source: "google",
-      medium: "paid",
-      campaign: "google_ads_real_estate",
-      formData: {
-        name: "Robert Kim",
-        email: "rkim.realestate@pacific.com",
-        phone: "+1 (808) 555-0111",
-        eventType: "real_estate",
-        propertyType: "luxury_home",
-        location: "Diamond Head area",
-        budget: "$500-800",
-        message: "Need drone photography for high-end listing, quick turnaround preferred"
-      },
-      score: 75,
-      temperature: "warm",
-      qualification: "qualified",
-      createdAt: "2025-07-07T09:20:00Z"
-    },
-    {
-      id: 5,
-      clientId: null,
-      source: "tiktok",
-      medium: "organic",
-      campaign: "viral_drone_video",
-      formData: {
-        name: "Emma Wilson",
-        email: "emma.adventures@gmail.com",
-        phone: "+1 (808) 555-0789",
-        eventType: "adventure",
-        activityType: "surfing_session",
-        preferredDate: "2025-07-20",
-        budget: "$400-600",
-        message: "Saw your TikTok drone shots - want similar for my surf competition"
-      },
-      score: 60,
-      temperature: "warm",
-      qualification: "unqualified",
-      createdAt: "2025-07-06T11:30:00Z"
+  // Fetch real contact messages as leads
+  const { data: contactMessages = [] } = useQuery({
+    queryKey: ['/api/contact-messages'],
+    queryFn: async () => {
+      const response = await fetch('/api/contact-messages');
+      if (!response.ok) throw new Error('Failed to fetch contact messages');
+      return response.json();
     }
-  ];
+  });
+
+  // Transform contact messages into lead format
+  const leads = contactMessages.map((message: any, index: number) => ({
+    id: message.id,
+    clientId: null, // Not linked to clients yet
+    source: "website", // All from contact form
+    medium: "organic",
+    campaign: "contact_form",
+    formData: {
+      name: message.name,
+      email: message.email,
+      phone: message.phone || "Not provided",
+      eventType: message.eventType || "general_inquiry",
+      preferredDate: message.preferredDate || "Not specified",
+      guestCount: 0,
+      budget: "Not specified",
+      message: message.message
+    },
+    score: Math.min(95, 40 + (message.priority === 'urgent' ? 30 : 20) + (message.email ? 10 : 0) + (message.phone ? 10 : 0)),
+    temperature: message.priority === 'urgent' ? "hot" : message.status === 'unread' ? "warm" : "cold",
+    qualification: message.status === 'unread' ? "new" : "contacted",
+    createdAt: message.createdAt
+  }));
+
+  // Filter leads based on search and status
+  const filteredLeads = leads.filter(lead => {
+    const matchesSearch = lead.formData.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         lead.formData.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         lead.source.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFilter = filterStatus === "all" || 
+                         (filterStatus === "hot" && lead.temperature === "hot") ||
+                         (filterStatus === "qualified" && lead.qualification === "qualified") ||
+                         (filterStatus === "new" && lead.qualification === "new");
+    
+    return matchesSearch && matchesFilter;
+  });
+
+  // Calculate lead statistics from real data
+  const leadStats = {
+    total: leads.length,
+    hot: leads.filter(lead => lead.temperature === "hot").length,
+    qualified: leads.filter(lead => lead.qualification === "qualified").length,
+    avgScore: leads.length > 0 ? Math.round(leads.reduce((sum, lead) => sum + lead.score, 0) / leads.length) : 0
+  };
+
 
   const getSourceIcon = (source: string) => {
     switch (source) {
@@ -176,26 +123,7 @@ export function LeadManagement() {
     }
   };
 
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = lead.formData.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.formData.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.source.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesFilter = filterStatus === "all" || 
-                         (filterStatus === "hot" && lead.temperature === "hot") ||
-                         (filterStatus === "qualified" && lead.qualification === "qualified") ||
-                         (filterStatus === "unqualified" && lead.qualification === "unqualified");
-    
-    return matchesSearch && matchesFilter;
-  });
 
-  const leadStats = {
-    total: leads.length,
-    hot: leads.filter(l => l.temperature === "hot").length,
-    qualified: leads.filter(l => l.qualification === "qualified").length,
-    avgScore: Math.round(leads.reduce((sum, l) => sum + l.score, 0) / leads.length),
-    conversionRate: Math.round((leads.filter(l => l.clientId).length / leads.length) * 100)
-  };
 
   return (
     <div className="space-y-6">

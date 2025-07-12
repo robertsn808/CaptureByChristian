@@ -39,10 +39,18 @@ export function GalleryViewer({ galleryId, clientId }: GalleryViewerProps) {
     queryFn: () => fetch(`/api/client-portal/gallery/${galleryId}`).then(r => r.json()),
   });
 
-  // Fetch existing selections
+  // Fetch existing selections from real database
   const { data: existingSelections } = useQuery({
     queryKey: ['/api/client-portal/selections', galleryId],
-    queryFn: () => fetch(`/api/client-portal/selections/${galleryId}?clientId=${clientId}`).then(r => r.json()),
+    queryFn: async () => {
+      const response = await fetch(`/api/client-portal/selections/${galleryId}?clientId=${clientId}`);
+      if (response.status === 404) {
+        // No selections exist yet - return empty state
+        return { favorites: [], comments: {} };
+      }
+      if (!response.ok) throw new Error('Failed to fetch selections');
+      return response.json();
+    },
     onSuccess: (data) => {
       if (data?.favorites) {
         setFavorites(new Set(data.favorites));

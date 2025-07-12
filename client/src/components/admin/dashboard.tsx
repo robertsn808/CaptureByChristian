@@ -43,27 +43,36 @@ export function AdminDashboard() {
     );
   }
 
-  // Calculate total revenue first
+  // Calculate real metrics from booking data
   const totalRevenue = bookings?.reduce((sum: number, booking: any) => 
     booking.status === 'confirmed' || booking.status === 'completed' 
       ? sum + parseFloat(booking.totalPrice) 
       : sum, 0) || 0;
 
+  const totalBookings = bookings?.length || 0;
+  const pendingBookings = bookings?.filter((b: any) => b.status === 'pending').length || 0;
+  const confirmedBookings = bookings?.filter((b: any) => b.status === 'confirmed').length || 0;
+  const completedBookings = bookings?.filter((b: any) => b.status === 'completed').length || 0;
+  
+  // Calculate real growth rates (would need historical data for accurate calculations)
+  const bookingGrowth = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
+  const revenueGrowth = totalRevenue > 0 ? Math.round((completedBookings / totalBookings) * 100) : 0;
+
   const stats = [
     {
       title: "Total Bookings",
-      value: analytics?.totalBookings || 0,
+      value: totalBookings,
       icon: Calendar,
       gradient: "from-blue-500 to-cyan-500",
-      change: "+12%",
+      change: totalBookings > 0 ? `${bookingGrowth}% confirmed` : "No data",
       changeType: "positive" as const,
     },
     {
       title: "Pending Review", 
-      value: analytics?.pendingBookings || 0,
+      value: pendingBookings,
       icon: Clock,
       gradient: "from-amber-500 to-orange-500",
-      change: "+3%",
+      change: totalBookings > 0 ? `${Math.round((pendingBookings / totalBookings) * 100)}% pending` : "No data",
       changeType: "neutral" as const,
     },
     {
@@ -71,15 +80,15 @@ export function AdminDashboard() {
       value: `$${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       gradient: "from-emerald-500 to-green-500",
-      change: "+18%",
+      change: totalRevenue > 0 ? `${revenueGrowth}% completed` : "No data",
       changeType: "positive" as const,
     },
     {
       title: "Active Projects",
-      value: analytics?.confirmedBookings || 0,
+      value: confirmedBookings,
       icon: Camera,
       gradient: "from-purple-500 to-pink-500",
-      change: "+7%",
+      change: totalBookings > 0 ? `${Math.round((confirmedBookings / totalBookings) * 100)}% active` : "No data",
       changeType: "positive" as const,
     },
   ];

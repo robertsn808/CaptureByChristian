@@ -140,50 +140,28 @@ export function AdvancedAnalytics() {
 
   const analytics = calculateAnalytics();
 
-  // Fallback data if no real data exists
-  const revenueData = analytics.revenueData.length > 0 ? analytics.revenueData : [
-    { month: "Jan 2024", revenue: 3250, bookings: 8, leads: 23, conversion: 35 },
-    { month: "Feb 2024", revenue: 4100, bookings: 12, leads: 31, conversion: 39 },
-    { month: "Mar 2024", revenue: 5200, bookings: 15, leads: 28, conversion: 54 },
-    { month: "Apr 2024", revenue: 6800, bookings: 18, leads: 42, conversion: 43 },
-    { month: "May 2024", revenue: 8900, bookings: 22, leads: 38, conversion: 58 },
-    { month: "Jun 2024", revenue: 12400, bookings: 28, leads: 45, conversion: 62 },
-    { month: "Jul 2024", revenue: 15200, bookings: 32, leads: 52, conversion: 62 },
-    { month: "Aug 2024", revenue: 11800, bookings: 26, leads: 48, conversion: 54 },
-    { month: "Sep 2024", revenue: 9600, bookings: 21, leads: 39, conversion: 54 },
-    { month: "Oct 2024", revenue: 8200, bookings: 19, leads: 35, conversion: 54 },
-    { month: "Nov 2024", revenue: 6800, bookings: 16, leads: 29, conversion: 55 },
-    { month: "Dec 2024", revenue: 14200, bookings: 31, leads: 48, conversion: 65 }
-  ];
+  // Use only real data from analytics calculation
+  const revenueData = analytics.revenueData;
+  const serviceBreakdown = analytics.serviceBreakdown;
+  const leadSourceData = analytics.leadSourceData;
 
-  const serviceBreakdown = analytics.serviceBreakdown.length > 0 ? analytics.serviceBreakdown : [
-    { name: "Wedding Photography", value: 3, revenue: 7470, count: 3 },
-    { name: "Portrait Sessions", value: 1, revenue: 875, count: 1 },
-    { name: "Aerial Photography", value: 1, revenue: 475, count: 1 }
-  ];
-
-  const leadSourceData = analytics.leadSourceData.length > 0 ? analytics.leadSourceData : [
-    { source: "Website", leads: clients.length, converted: clients.filter((c: any) => c.status === 'active').length, rate: clients.length > 0 ? Math.round((clients.filter((c: any) => c.status === 'active').length / clients.length) * 100) : 0, cost: 0.00 }
-  ];
-
-  // Use real data with fallbacks for display purposes only
+  // Use only real data from API endpoints
   const displayClientMetrics = {
     totalClients: clientMetrics.totalClients || 0,
     newThisMonth: clientMetrics.newThisMonth || 0,
     repeatClients: clientMetrics.repeatClients || 0,
     avgLifetimeValue: clientMetrics.avgLifetimeValue || 0,
-    churnRate: 0, // Not calculated yet
-    satisfactionScore: 0 // Not calculated yet
+    churnRate: clientMetrics.churnRate || 0,
+    satisfactionScore: clientMetrics.satisfactionScore || 0
   };
 
   const displayBusinessKPIs = {
     monthlyRecurringRevenue: businessKPIs.monthlyRecurringRevenue || 0,
-    averageBookingValue: bookings.length > 0 ? 
-      Math.round(bookings.reduce((sum: number, b: any) => sum + (b.totalPrice || 0), 0) / bookings.length) : 0,
-    profitMargin: 0, // Not calculated yet
-    bookingFrequency: 0, // Not calculated yet
-    seasonalityIndex: 0, // Not calculated yet
-    competitorAnalysis: "Data not available"
+    averageBookingValue: businessKPIs.averageBookingValue || 0,
+    profitMargin: businessKPIs.profitMargin || 0,
+    bookingFrequency: businessKPIs.bookingFrequency || 0,
+    seasonalityIndex: businessKPIs.seasonalityIndex || 0,
+    competitorAnalysis: businessKPIs.competitorAnalysis || "No data available"
   };
 
   const COLORS = ['#D4A574', '#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
@@ -200,9 +178,10 @@ export function AdvancedAnalytics() {
     }
   };
 
-  const currentMonthRevenue = revenueData[revenueData.length - 1].revenue;
-  const previousMonthRevenue = revenueData[revenueData.length - 2].revenue;
-  const revenueGrowth = ((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue * 100).toFixed(1);
+  // Calculate growth only if we have data
+  const currentMonthRevenue = revenueData.length > 0 ? revenueData[revenueData.length - 1].revenue : 0;
+  const previousMonthRevenue = revenueData.length > 1 ? revenueData[revenueData.length - 2].revenue : 0;
+  const revenueGrowth = previousMonthRevenue > 0 ? ((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue * 100).toFixed(1) : "0";
 
   return (
     <div className="space-y-6">
