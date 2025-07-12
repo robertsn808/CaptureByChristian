@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import { AdminDashboard } from "@/components/admin/dashboard";
 import { AdminCalendar } from "@/components/admin/calendar";
 import { ClientManagement } from "@/components/admin/client-management";
+import { PortfolioManagement } from "@/components/admin/portfolio-management";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -90,61 +91,7 @@ export default function Admin() {
 
           {/* Gallery AI Tab */}
           <TabsContent value="gallery" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Brain className="h-5 w-5 mr-2 text-bronze" />
-                  AI Gallery Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Upload & Analyze Photos</h3>
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                      <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-muted-foreground mb-4">
-                        Drag and drop photos here or click to upload
-                      </p>
-                      <Button className="btn-bronze">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Select Photos
-                      </Button>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      AI will automatically tag emotions, style, composition, and quality scores
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">AI Features</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                        <Brain className="h-5 w-5 text-bronze" />
-                        <div>
-                          <div className="font-medium">Smart Photo Selection</div>
-                          <div className="text-sm text-muted-foreground">AI identifies best shots automatically</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                        <Camera className="h-5 w-5 text-bronze" />
-                        <div>
-                          <div className="font-medium">Auto Gallery Organization</div>
-                          <div className="text-sm text-muted-foreground">Groups by theme, style, and emotion</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                        <FileText className="h-5 w-5 text-bronze" />
-                        <div>
-                          <div className="font-medium">Content Generation</div>
-                          <div className="text-sm text-muted-foreground">Auto-generates blog posts and captions</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PortfolioManagement />
           </TabsContent>
 
           {/* Contracts Tab */}

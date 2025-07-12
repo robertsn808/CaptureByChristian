@@ -1,8 +1,11 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAnalytics, fetchBookings } from "@/lib/api";
+import { fetchAnalytics, fetchBookings, fetchClients } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, DollarSign, Camera, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Users, DollarSign, Camera, TrendingUp, Clock, AlertCircle } from "lucide-react";
+import { RevenueChart } from "./revenue-chart";
 
 export function AdminDashboard() {
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
@@ -13,6 +16,11 @@ export function AdminDashboard() {
   const { data: bookings, isLoading: bookingsLoading } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
+  });
+
+  const { data: clients } = useQuery({
+    queryKey: ['/api/clients'],
+    queryFn: fetchClients,
   });
 
   if (analyticsLoading || bookingsLoading) {
@@ -51,8 +59,8 @@ export function AdminDashboard() {
       bgColor: "bg-orange-100",
     },
     {
-      title: "Monthly Revenue",
-      value: `$${(analytics?.monthlyRevenue || 0).toLocaleString()}`,
+      title: "Total Revenue",
+      value: `$${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: "text-green-600",
       bgColor: "bg-green-100",
@@ -67,14 +75,35 @@ export function AdminDashboard() {
   ];
 
   const recentBookings = bookings?.slice(0, 5) || [];
+  
+  const getUpcomingBookings = () => {
+    if (!bookings) return [];
+    const today = new Date();
+    return bookings
+      .filter((booking: any) => new Date(booking.date) > today && booking.status !== 'cancelled')
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 3);
+  };
+
+  const getPendingActions = () => {
+    if (!bookings) return [];
+    return bookings.filter((booking: any) => booking.status === 'pending');
+  };
+
+  const upcomingBookings = getUpcomingBookings();
+  const pendingActions = getPendingActions();
+  const totalRevenue = bookings?.reduce((sum: number, booking: any) => 
+    booking.status === 'confirmed' || booking.status === 'completed' 
+      ? sum + parseFloat(booking.totalPrice) 
+      : sum, 0) || 0;
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="font-playfair text-3xl font-bold">Dashboard</h1>
+        <h1 className="font-playfair text-3xl font-bold">Business Dashboard</h1>
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-          <span>Today: <strong>{analytics?.pendingBookings || 0} bookings</strong></span>
-          <span>This month: <strong>${(analytics?.monthlyRevenue || 0).toLocaleString()}</strong></span>
+          <span>Active Clients: <strong>{clients?.length || 0}</strong></span>
+          <span>Revenue: <strong>${totalRevenue.toLocaleString()}</strong></span>
         </div>
       </div>
 
@@ -97,34 +126,48 @@ export function AdminDashboard() {
         ))}
       </div>
 
-      {/* Recent Activity */}
+      {/* Revenue Analytics */}
+      <RevenueChart />
+
+      {/* Recent Activity & Alerts */}
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2" />
-              Recent Bookings
+              <Clock className="h-5 w-5 mr-2" />
+              Upcoming Sessions
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentBookings.length > 0 ? (
-                recentBookings.map((booking: any) => (
+              {upcomingBookings.length > 0 ? (
+                upcomingBookings.map((booking: any) => (
                   <div key={booking.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                     <div>
                       <p className="font-medium">{booking.client?.name}</p>
                       <p className="text-sm text-muted-foreground">{booking.service?.name}</p>
+                      <p className="text-xs text-muted-foreground">{booking.location}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium">${parseFloat(booking.totalPrice).toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <Badge className={`mb-1 ${
+                        booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {booking.status}
+                      </Badge>
+                      <p className="text-sm font-medium">
                         {new Date(booking.date).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(booking.date).toLocaleTimeString('en-US', { 
+                          hour: 'numeric', 
+                          minute: '2-digit' 
+                        })}
                       </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-muted-foreground text-center py-8">No recent bookings</p>
+                <p className="text-center text-muted-foreground py-8">No upcoming sessions</p>
               )}
             </div>
           </CardContent>
@@ -132,26 +175,40 @@ export function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2" />
+              Action Required ({pendingActions.length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 border rounded-lg text-center hover:bg-muted/50 cursor-pointer transition-colors">
-                <Calendar className="h-8 w-8 mx-auto mb-2 text-bronze" />
-                <p className="text-sm font-medium">View Calendar</p>
-              </div>
-              <div className="p-4 border rounded-lg text-center hover:bg-muted/50 cursor-pointer transition-colors">
-                <Users className="h-8 w-8 mx-auto mb-2 text-bronze" />
-                <p className="text-sm font-medium">Manage Clients</p>
-              </div>
-              <div className="p-4 border rounded-lg text-center hover:bg-muted/50 cursor-pointer transition-colors">
-                <Camera className="h-8 w-8 mx-auto mb-2 text-bronze" />
-                <p className="text-sm font-medium">Upload Photos</p>
-              </div>
-              <div className="p-4 border rounded-lg text-center hover:bg-muted/50 cursor-pointer transition-colors">
-                <DollarSign className="h-8 w-8 mx-auto mb-2 text-bronze" />
-                <p className="text-sm font-medium">Generate Invoice</p>
-              </div>
+            <div className="space-y-4">
+              {pendingActions.length > 0 ? (
+                pendingActions.slice(0, 4).map((booking: any) => (
+                  <div key={booking.id} className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div>
+                      <p className="font-medium">{booking.client?.name}</p>
+                      <p className="text-sm text-muted-foreground">{booking.service?.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 mb-1">
+                        Pending
+                      </Badge>
+                      <p className="text-sm">${parseFloat(booking.totalPrice).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">All caught up! 🎉</p>
+                  <p className="text-sm text-muted-foreground mt-1">No pending actions</p>
+                </div>
+              )}
+              
+              {pendingActions.length > 0 && (
+                <Button variant="outline" className="w-full mt-4">
+                  Review All Pending Bookings
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

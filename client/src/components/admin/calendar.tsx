@@ -1,20 +1,35 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAvailability } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchBookings, updateBooking } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, MapPin, User, Phone, Mail } from "lucide-react";
 
 export function AdminCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const queryClient = useQueryClient();
 
-  const { data: availability, isLoading } = useQuery({
-    queryKey: ['/api/availability', startOfMonth.toISOString(), endOfMonth.toISOString()],
-    queryFn: () => fetchAvailability(startOfMonth.toISOString(), endOfMonth.toISOString()),
+  const { data: bookings, isLoading } = useQuery({
+    queryKey: ['/api/bookings'],
+    queryFn: fetchBookings,
+  });
+
+  const updateBookingMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => updateBooking(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/stats'] });
+    },
   });
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -49,11 +64,18 @@ export function AdminCalendar() {
   };
 
   const getBookingsForDate = (date: Date) => {
-    if (!availability?.bookings) return [];
+    if (!bookings) return [];
     
-    return availability.bookings.filter((booking: any) => {
+    return bookings.filter((booking: any) => {
       const bookingDate = new Date(booking.date);
       return bookingDate.toDateString() === date.toDateString();
+    });
+  };
+
+  const handleStatusChange = (bookingId: number, newStatus: string) => {
+    updateBookingMutation.mutate({ 
+      id: bookingId, 
+      data: { status: newStatus } 
     });
   };
 
@@ -65,10 +87,14 @@ export function AdminCalendar() {
         return 'bg-yellow-100 text-yellow-800';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+
 
   const days = getDaysInMonth();
   const monthNames = [
@@ -123,67 +149,204 @@ export function AdminCalendar() {
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1 bg-muted/30 rounded-lg p-4">
           {/* Day Headers */}
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="text-center text-sm font-medium p-2">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+            <div key={day} className="p-2 text-center font-medium text-sm text-muted-foreground">
               {day}
             </div>
           ))}
-
+          
           {/* Calendar Days */}
           {days.map((day, index) => {
+            const dayBookings = getBookingsForDate(day);
             const isCurrentMonth = day.getMonth() === currentDate.getMonth();
             const isToday = day.toDateString() === new Date().toDateString();
-            const bookings = getBookingsForDate(day);
-
+            
             return (
               <div
                 key={index}
-                className={`bg-background p-2 h-24 text-sm rounded border transition-colors hover:bg-muted/50 ${
-                  !isCurrentMonth ? 'opacity-50' : ''
+                className={`min-h-[100px] p-2 border rounded-md ${
+                  isCurrentMonth ? 'bg-white' : 'bg-muted/50'
                 } ${isToday ? 'ring-2 ring-bronze' : ''}`}
               >
-                <div className={`font-medium ${isToday ? 'text-bronze' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'}`}>
+                <div className={`text-sm font-medium mb-1 ${
+                  isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'
+                }`}>
                   {day.getDate()}
                 </div>
                 
-                <div className="mt-1 space-y-1">
-                  {bookings.slice(0, 2).map((booking: any) => (
-                    <div key={booking.id} className="text-xs">
-                      <Badge 
-                        variant="secondary" 
-                        className={`text-xs px-1 py-0 ${getStatusColor(booking.status)}`}
-                      >
-                        {booking.service}
-                      </Badge>
-                    </div>
+                <div className="space-y-1">
+                  {dayBookings.map((booking: any) => (
+                    <Dialog key={booking.id}>
+                      <DialogTrigger asChild>
+                        <div
+                          className={`text-xs p-1 rounded cursor-pointer hover:opacity-80 ${getStatusColor(booking.status)}`}
+                          onClick={() => setSelectedBooking(booking)}
+                        >
+                          <div className="font-medium truncate">{booking.client?.name}</div>
+                          <div className="truncate">{booking.service?.name}</div>
+                          <div className="flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {new Date(booking.date).toLocaleTimeString('en-US', { 
+                              hour: 'numeric', 
+                              minute: '2-digit' 
+                            })}
+                          </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Booking Details</DialogTitle>
+                        </DialogHeader>
+                        {selectedBooking && (
+                          <BookingDetailView 
+                            booking={selectedBooking} 
+                            onStatusChange={handleStatusChange}
+                          />
+                        )}
+                      </DialogContent>
+                    </Dialog>
                   ))}
-                  {bookings.length > 2 && (
-                    <div className="text-xs text-muted-foreground">
-                      +{bookings.length - 2} more
-                    </div>
-                  )}
                 </div>
               </div>
             );
           })}
         </div>
-
-        {/* Legend */}
-        <div className="flex items-center space-x-4 mt-4 text-sm">
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-green-100 rounded mr-1"></div>
-            <span>Confirmed</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-yellow-100 rounded mr-1"></div>
-            <span>Pending</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-red-100 rounded mr-1"></div>
-            <span>Cancelled</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
+  );
+}
+
+function BookingDetailView({ booking, onStatusChange }: { booking: any; onStatusChange: (id: number, status: string) => void }) {
+  return (
+    <div className="space-y-6">
+      {/* Client Information */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <User className="h-5 w-5 mr-2" />
+              Client Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="font-medium text-lg">{booking.client?.name}</p>
+            </div>
+            <div className="flex items-center text-sm">
+              <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+              {booking.client?.email}
+            </div>
+            {booking.client?.phone && (
+              <div className="flex items-center text-sm">
+                <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                {booking.client?.phone}
+              </div>
+            )}
+            {booking.client?.tags && (
+              <div className="flex flex-wrap gap-1">
+                {booking.client.tags.map((tag: string) => (
+                  <Badge key={tag} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Service & Status</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="font-medium">{booking.service?.name}</p>
+              <p className="text-sm text-muted-foreground">{booking.service?.description}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Status:</span>
+              <Select 
+                value={booking.status} 
+                onValueChange={(value) => onStatusChange(booking.id, value)}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Total:</span>
+              <span className="font-bold text-lg">${parseFloat(booking.totalPrice).toLocaleString()}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Booking Details */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Session Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Date & Time</p>
+                <p className="font-medium">
+                  {new Date(booking.date).toLocaleDateString('en-US', { 
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+                <p className="text-sm">
+                  {new Date(booking.date).toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit' 
+                  })} ({booking.duration} mins)
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Location</p>
+                <p className="font-medium">{booking.location}</p>
+              </div>
+            </div>
+          </div>
+
+          {booking.notes && (
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Notes</p>
+              <p className="text-sm bg-muted p-3 rounded">{booking.notes}</p>
+            </div>
+          )}
+
+          {booking.addOns && booking.addOns.length > 0 && (
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">Add-ons</p>
+              <div className="space-y-1">
+                {booking.addOns.map((addon: any, index: number) => (
+                  <div key={index} className="flex justify-between text-sm">
+                    <span>{addon.name}</span>
+                    <span>+${addon.price}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
