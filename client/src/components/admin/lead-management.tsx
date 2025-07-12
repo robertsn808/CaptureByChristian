@@ -32,12 +32,14 @@ import {
   Star
 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export function LeadManagement() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch real contact messages as leads
   const { data: contactMessages = [] } = useQuery({
@@ -274,14 +276,96 @@ export function LeadManagement() {
                       {format(new Date(lead.createdAt), "MMM d, yyyy")}
                     </div>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-3 w-3 mr-1" />
-                        View
-                      </Button>
-                      <Button size="sm" className="btn-bronze">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        Convert
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline" onClick={() => setSelectedLead(lead)}>
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Lead Details</DialogTitle>
+                          </DialogHeader>
+                          {selectedLead && (
+                            <div className="space-y-4">
+                              <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                  <h3 className="font-semibold mb-2">Contact Information</h3>
+                                  <div className="space-y-2 text-sm">
+                                    <p><strong>Name:</strong> {selectedLead.formData.name}</p>
+                                    <p><strong>Email:</strong> {selectedLead.formData.email}</p>
+                                    <p><strong>Phone:</strong> {selectedLead.formData.phone}</p>
+                                    <p><strong>Service:</strong> {selectedLead.formData.eventType}</p>
+                                    <p><strong>Budget:</strong> {selectedLead.formData.budget}</p>
+                                  </div>
+                                </div>
+                                <div>
+                                  <h3 className="font-semibold mb-2">Lead Details</h3>
+                                  <div className="space-y-2 text-sm">
+                                    <p><strong>Score:</strong> {selectedLead.score}/100</p>
+                                    <p><strong>Temperature:</strong> {selectedLead.temperature}</p>
+                                    <p><strong>Source:</strong> {selectedLead.source}</p>
+                                    <p><strong>Created:</strong> {format(new Date(selectedLead.createdAt), "PPP")}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <h3 className="font-semibold mb-2">Message</h3>
+                                <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
+                                  {selectedLead.formData.message}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm" className="btn-bronze" onClick={() => setSelectedLead(lead)}>
+                            <Calendar className="h-3 w-3 mr-1" />
+                            Convert
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Convert Lead to Client</DialogTitle>
+                          </DialogHeader>
+                          {selectedLead && (
+                            <div className="space-y-4">
+                              <p className="text-sm text-muted-foreground">
+                                Convert <strong>{selectedLead.formData.name}</strong> from a lead to an active client.
+                              </p>
+                              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <p><strong>Email:</strong> {selectedLead.formData.email}</p>
+                                  <p><strong>Phone:</strong> {selectedLead.formData.phone}</p>
+                                </div>
+                                <div>
+                                  <p><strong>Service Interest:</strong> {selectedLead.formData.eventType}</p>
+                                  <p><strong>Lead Score:</strong> {selectedLead.score}/100</p>
+                                </div>
+                              </div>
+                              <div className="flex justify-end space-x-2">
+                                <Button variant="outline">Cancel</Button>
+                                <Button 
+                                  className="btn-bronze"
+                                  onClick={() => {
+                                    toast({
+                                      title: "Lead Converted",
+                                      description: `${selectedLead.formData.name} has been converted to a client.`,
+                                    });
+                                    setSelectedLead(null);
+                                  }}
+                                >
+                                  Convert to Client
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 </div>

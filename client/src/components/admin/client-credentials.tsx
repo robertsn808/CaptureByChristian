@@ -26,7 +26,8 @@ import {
   User,
   Calendar,
   RefreshCw,
-  Settings
+  Settings,
+  Bell
 } from "lucide-react";
 
 interface ClientCredential {
@@ -361,16 +362,87 @@ export function ClientCredentials() {
               <RefreshCw className="h-4 w-4 mr-2" />
               Reset All Sessions
             </Button>
-            <Button 
-              variant="outline"
-              onClick={() => {
-                // Open portal configuration settings
-                console.log("Opening portal settings...");
-              }}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Portal Settings
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Portal Settings
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Client Portal Settings</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6">
+                  {/* Portal Customization */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-sm">Branding</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <Label>Portal Title</Label>
+                          <Input defaultValue="Captured by Christian - Client Portal" />
+                        </div>
+                        <div>
+                          <Label>Welcome Message</Label>
+                          <Textarea defaultValue="Welcome to your personal photography portal! View your galleries, download photos, and track your session progress." />
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-sm">Access Settings</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <Label>Auto-expire sessions</Label>
+                          <Button variant="outline" size="sm">30 days</Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Label>Download limits</Label>
+                          <Button variant="outline" size="sm">Unlimited</Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Label>Gallery protection</Label>
+                          <Button variant="outline" size="sm">Password</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  {/* Email Templates */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Email Templates</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <Button variant="outline" size="sm">
+                          <Mail className="h-4 w-4 mr-2" />
+                          Welcome Email
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Send className="h-4 w-4 mr-2" />
+                          Magic Link Email
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Bell className="h-4 w-4 mr-2" />
+                          Gallery Ready
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline">Cancel</Button>
+                    <Button>Save Settings</Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>
