@@ -28,43 +28,87 @@ export function AIBusinessInsights() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Fetch real business data for AI analysis
-  const { data: bookingsData } = useQuery({
+  const { data: bookingsData = [] } = useQuery({
     queryKey: ['/api/bookings'],
+    queryFn: async () => {
+      const response = await fetch('/api/bookings');
+      if (!response.ok) throw new Error('Failed to fetch bookings');
+      return response.json();
+    }
   });
 
-  const { data: clientsData } = useQuery({
+  const { data: clientsData = [] } = useQuery({
     queryKey: ['/api/clients'],
+    queryFn: async () => {
+      const response = await fetch('/api/clients');
+      if (!response.ok) throw new Error('Failed to fetch clients');
+      return response.json();
+    }
   });
 
-  const { data: analyticsData } = useQuery({
-    queryKey: ['/api/analytics/stats'],
+  const { data: servicesData = [] } = useQuery({
+    queryKey: ['/api/services'],
+    queryFn: async () => {
+      const response = await fetch('/api/services');
+      if (!response.ok) throw new Error('Failed to fetch services');
+      return response.json();
+    }
+  });
+
+  const { data: contactMessages = [] } = useQuery({
+    queryKey: ['/api/contact-messages'],
+    queryFn: async () => {
+      const response = await fetch('/api/contact-messages');
+      if (!response.ok) throw new Error('Failed to fetch contact messages');
+      return response.json();
+    }
   });
 
   // Advanced AI insights based on real business data
   const generateSmartInsights = async () => {
     setIsGenerating(true);
     
-    // Simulate advanced AI analysis of real business data
+    // Calculate real metrics from business data
+    const totalRevenue = bookingsData.reduce((sum: number, booking: any) => sum + (booking.totalPrice || 0), 0);
+    const avgBookingValue = bookingsData.length > 0 ? totalRevenue / bookingsData.length : 0;
+    const confirmedBookings = bookingsData.filter((b: any) => b.status === 'confirmed').length;
+    const conversionRate = clientsData.length > 0 ? (confirmedBookings / clientsData.length) * 100 : 0;
+    const unreadMessages = contactMessages.filter((m: any) => m.status === 'unread').length;
+    const urgentMessages = contactMessages.filter((m: any) => m.priority === 'urgent').length;
+    
+    // Service performance analysis
+    const servicePerformance = servicesData.map((service: any) => {
+      const serviceBookings = bookingsData.filter((b: any) => b.serviceId === service.id);
+      const serviceRevenue = serviceBookings.reduce((sum: number, b: any) => sum + (b.totalPrice || 0), 0);
+      return {
+        name: service.name,
+        bookings: serviceBookings.length,
+        revenue: serviceRevenue,
+        avgValue: serviceBookings.length > 0 ? serviceRevenue / serviceBookings.length : 0
+      };
+    }).sort((a, b) => b.revenue - a.revenue);
+
+    const topService = servicePerformance[0];
     const businessInsights = [
       {
         type: "revenue_optimization",
-        title: "Revenue Growth Opportunity",
-        insight: "Analysis shows 73% of your bookings are portrait sessions. Consider expanding aerial photography marketing - it has 2.5x higher profit margins.",
-        confidence: 89,
+        title: "Revenue Performance Analysis",
+        insight: `Your total revenue is $${totalRevenue.toLocaleString()} with an average booking value of $${avgBookingValue.toFixed(0)}. ${topService ? `${topService.name} generates the highest revenue ($${topService.revenue.toLocaleString()}).` : 'Focus on high-value services to maximize revenue.'}`,
+        confidence: 94,
         impact: "High",
-        action: "Launch targeted drone photography campaign for real estate agents",
+        action: topService ? `Promote ${topService.name} more aggressively - it's your top revenue generator` : "Analyze service pricing and demand patterns",
         icon: TrendingUp,
         color: "text-green-600"
       },
       {
-        type: "client_behavior",
-        title: "Client Booking Patterns",
-        insight: "Peak booking times are 6PM-8PM weekdays. Your response time during these hours directly correlates with 67% higher conversion rates.",
-        confidence: 94,
-        impact: "Medium",
-        action: "Implement AI chatbot priority routing during peak hours",
+        type: "client_management",
+        title: "Client Communication Status",
+        insight: `You have ${unreadMessages} unread messages${urgentMessages > 0 ? ` including ${urgentMessages} urgent inquiries` : ''}. Your conversion rate is ${conversionRate.toFixed(1)}% with ${confirmedBookings} confirmed bookings from ${clientsData.length} total clients.`,
+        confidence: 97,
+        impact: urgentMessages > 0 ? "High" : "Medium",
+        action: urgentMessages > 0 ? "Respond to urgent messages immediately to maintain client satisfaction" : "Maintain consistent response times to improve conversion rates",
         icon: Users,
-        color: "text-blue-600"
+        color: urgentMessages > 0 ? "text-red-600" : "text-blue-600"
       },
       {
         type: "seasonal_prediction",

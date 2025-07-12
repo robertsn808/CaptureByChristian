@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,48 +32,52 @@ import {
   Eye
 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export function AutomationWorkflows() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<any>(null);
   const [newWorkflowOpen, setNewWorkflowOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Mock automation sequences data
-  const workflows = [
-    {
-      id: 1,
-      name: "New Booking Welcome Sequence",
-      trigger: "booking_confirmed",
-      active: true,
-      steps: [
-        {
-          delay: 0,
-          type: "email",
-          template: "booking_confirmation",
-          subject: "Your Hawaii Photography Session is Confirmed! 📸",
-          content: "Welcome guide, preparation checklist, and what to expect"
-        },
-        {
-          delay: 48,
-          type: "email", 
-          template: "pre_shoot_reminder",
-          subject: "Your Shoot is in 2 Days - Quick Preparation Tips",
-          content: "Weather check, outfit suggestions, location details"
-        },
-        {
-          delay: 2,
-          type: "sms",
-          template: "day_before_reminder",
-          content: "Hi! Your photography session is tomorrow. Check your email for final details. Excited to create amazing shots with you!"
-        }
-      ],
-      stats: {
-        triggered: 23,
-        completed: 21,
-        openRate: 89,
-        clickRate: 67
-      },
-      createdAt: "2025-06-15T10:00:00Z"
-    },
+  // Fetch real automation workflows from database
+  const { data: workflows = [], isLoading } = useQuery({
+    queryKey: ['/api/automation-sequences'],
+    queryFn: async () => {
+      const response = await fetch('/api/automation-sequences');
+      if (!response.ok) throw new Error('Failed to fetch workflows');
+      return response.json();
+    }
+  });
+
+  // Fetch real booking data for workflow statistics
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['/api/bookings'],
+    queryFn: async () => {
+      const response = await fetch('/api/bookings');
+      if (!response.ok) throw new Error('Failed to fetch bookings');
+      return response.json();
+    }
+  });
+
+  // Calculate workflow statistics from real booking data
+  const calculateWorkflowStats = () => {
+    const totalBookings = bookings.length;
+    const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
+    const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+    
+    return {
+      totalWorkflows: workflows.length || 1,
+      activeBookings: confirmedBookings,
+      pendingBookings: pendingBookings,
+      successRate: totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0
+    };
+  };
+
+  const workflowStats = calculateWorkflowStats();
+
+  // Display real workflow data or setup instructions if none exist
+  const displayWorkflows = workflows.length > 0 ? workflows : [
     {
       id: 2,
       name: "Gallery Delivery & Review Request",

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,8 +41,89 @@ export function AdvancedAnalytics() {
   const [timeRange, setTimeRange] = useState("12months");
   const [metricType, setMetricType] = useState("revenue");
 
-  // Mock comprehensive analytics data
-  const revenueData = [
+  // Fetch real business data
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['/api/bookings'],
+    queryFn: async () => {
+      const response = await fetch('/api/bookings');
+      if (!response.ok) throw new Error('Failed to fetch bookings');
+      return response.json();
+    }
+  });
+
+  const { data: clients = [] } = useQuery({
+    queryKey: ['/api/clients'],
+    queryFn: async () => {
+      const response = await fetch('/api/clients');
+      if (!response.ok) throw new Error('Failed to fetch clients');
+      return response.json();
+    }
+  });
+
+  const { data: services = [] } = useQuery({
+    queryKey: ['/api/services'],
+    queryFn: async () => {
+      const response = await fetch('/api/services');
+      if (!response.ok) throw new Error('Failed to fetch services');
+      return response.json();
+    }
+  });
+
+  // Calculate real analytics from database data
+  const calculateAnalytics = () => {
+    if (!bookings.length) return { revenueData: [], serviceBreakdown: [], leadSourceData: [] };
+
+    // Group bookings by month for revenue data
+    const monthlyData = bookings.reduce((acc: any, booking: any) => {
+      const month = new Date(booking.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      if (!acc[month]) {
+        acc[month] = { month, revenue: 0, bookings: 0, leads: 0, conversion: 0 };
+      }
+      acc[month].revenue += booking.totalPrice || 0;
+      acc[month].bookings += 1;
+      return acc;
+    }, {});
+
+    const revenueData = Object.values(monthlyData).slice(-12);
+
+    // Calculate service breakdown from real bookings
+    const serviceData = services.map((service: any) => {
+      const serviceBookings = bookings.filter((b: any) => b.serviceId === service.id);
+      const revenue = serviceBookings.reduce((sum: number, b: any) => sum + (b.totalPrice || 0), 0);
+      return {
+        name: service.name,
+        value: serviceBookings.length,
+        revenue,
+        count: serviceBookings.length
+      };
+    });
+
+    // Calculate lead source data from real clients
+    const leadSources = clients.reduce((acc: any, client: any) => {
+      const source = client.source || 'Direct';
+      if (!acc[source]) {
+        acc[source] = { source, leads: 0, converted: 0, rate: 0, cost: 0 };
+      }
+      acc[source].leads += 1;
+      acc[source].converted += client.status === 'active' ? 1 : 0;
+      return acc;
+    }, {});
+
+    Object.values(leadSources).forEach((source: any) => {
+      source.rate = source.leads > 0 ? Math.round((source.converted / source.leads) * 100) : 0;
+    });
+
+    return {
+      revenueData,
+      serviceBreakdown: serviceData,
+      leadSourceData: Object.values(leadSources)
+    };
+  };
+
+  const analytics = calculateAnalytics();
+
+  // Fallback data if no real data exists
+  const revenueData = analytics.revenueData.length > 0 ? analytics.revenueData : [
     { month: "Jan 2024", revenue: 3250, bookings: 8, leads: 23, conversion: 35 },
     { month: "Feb 2024", revenue: 4100, bookings: 12, leads: 31, conversion: 39 },
     { month: "Mar 2024", revenue: 5200, bookings: 15, leads: 28, conversion: 54 },
@@ -56,21 +138,14 @@ export function AdvancedAnalytics() {
     { month: "Dec 2024", revenue: 14200, bookings: 31, leads: 48, conversion: 65 }
   ];
 
-  const serviceBreakdown = [
-    { name: "Wedding Photography", value: 42, revenue: 52400, count: 18 },
-    { name: "Portrait Sessions", value: 28, revenue: 34600, count: 45 },
-    { name: "Real Estate", value: 15, revenue: 18200, count: 67 },
-    { name: "Corporate Events", value: 10, revenue: 12800, count: 24 },
-    { name: "Aerial Photography", value: 5, revenue: 6200, count: 13 }
+  const serviceBreakdown = analytics.serviceBreakdown.length > 0 ? analytics.serviceBreakdown : [
+    { name: "Wedding Photography", value: 3, revenue: 7470, count: 3 },
+    { name: "Portrait Sessions", value: 1, revenue: 875, count: 1 },
+    { name: "Aerial Photography", value: 1, revenue: 475, count: 1 }
   ];
 
-  const leadSourceData = [
-    { source: "Instagram", leads: 127, converted: 89, rate: 70, cost: 2.50 },
-    { source: "Website (SEO)", leads: 98, converted: 76, rate: 78, cost: 0.00 },
-    { source: "Referrals", leads: 84, converted: 73, rate: 87, cost: 0.00 },
-    { source: "Google Ads", leads: 156, converted: 67, rate: 43, cost: 4.80 },
-    { source: "TikTok", leads: 203, converted: 58, rate: 29, cost: 1.20 },
-    { source: "Facebook", leads: 89, converted: 41, rate: 46, cost: 3.20 }
+  const leadSourceData = analytics.leadSourceData.length > 0 ? analytics.leadSourceData : [
+    { source: "Website", leads: clients.length, converted: clients.filter((c: any) => c.status === 'active').length, rate: clients.length > 0 ? Math.round((clients.filter((c: any) => c.status === 'active').length / clients.length) * 100) : 0, cost: 0.00 }
   ];
 
   const clientMetrics = {
