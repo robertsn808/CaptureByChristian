@@ -1,7 +1,3 @@
-The code modifies the navigation styling and animations by updating the nav component's appearance and effects.
-```
-
-```replit_final_file
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
