@@ -85,21 +85,21 @@
 
 :root {
   --background: hsl(0, 0%, 99%);
-  --foreground: hsl(30, 15%, 18%);
+  --foreground: hsl(0, 0%, 8%);
   --muted: hsl(33, 12%, 95%);
-  --muted-foreground: hsl(30, 8%, 44%);
+  --muted-foreground: hsl(0, 0%, 35%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(30, 15%, 18%);
+  --popover-foreground: hsl(0, 0%, 8%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(30, 15%, 18%);
+  --card-foreground: hsl(0, 0%, 8%);
   --border: hsl(30, 10%, 88%);
   --input: hsl(30, 10%, 88%);
   --primary: hsl(25, 65%, 45%);
   --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(33, 12%, 95%);
-  --secondary-foreground: hsl(30, 15%, 18%);
+  --secondary-foreground: hsl(0, 0%, 8%);
   --accent: hsl(33, 12%, 95%);
-  --accent-foreground: hsl(30, 15%, 18%);
+  --accent-foreground: hsl(0, 0%, 8%);
   --destructive: hsl(0, 84%, 60%);
   --destructive-foreground: hsl(0, 0%, 98%);
   --ring: hsl(25, 65%, 45%);
@@ -116,24 +116,24 @@
 
 .dark {
   --background: hsl(0, 0%, 4%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(0, 0%, 15%);
-  --muted-foreground: hsl(0, 0%, 65%);
-  --popover: hsl(0, 0%, 4%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(0, 0%, 4%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(0, 0%, 15%);
-  --input: hsl(0, 0%, 15%);
-  --primary: hsl(25, 65%, 45%);
+  --foreground: hsl(0, 0%, 95%);
+  --muted: hsl(0, 0%, 12%);
+  --muted-foreground: hsl(0, 0%, 70%);
+  --popover: hsl(0, 0%, 6%);
+  --popover-foreground: hsl(0, 0%, 95%);
+  --card: hsl(0, 0%, 6%);
+  --card-foreground: hsl(0, 0%, 95%);
+  --border: hsl(0, 0%, 20%);
+  --input: hsl(0, 0%, 18%);
+  --primary: hsl(25, 65%, 55%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(0, 0%, 15%);
-  --secondary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(0, 0%, 12%);
+  --secondary-foreground: hsl(0, 0%, 90%);
   --accent: hsl(0, 0%, 15%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 63%, 31%);
+  --accent-foreground: hsl(0, 0%, 90%);
+  --destructive: hsl(0, 63%, 50%);
   --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(25, 65%, 45%);
+  --ring: hsl(25, 65%, 55%);
 }
 
 @layer base {
@@ -156,11 +156,46 @@
     background: rgba(254, 254, 254, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    color: hsl(0, 0%, 8%);
   }
   
   .dark .glass-morphism {
     background: rgba(10, 10, 10, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    color: hsl(0, 0%, 95%);
+  }
+
+  /* Enhanced text contrast classes */
+  .text-high-contrast {
+    color: var(--foreground);
+  }
+
+  .text-medium-contrast {
+    color: var(--muted-foreground);
+  }
+
+  /* Ensure buttons have proper contrast */
+  .btn-text-contrast {
+    color: var(--foreground);
+  }
+
+  .dark .btn-text-contrast {
+    color: var(--foreground);
+  }
+
+  /* Card text improvements */
+  .card-text {
+    color: var(--card-foreground);
+  }
+
+  /* Navigation text improvements */
+  .nav-text {
+    color: var(--foreground);
+    transition: color 0.2s ease-in-out;
+  }
+
+  .nav-text:hover {
+    color: var(--primary);
   }
 
   .parallax-bg {
