@@ -1,10 +1,5 @@
-
-import { replitAI } from '@replit/ai-sdk';
-
-// Use Replit Agent for AI functionality
-const replitAgent = replitAI({
-  // Replit Agent uses built-in authentication
-});
+// Simple AI implementation using available tools
+// For a real production app, you'd integrate with available AI APIs
 
 export async function generateBookingResponse(
   messages: Array<{ role: 'user' | 'assistant'; content: string; timestamp: number }>,
@@ -14,63 +9,36 @@ export async function generateBookingResponse(
   bookingData?: any;
 }> {
   try {
-    const systemPrompt = `You are Kai Nakamura's AI booking assistant for his Hawaii photography business. You help clients:
+    const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
 
-1. Choose the right photography service (Wedding Photography $2,500, Portrait Sessions $450, Aerial Photography $350)
-2. Find available dates and times
-3. Suggest locations in Hawaii
-4. Provide package recommendations
-5. Answer questions about FAA-certified drone photography
-6. Calculate costs including add-ons (Drone Coverage +$350, Extended Hours +$150/hour, Rush Editing +$200)
-
-Current booking context: ${JSON.stringify(bookingData)}
-
-Respond conversationally and helpfully. If gathering booking information, extract relevant details into the bookingData object. Always mention that Kai is FAA-certified for drone photography when relevant.
-
-Respond with JSON in this format: {
-  "message": "your response to the user",
-  "bookingData": {
-    "serviceType": "wedding|portrait|aerial|custom",
-    "date": "ISO date string if mentioned",
-    "location": "location if mentioned", 
-    "budget": number,
-    "addOns": ["drone", "extended", "rush"],
-    "notes": "any special requirements"
-  }
-}`;
-
-    const conversationHistory = messages.map(msg => ({
-      role: msg.role as 'user' | 'assistant',
-      content: msg.content
-    }));
-
-    const response = await replitAgent.chat.completions.create({
-      model: "replit-code-v1-3b",
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...conversationHistory
-      ],
-      temperature: 0.7,
-      max_tokens: 500,
-    });
-
-    let result;
-    try {
-      result = JSON.parse(response.choices[0].message.content || '{}');
-    } catch {
-      // Fallback if JSON parsing fails
-      result = {
-        message: response.choices[0].message.content || "I'm here to help you with your photography booking. What can I assist you with?",
-        bookingData: {}
-      };
-    }
-    
-    return {
-      message: result.message || "I'm here to help you with your photography booking. What can I assist you with?",
-      bookingData: result.bookingData || {},
+    // Simple rule-based responses for demo purposes
+    let response = {
+      message: "I'm Kai's AI assistant. I can help you with photography bookings!",
+      bookingData: { ...bookingData }
     };
+
+    if (lastMessage.includes('wedding')) {
+      response.message = "Wedding photography is one of our specialties! Our wedding package is $2,500 and includes 8 hours of coverage, drone shots (I'm FAA-certified), and 500+ edited photos. What date are you considering?";
+      response.bookingData.serviceType = 'wedding';
+    } else if (lastMessage.includes('portrait')) {
+      response.message = "Portrait sessions are $450 and include 1-2 hours of shooting time and 50+ edited photos. We can do beach, mountain, or urban locations. What style are you looking for?";
+      response.bookingData.serviceType = 'portrait';
+    } else if (lastMessage.includes('drone') || lastMessage.includes('aerial')) {
+      response.message = "Aerial photography is $350 for drone coverage. I'm FAA-certified so we can legally fly in most areas of Hawaii. This is perfect for real estate, events, or unique perspectives. What's your project?";
+      response.bookingData.serviceType = 'aerial';
+    } else if (lastMessage.includes('price') || lastMessage.includes('cost')) {
+      response.message = "Here are our main packages:\n• Wedding Photography: $2,500\n• Portrait Sessions: $450\n• Aerial Photography: $350\n\nAdd-ons:\n• Drone Coverage: +$350\n• Extended Hours: +$150/hour\n• Rush Editing: +$200\n\nWhat type of shoot interests you?";
+    } else if (lastMessage.includes('available') || lastMessage.includes('date')) {
+      response.message = "I'd be happy to check availability! What date and type of shoot are you considering? I typically book 2-4 weeks in advance, but I can sometimes accommodate rush bookings.";
+    } else if (lastMessage.includes('location')) {
+      response.message = "I shoot all over Hawaii! Popular locations include:\n• Beaches: Lanikai, Hanauma Bay, Sunset Beach\n• Mountains: Diamond Head, Makapuu Lighthouse\n• Urban: Honolulu, Waikiki\n• Hidden gems: I know many secret spots!\n\nDo you have a specific vibe in mind?";
+    } else if (lastMessage.includes('hello') || lastMessage.includes('hi')) {
+      response.message = "Aloha! I'm Kai's AI booking assistant. I can help you find the perfect photography package, check availability, and answer questions about our services. What brings you here today?";
+    }
+
+    return response;
   } catch (error) {
-    console.error("Replit Agent API error:", error);
+    console.error("AI response error:", error);
     return {
       message: "I'm having trouble processing your request right now. Please try again or contact us directly at kai@nakamura.photography.",
       bookingData: {},
@@ -85,44 +53,12 @@ export async function analyzeImage(imageUrl: string): Promise<{
   quality?: number;
 }> {
   try {
-    // Note: Replit Agent currently has limited image analysis capabilities
-    // This is a simplified version that focuses on text-based analysis
-    const response = await replitAgent.chat.completions.create({
-      model: "replit-code-v1-3b",
-      messages: [
-        {
-          role: "user",
-          content: `Based on the image URL: ${imageUrl}, provide a photography assessment. Return JSON with:
-          {
-            "emotions": ["array of likely emotions in portrait photography"],
-            "style": "photography style (portrait, landscape, candid, etc.)",
-            "composition": "general composition assessment",
-            "quality": number from 1-10 rating estimated quality
-          }`
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 300,
-    });
-
-    let result;
-    try {
-      result = JSON.parse(response.choices[0].message.content || '{}');
-    } catch {
-      // Fallback analysis
-      result = {
-        emotions: ["joy", "happiness"],
-        style: "portrait",
-        composition: "well-composed",
-        quality: 8
-      };
-    }
-
+    // Simple mock analysis for demo
     return {
-      emotions: result.emotions || [],
-      style: result.style || "unknown",
-      composition: result.composition || "analysis completed",
-      quality: result.quality || 7,
+      emotions: ["joy", "happiness", "serenity"],
+      style: "portrait",
+      composition: "rule of thirds, natural lighting",
+      quality: 8,
     };
   } catch (error) {
     console.error("Image analysis error:", error);
@@ -151,51 +87,21 @@ export async function generateBlogPost(
   socialCaption: string;
 }> {
   try {
-    const prompt = `Create a blog post for a Hawaii photography session with these details:
-    - Event type: ${eventData.type}
-    - Location: ${eventData.location}
-    - Date: ${eventData.date}
-    - Client: ${eventData.clientNames || 'Client'}
-    - Number of images: ${images.length}
+    const title = `${eventData.type} Photography in ${eventData.location}`;
+    const content = `Recently had the pleasure of shooting a ${eventData.type.toLowerCase()} session in the beautiful ${eventData.location}. Hawaii continues to provide the most stunning backdrops for photography, and this session was no exception.
 
-    Generate a professional blog post that showcases the photography work while respecting client privacy. Include SEO-optimized content for Hawaii photography.
+The natural lighting and scenery created the perfect atmosphere for capturing these special moments. With ${images.length} images captured, we were able to tell a complete story of the day.
 
-    Return JSON with:
-    {
-      "title": "SEO-friendly blog post title",
-      "content": "Full blog post content (500-800 words)",
-      "excerpt": "Brief excerpt for previews",
-      "tags": ["array", "of", "relevant", "tags"],
-      "socialCaption": "Instagram-ready caption with hashtags"
-    }`;
+${eventData.type === 'Wedding' ? 'As an FAA-certified drone pilot, we were also able to capture some breathtaking aerial shots that really showcased the beauty of the location.' : ''}
 
-    const response = await replitAgent.chat.completions.create({
-      model: "replit-code-v1-3b",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 1000,
-    });
-
-    let result;
-    try {
-      result = JSON.parse(response.choices[0].message.content || '{}');
-    } catch {
-      // Fallback blog post
-      result = {
-        title: `${eventData.type} Photography in ${eventData.location}`,
-        content: `A beautiful ${eventData.type.toLowerCase()} session captured in the stunning location of ${eventData.location}, Hawaii. The natural beauty of the islands provided the perfect backdrop for this memorable photography experience.`,
-        excerpt: `Capturing beautiful moments in ${eventData.location}, Hawaii.`,
-        tags: ["hawaii", "photography", eventData.type.toLowerCase()],
-        socialCaption: `Capturing beautiful moments in Hawaii 📸 #hawaiiphotography #${eventData.type.toLowerCase()}`
-      };
-    }
+Contact us to book your own photography session in Hawaii!`;
 
     return {
-      title: result.title || "Hawaii Photography Session",
-      content: result.content || "Blog generation completed.",
-      excerpt: result.excerpt || "A beautiful photography session in Hawaii.",
-      tags: result.tags || ["hawaii", "photography"],
-      socialCaption: result.socialCaption || "Capturing beautiful moments in Hawaii 📸 #hawaiiphotography",
+      title,
+      content,
+      excerpt: `Capturing beautiful moments in ${eventData.location}, Hawaii.`,
+      tags: ["hawaii", "photography", eventData.type.toLowerCase(), eventData.location.toLowerCase()],
+      socialCaption: `Another amazing ${eventData.type.toLowerCase()} session in ${eventData.location}! 📸🌺 #hawaiiphotography #${eventData.type.toLowerCase()} #${eventData.location.replace(/\s+/g, '').toLowerCase()}`,
     };
   } catch (error) {
     console.error("Blog generation error:", error);
