@@ -142,7 +142,9 @@ export function InvoiceGenerator() {
     updated[index] = { ...updated[index], [field]: value };
     
     if (field === 'quantity' || field === 'rate') {
-      updated[index].amount = updated[index].quantity * updated[index].rate;
+      const quantity = field === 'quantity' ? Number(value) : updated[index].quantity;
+      const rate = field === 'rate' ? Number(value) : updated[index].rate;
+      updated[index].amount = quantity * rate;
     }
     
     setInvoiceItems(updated);
@@ -155,7 +157,7 @@ export function InvoiceGenerator() {
   };
 
   const getTotalAmount = () => {
-    return invoiceItems.reduce((total, item) => total + item.amount, 0);
+    return invoiceItems.reduce((total, item) => total + (item.amount || 0), 0);
   };
 
   const generateInvoiceNumber = () => {
@@ -328,7 +330,7 @@ export function InvoiceGenerator() {
                         </div>
                         <div>
                           <Label>Amount ($)</Label>
-                          <Input value={item.amount.toFixed(2)} disabled />
+                          <Input value={(item.amount || 0).toFixed(2)} disabled />
                         </div>
                         <div>
                           <Button
