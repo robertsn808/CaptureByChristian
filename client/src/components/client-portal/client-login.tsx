@@ -105,9 +105,9 @@ export function ClientLogin({ onLoginSuccess }: ClientLoginProps) {
           <div className="mx-auto w-16 h-16 bg-bronze/10 rounded-full flex items-center justify-center">
             <Camera className="h-8 w-8 text-bronze" />
           </div>
-          <CardTitle className="text-2xl font-playfair">Client Portal</CardTitle>
+          <CardTitle className="text-2xl font-playfair">Captured by Christian</CardTitle>
           <p className="text-muted-foreground">
-            Access your photo galleries, contracts, and session details
+            Client Portal - Access your photo galleries, contracts, and session details
           </p>
         </CardHeader>
         

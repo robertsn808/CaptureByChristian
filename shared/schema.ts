@@ -231,6 +231,17 @@ export const contactMessages = pgTable("contact_messages", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const clientMessages = pgTable("client_messages", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  message: text("message").notNull(),
+  isFromClient: boolean("is_from_client").default(true).notNull(),
+  senderName: text("sender_name").notNull(),
+  senderEmail: text("sender_email").notNull(),
+  status: text("status").default("unread").notNull(), // unread, read, replied
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const clientsRelations = relations(clients, ({ many }) => ({
   bookings: many(bookings),
@@ -359,6 +370,11 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   createdAt: true,
 });
 
+export const insertClientMessageSchema = createInsertSchema(clientMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -410,3 +426,6 @@ export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
 
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+
+export type ClientMessage = typeof clientMessages.$inferSelect;
+export type InsertClientMessage = z.infer<typeof insertClientMessageSchema>;

@@ -1,10 +1,10 @@
 import { 
-  users, clients, services, bookings, contracts, invoices, galleryImages, aiChats, contactMessages, clientPortalSessions,
+  users, clients, services, bookings, contracts, invoices, galleryImages, aiChats, contactMessages, clientPortalSessions, clientMessages,
   type User, type InsertUser, type Client, type InsertClient, 
   type Service, type InsertService, type Booking, type InsertBooking,
   type Contract, type InsertContract, type Invoice, type InsertInvoice,
   type GalleryImage, type InsertGalleryImage, type AiChat, type InsertAiChat,
-  type ContactMessage, type InsertContactMessage
+  type ContactMessage, type InsertContactMessage, type ClientMessage, type InsertClientMessage
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -73,6 +73,10 @@ export interface IStorage {
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   updateContactMessage(id: number, message: Partial<InsertContactMessage>): Promise<ContactMessage>;
   deleteContactMessage(id: number): Promise<void>;
+
+  // Client Messages
+  getClientMessages(clientId: number): Promise<ClientMessage[]>;
+  createClientMessage(message: InsertClientMessage): Promise<ClientMessage>;
 
   // Client Portal Sessions
   getClientPortalSessions(): Promise<any[]>;
@@ -493,6 +497,18 @@ export class DatabaseStorage implements IStorage {
       repeatClients: clientsWithMultipleBookings.length,
       avgLifetimeValue: Math.round(avgLifetimeValue)
     };
+  }
+
+  async getClientMessages(clientId: number): Promise<ClientMessage[]> {
+    const messages = await db.select().from(clientMessages)
+      .where(eq(clientMessages.clientId, clientId))
+      .orderBy(desc(clientMessages.createdAt));
+    return messages;
+  }
+
+  async createClientMessage(insertMessage: InsertClientMessage): Promise<ClientMessage> {
+    const [message] = await db.insert(clientMessages).values(insertMessage).returning();
+    return message;
   }
 }
 

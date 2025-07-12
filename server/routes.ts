@@ -1435,6 +1435,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Client Portal Messaging API
+  app.get("/api/client-portal/messages", async (req, res) => {
+    try {
+      const clientId = parseInt(req.query.clientId as string);
+      
+      if (!clientId) {
+        return res.status(400).json({ error: "Client ID is required" });
+      }
+
+      const messages = await storage.getClientMessages(clientId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching client messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  app.post("/api/client-portal/send-message", async (req, res) => {
+    try {
+      const { clientId, message, senderName, senderEmail } = req.body;
+      
+      if (!clientId || !message || !senderName || !senderEmail) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const newMessage = await storage.createClientMessage({
+        clientId,
+        message,
+        isFromClient: true,
+        senderName,
+        senderEmail,
+        status: 'unread'
+      });
+
+      // Also create a contact message for admin inbox
+      await storage.createContactMessage({
+        name: senderName,
+        email: senderEmail,
+        phone: '',
+        subject: 'Client Portal Message',
+        message: `Message from client portal:\n\n${message}`,
+        status: 'unread',
+        priority: 'normal',
+        source: 'client_portal'
+      });
+
+      res.json(newMessage);
+    } catch (error) {
+      console.error("Error sending client message:", error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
