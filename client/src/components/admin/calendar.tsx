@@ -88,7 +88,7 @@ export function AdminCalendar() {
   const getWeekDays = () => {
     const startOfWeek = new Date(currentDate);
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-    
+
     const days = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
@@ -100,7 +100,7 @@ export function AdminCalendar() {
 
   const getBookingsForDate = (date: Date) => {
     if (!bookings || !Array.isArray(bookings)) return [];
-    
+
     return bookings.filter((booking: any) => {
       if (!booking || !booking.date) return false;
       try {
@@ -148,7 +148,7 @@ export function AdminCalendar() {
       startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
-      
+
       if (startOfWeek.getMonth() === endOfWeek.getMonth()) {
         return `${startOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${startOfWeek.getDate()}-${endOfWeek.getDate()}, ${startOfWeek.getFullYear()}`;
       } else {
@@ -266,7 +266,7 @@ export function AdminCalendar() {
           {days.map((day, index) => {
             const dayBookings = getBookingsForDate(day);
             const isToday = day.toDateString() === new Date().toDateString();
-            
+
             return (
               <div key={index} className={`p-2 text-center border-l ${isToday ? 'bg-blue-50 dark:bg-blue-950' : ''}`}>
                 <div className="text-sm text-muted-foreground">
@@ -294,7 +294,7 @@ export function AdminCalendar() {
           {/* Day columns */}
           {days.map((day, dayIndex) => {
             const dayBookings = getBookingsForDate(day);
-            
+
             return (
               <div key={dayIndex} className="border-l">
                 {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(hour => (
@@ -474,7 +474,7 @@ export function AdminCalendar() {
           >
             Today
           </Button>
-          
+
           {/* Debug info - remove in production */}
           {process.env.NODE_ENV === 'development' && bookings && (
             <div className="text-xs text-muted-foreground">
@@ -483,6 +483,33 @@ export function AdminCalendar() {
           )}
         </div>
       </div>
+
+      {/* Status Legend */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-muted-foreground">Appointment Status Legend:</h4>
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded border bg-green-100 border-green-200"></div>
+                <span className="text-sm text-green-800">Confirmed</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded border bg-yellow-100 border-yellow-200"></div>
+                <span className="text-sm text-yellow-800">Pending</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded border bg-blue-100 border-blue-200"></div>
+                <span className="text-sm text-blue-800">Completed</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded border bg-red-100 border-red-200"></div>
+                <span className="text-sm text-red-800">Cancelled</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Calendar Content */}
       <Card>
