@@ -26,6 +26,7 @@ import {
   Download,
   Share
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function PortfolioManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,6 +37,7 @@ export function PortfolioManagement() {
   const [uploadCategory, setUploadCategory] = useState("portfolio");
   const [uploadDescription, setUploadDescription] = useState("");
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: images, isLoading } = useQuery({
     queryKey: ['/api/gallery'],
@@ -51,14 +53,32 @@ export function PortfolioManagement() {
         method: 'POST',
         body: formData,
       });
-      if (!response.ok) throw new Error('Upload failed');
-      return response.json();
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Throw error with the server's error message
+        throw new Error(data.message || data.error || 'Upload failed');
+      }
+      
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toast({
+        title: "Upload Successful",
+        description: data.message || "Images uploaded successfully",
+      });
       queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
       setUploadDialogOpen(false);
       setSelectedFiles([]);
       setUploadDescription("");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Upload Failed",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 

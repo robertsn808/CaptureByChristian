@@ -7,7 +7,8 @@ import { storage } from "./storage";
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
+    fileSize: 50 * 1024 * 1024, // 50MB limit for high-resolution photography
+    files: 10, // Maximum 10 files per upload
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -307,45 +308,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/gallery/upload", upload.array('images', 10), async (req, res) => {
-    try {
-      const files = req.files as Express.Multer.File[];
-      const { category = "portfolio", description = "" } = req.body;
-      
-      if (!files || files.length === 0) {
-        return res.status(400).json({ error: "No files uploaded" });
+  app.post("/api/gallery/upload", (req, res) => {
+    upload.array('images', 10)(req, res, async (err) => {
+      try {
+        // Handle multer errors
+        if (err) {
+          if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+              return res.status(400).json({ 
+                error: "File too large", 
+                message: "Image file size must be less than 50MB. Please compress your image and try again.",
+                details: err.message 
+              });
+            }
+            if (err.code === 'LIMIT_FILE_COUNT') {
+              return res.status(400).json({ 
+                error: "Too many files", 
+                message: "You can upload a maximum of 10 images at once.",
+                details: err.message 
+              });
+            }
+            return res.status(400).json({ 
+              error: "Upload error", 
+              message: err.message 
+            });
+          }
+          return res.status(400).json({ 
+            error: "Invalid file", 
+            message: err.message 
+          });
+        }
+
+        const files = req.files as Express.Multer.File[];
+        const { category = "portfolio", description = "" } = req.body;
+        
+        if (!files || files.length === 0) {
+          return res.status(400).json({ 
+            error: "No files uploaded",
+            message: "Please select at least one image file to upload."
+          });
+        }
+
+        console.log(`Processing ${files.length} uploaded file(s)...`);
+
+        // Create database entries for uploaded images
+        const uploadedImages = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const filename = `${Date.now()}_${i}_${file.originalname}`;
+          
+          // For demo: using base64 data URL since we don't have cloud storage
+          const base64Data = file.buffer.toString('base64');
+          const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
+          
+          try {
+            const imageData = {
+              filename,
+              originalName: file.originalname,
+              url: dataUrl, // Base64 data URL containing the actual image
+              thumbnailUrl: dataUrl, // Using same image as thumbnail for demo
+              category,
+              tags: [category, "uploaded"],
+              featured: false,
+              bookingId: null,
+            };
+            
+            // Save to database
+            const savedImage = await storage.createGalleryImage(imageData);
+            uploadedImages.push(savedImage);
+            
+            console.log(`Saved image ${i + 1}/${files.length}: ${file.originalname}`);
+          } catch (dbError) {
+            console.error(`Failed to save image ${file.originalname}:`, dbError);
+            // Continue with other images even if one fails
+          }
+        }
+
+        if (uploadedImages.length === 0) {
+          return res.status(500).json({ 
+            error: "Save failed", 
+            message: "Failed to save any images to the gallery. Please try again."
+          });
+        }
+
+        console.log(`Successfully uploaded ${uploadedImages.length} image(s) to gallery`);
+        
+        res.json({ 
+          message: `${uploadedImages.length} image(s) uploaded successfully`,
+          images: uploadedImages
+        });
+      } catch (error) {
+        console.error("Error in upload handler:", error);
+        res.status(500).json({ 
+          error: "Upload failed", 
+          message: "An unexpected error occurred while uploading. Please try again.",
+          details: error.message 
+        });
       }
-
-      // In a real implementation, you would:
-      // 1. Upload files to cloud storage (AWS S3, Cloudinary, etc.)
-      // 2. Generate thumbnails
-      // 3. Save metadata to database using storage.createGalleryImage()
-      
-      // For demo purposes, we'll create mock entries with the actual file info
-      const uploadedImages = files.map((file, index) => ({
-        filename: `${Date.now()}_${index}_${file.originalname}`,
-        originalName: file.originalname,
-        url: `https://images.unsplash.com/photo-${1542038784456 + index}?w=800`, // Mock URL
-        category,
-        description,
-        featured: false,
-        bookingId: null,
-        tags: ["portfolio", category],
-        uploadedAt: new Date().toISOString(),
-        size: file.size,
-        mimetype: file.mimetype
-      }));
-
-      console.log(`Uploaded ${files.length} image(s):`, uploadedImages);
-      
-      res.json({ 
-        message: `${files.length} image(s) uploaded successfully`,
-        images: uploadedImages
-      });
-    } catch (error) {
-      console.error("Error uploading images:", error);
-      res.status(500).json({ error: "Failed to upload images" });
-    }
+    });
   });
 
   app.delete("/api/gallery/:id", async (req, res) => {
