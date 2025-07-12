@@ -36,6 +36,8 @@ const adminTabs = [
   { id: "clients", label: "Clients", icon: Users },
   { id: "leads", label: "Leads", icon: Users },
   { id: "gallery", label: "Portfolio", icon: Camera },
+  { id: "portal", label: "Client Portal", icon: Settings },
+  { id: "invoices", label: "Invoices", icon: FileText },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
 
@@ -136,6 +138,254 @@ export default function Admin() {
           {/* Portfolio Tab */}
           <TabsContent value="gallery" className="space-y-6">
             <PortfolioManagement />
+          </TabsContent>
+
+          {/* Client Portal Tab */}
+          <TabsContent value="portal" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Settings className="h-5 w-5 mr-2" />
+                  Client Portal Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid lg:grid-cols-2 gap-6">
+                  {/* Portal Access Management */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Portal Access</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                        <div>
+                          <h4 className="font-medium">Sarah Johnson</h4>
+                          <p className="text-sm text-muted-foreground">Wedding - Nov 15, 2024</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">Gallery Access</Button>
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700">Active</Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                        <div>
+                          <h4 className="font-medium">Mike Chen</h4>
+                          <p className="text-sm text-muted-foreground">Portrait - Dec 2, 2024</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">Send Access</Button>
+                          <Button size="sm" variant="secondary">Pending</Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                        <div>
+                          <h4 className="font-medium">Lisa Wong</h4>
+                          <p className="text-sm text-muted-foreground">Engagement - Oct 20, 2024</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">Revoke Access</Button>
+                          <Button size="sm" className="bg-red-600 hover:bg-red-700">Expired</Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Portal Analytics */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Portal Analytics</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                          <div className="text-2xl font-bold text-blue-600">247</div>
+                          <div className="text-sm text-muted-foreground">Total Logins</div>
+                        </div>
+                        <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                          <div className="text-2xl font-bold text-green-600">89%</div>
+                          <div className="text-sm text-muted-foreground">Access Rate</div>
+                        </div>
+                        <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-600">156</div>
+                          <div className="text-sm text-muted-foreground">Downloads</div>
+                        </div>
+                        <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                          <div className="text-2xl font-bold text-orange-600">4.8</div>
+                          <div className="text-sm text-muted-foreground">Avg Rating</div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <h4 className="font-medium">Recent Activity</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Sarah Johnson logged in</span>
+                            <span className="text-muted-foreground">2 hours ago</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Mike Chen downloaded 12 photos</span>
+                            <span className="text-muted-foreground">5 hours ago</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Lisa Wong left 5-star review</span>
+                            <span className="text-muted-foreground">1 day ago</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Portal Settings */}
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Portal Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <Users className="h-6 w-6 mb-2" />
+                        Bulk Access Management
+                      </Button>
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <Settings className="h-6 w-6 mb-2" />
+                        Portal Customization
+                      </Button>
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <Mail className="h-6 w-6 mb-2" />
+                        Email Templates
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Invoice Generator Tab */}
+          <TabsContent value="invoices" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <FileText className="h-5 w-5 mr-2" />
+                  Invoice & Contract Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid lg:grid-cols-3 gap-6">
+                  {/* Quick Actions */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Button className="w-full bg-bronze hover:bg-bronze/90">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Generate New Invoice
+                      </Button>
+                      <Button variant="outline" className="w-full">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Create Contract
+                      </Button>
+                      <Button variant="outline" className="w-full">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Template
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Recent Invoices */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Recent Invoices</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <div className="font-medium">#INV-2024-089</div>
+                          <div className="text-sm text-muted-foreground">Sarah Johnson - $2,500</div>
+                        </div>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700">Paid</Button>
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <div className="font-medium">#INV-2024-090</div>
+                          <div className="text-sm text-muted-foreground">Mike Chen - $1,800</div>
+                        </div>
+                        <Button size="sm" variant="secondary">Pending</Button>
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <div className="font-medium">#INV-2024-091</div>
+                          <div className="text-sm text-muted-foreground">Lisa Wong - $3,200</div>
+                        </div>
+                        <Button size="sm" className="bg-red-600 hover:bg-red-700">Overdue</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Revenue Summary */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Revenue Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                        <div className="text-2xl font-bold text-green-600">$24,650</div>
+                        <div className="text-sm text-muted-foreground">This Month</div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="text-center p-2 bg-muted rounded">
+                          <div className="font-medium">$18,400</div>
+                          <div className="text-xs text-muted-foreground">Paid</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted rounded">
+                          <div className="font-medium">$6,250</div>
+                          <div className="text-xs text-muted-foreground">Pending</div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Payment Rate</span>
+                          <span className="font-medium">74.6%</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Avg. Invoice</span>
+                          <span className="font-medium">$2,188</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Invoice Management Tools */}
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Management Tools</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-4 gap-4">
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <FileText className="h-6 w-6 mb-2" />
+                        Template Editor
+                      </Button>
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <Mail className="h-6 w-6 mb-2" />
+                        Payment Reminders
+                      </Button>
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <BarChart3 className="h-6 w-6 mb-2" />
+                        Payment Analytics
+                      </Button>
+                      <Button variant="outline" className="h-20 flex flex-col">
+                        <Settings className="h-6 w-6 mb-2" />
+                        Tax Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Analytics Tab */}
