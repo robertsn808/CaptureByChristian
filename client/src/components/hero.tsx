@@ -31,9 +31,9 @@ export function Hero() {
         </video>
       </div>
 
-      {/* Dynamic Overlay with Animated Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-black/70 animate-gradient-shift"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent"></div>
+      {/* Enhanced Overlay with Better Contrast */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/50 to-black/80 animate-gradient-shift"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-black/30 to-black/40"></div>
 
       {/* Floating Elements */}
       <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-bronze/20 to-teal/20 rounded-full blur-xl animate-float"></div>
@@ -51,36 +51,38 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Enhanced Title with Text Shadow and Glow */}
-          <h1 className="font-playfair text-6xl md:text-8xl font-bold mb-8 leading-tight hero-title-glow">
-            <span className="bg-gradient-to-r from-white via-cream to-white bg-clip-text text-transparent">
+          {/* Enhanced Title with Stronger Shadows and Backgrounds */}
+          <h1 className="font-playfair text-6xl md:text-8xl font-bold mb-8 leading-tight">
+            <span className="text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] filter">
               Licensed to Fly
             </span>
             <br />
-            <span className="text-5xl md:text-7xl bg-gradient-to-r from-bronze via-sandstone to-teal bg-clip-text text-transparent animate-shimmer">
+            <span className="text-5xl md:text-7xl bg-gradient-to-r from-bronze via-sandstone to-teal bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] animate-shimmer">
               Trained to Thrill
             </span>
           </h1>
 
-          {/* Enhanced Description with Better Typography */}
+          {/* Enhanced Description with Background and Better Typography */}
           <div className="mb-10">
-            <p className="text-xl md:text-2xl mb-4 max-w-4xl mx-auto font-light text-white/95 leading-relaxed">
-              FAA-Certified Aerial Photography — capturing Hawaii's beauty from every angle, 
-              <span className="text-bronze font-medium"> legally and spectacularly</span>
-            </p>
-            <div className="flex justify-center items-center space-x-4 text-sm text-white/70">
-              <span className="flex items-center">
-                <div className="w-2 h-2 bg-bronze rounded-full mr-2"></div>
-                10+ Years Experience
-              </span>
-              <span className="flex items-center">
-                <div className="w-2 h-2 bg-teal rounded-full mr-2"></div>
-                AI-Enhanced Processing
-              </span>
-              <span className="flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                Fully Insured
-              </span>
+            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 mb-6 max-w-5xl mx-auto">
+              <p className="text-xl md:text-2xl mb-4 font-light text-white leading-relaxed drop-shadow-lg">
+                FAA-Certified Aerial Photography — capturing Hawaii's beauty from every angle, 
+                <span className="text-bronze font-medium"> legally and spectacularly</span>
+              </p>
+              <div className="flex justify-center items-center space-x-4 text-sm text-white/90">
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-bronze rounded-full mr-2"></div>
+                  10+ Years Experience
+                </span>
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-teal rounded-full mr-2"></div>
+                  AI-Enhanced Processing
+                </span>
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                  Fully Insured
+                </span>
+              </div>
             </div>
           </div>
 
@@ -104,21 +106,23 @@ export function Hero() {
             </Button>
           </div>
 
-          {/* Social Proof */}
-          <div className="mt-12 flex justify-center items-center space-x-8 text-white/60">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white">500+</div>
-              <div className="text-sm">Happy Clients</div>
-            </div>
-            <div className="w-px h-8 bg-white/30"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white">15K+</div>
-              <div className="text-sm">Photos Captured</div>
-            </div>
-            <div className="w-px h-8 bg-white/30"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white">★★★★★</div>
-              <div className="text-sm">Client Reviews</div>
+          {/* Social Proof with Background */}
+          <div className="mt-12 bg-black/25 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto">
+            <div className="flex justify-center items-center space-x-8 text-white">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white drop-shadow-lg">500+</div>
+                <div className="text-sm text-white/90">Happy Clients</div>
+              </div>
+              <div className="w-px h-8 bg-white/40"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white drop-shadow-lg">15K+</div>
+                <div className="text-sm text-white/90">Photos Captured</div>
+              </div>
+              <div className="w-px h-8 bg-white/40"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white drop-shadow-lg">★★★★★</div>
+                <div className="text-sm text-white/90">Client Reviews</div>
+              </div>
             </div>
           </div>
         </div>
