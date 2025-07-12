@@ -31,8 +31,8 @@ export interface InvoiceData {
   };
 }
 
-const INVOICE_HTML_TEMPLATE = `
-<!DOCTYPE html>
+const INVOICE_HTML_TEMPLATE = 
+`<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -199,7 +199,7 @@ const INVOICE_HTML_TEMPLATE = `
         
         <tr class="subtotal-row">
           <td colspan="3">Subtotal</td>
-          <td class="right">${{subtotal}}</td>
+          <td class="right">\${{subtotal}}</td>
         </tr>
         
         {{taxRow}}
@@ -208,7 +208,7 @@ const INVOICE_HTML_TEMPLATE = `
         
         <tr class="total-row">
           <td colspan="3"><strong>TOTAL</strong></td>
-          <td class="right"><strong>${{total}}</strong></td>
+          <td class="right"><strong>\${{total}}</strong></td>
         </tr>
       </tbody>
     </table>
@@ -239,15 +239,15 @@ export function generateInvoiceHTML(data: InvoiceData): string {
   let html = INVOICE_HTML_TEMPLATE;
 
   // Replace basic fields
-  html = html.replace(/{{invoiceNumber}}/g, data.invoiceNumber);
-  html = html.replace(/{{invoiceDate}}/g, data.invoiceDate);
-  html = html.replace(/{{dueDate}}/g, data.dueDate);
-  html = html.replace(/{{clientName}}/g, data.clientName);
-  html = html.replace(/{{clientEmail}}/g, data.clientEmail);
-  html = html.replace(/{{clientPhone}}/g, data.clientPhone || '');
-  html = html.replace(/{{clientAddress}}/g, data.clientAddress || '');
-  html = html.replace(/{{subtotal}}/g, data.subtotal.toFixed(2));
-  html = html.replace(/{{total}}/g, data.total.toFixed(2));
+  html = html.replace(/\{\{invoiceNumber\}\}/g, data.invoiceNumber);
+  html = html.replace(/\{\{invoiceDate\}\}/g, data.invoiceDate);
+  html = html.replace(/\{\{dueDate\}\}/g, data.dueDate);
+  html = html.replace(/\{\{clientName\}\}/g, data.clientName);
+  html = html.replace(/\{\{clientEmail\}\}/g, data.clientEmail);
+  html = html.replace(/\{\{clientPhone\}\}/g, data.clientPhone || '');
+  html = html.replace(/\{\{clientAddress\}\}/g, data.clientAddress || '');
+  html = html.replace(/\{\{subtotal\}\}/g, data.subtotal.toFixed(2));
+  html = html.replace(/\{\{total\}\}/g, data.total.toFixed(2));
 
   // Generate items HTML
   const itemsHTML = data.items.map(item => `
@@ -258,7 +258,7 @@ export function generateInvoiceHTML(data: InvoiceData): string {
       <td class="right">$${item.amount.toFixed(2)}</td>
     </tr>
   `).join('');
-  html = html.replace(/{{items}}/g, itemsHTML);
+  html = html.replace(/\{\{items\}\}/g, itemsHTML);
 
   // Handle tax row
   const taxRow = data.tax ? `
@@ -267,7 +267,7 @@ export function generateInvoiceHTML(data: InvoiceData): string {
       <td class="right">$${data.tax.toFixed(2)}</td>
     </tr>
   ` : '';
-  html = html.replace(/{{taxRow}}/g, taxRow);
+  html = html.replace(/\{\{taxRow\}\}/g, taxRow);
 
   // Handle discount row
   const discountRow = data.discount ? `
@@ -276,7 +276,7 @@ export function generateInvoiceHTML(data: InvoiceData): string {
       <td class="right">-$${data.discount.toFixed(2)}</td>
     </tr>
   ` : '';
-  html = html.replace(/{{discountRow}}/g, discountRow);
+  html = html.replace(/\{\{discountRow\}\}/g, discountRow);
 
   // Handle booking details
   const bookingDetailsSection = data.bookingDetails ? `
@@ -287,7 +287,7 @@ export function generateInvoiceHTML(data: InvoiceData): string {
       Location: ${data.bookingDetails.location}
     </div>
   ` : '';
-  html = html.replace(/{{bookingDetailsSection}}/g, bookingDetailsSection);
+  html = html.replace(/\{\{bookingDetailsSection\}\}/g, bookingDetailsSection);
 
   // Handle notes
   const notesSection = data.notes ? `
@@ -296,7 +296,7 @@ export function generateInvoiceHTML(data: InvoiceData): string {
       ${data.notes}
     </div>
   ` : '';
-  html = html.replace(/{{notesSection}}/g, notesSection);
+  html = html.replace(/\{\{notesSection\}\}/g, notesSection);
 
   return html;
 }

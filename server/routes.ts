@@ -603,6 +603,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Invoices API Routes =====
+  app.get("/api/invoices", async (req, res) => {
+    try {
+      // For now, return empty array since we don't have any invoices created yet
+      // In a real app, this would fetch from the database
+      res.json([]);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ error: "Failed to fetch invoices" });
+    }
+  });
+
   // ===== Invoice PDF & Email Routes =====
   app.post("/api/invoices/pdf/:invoiceNumber", async (req, res) => {
     try {
@@ -619,10 +631,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         dueDate: invoiceData.dueDate,
         clientName: invoiceData.clientName,
         clientEmail: invoiceData.clientEmail,
-        items: invoiceData.items,
-        subtotal: invoiceData.amount,
-        total: invoiceData.amount,
-        notes: invoiceData.notes
+        items: invoiceData.items || [],
+        subtotal: invoiceData.amount || 0,
+        total: invoiceData.amount || 0,
+        notes: invoiceData.notes || '',
+        tax: 0,
+        taxRate: 0,
+        discount: 0
       };
       
       const html = generateInvoiceHTML(pdfData);

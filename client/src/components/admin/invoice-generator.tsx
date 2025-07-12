@@ -84,56 +84,16 @@ export function InvoiceGenerator() {
     queryFn: fetchClients,
   });
 
-  // Mock invoices - in real app this would come from database
-  const mockInvoices: Invoice[] = [
-    {
-      id: "INV-2024-089",
-      bookingId: 1,
-      clientName: "Sarah Johnson",
-      clientEmail: "sarah@email.com",
-      invoiceNumber: "INV-2024-089",
-      amount: 2500,
-      status: "paid",
-      dueDate: "2024-11-30",
-      createdDate: "2024-11-01",
-      items: [
-        { description: "Wedding Photography Session", quantity: 1, rate: 2000, amount: 2000 },
-        { description: "Photo Editing & Processing", quantity: 1, rate: 500, amount: 500 }
-      ],
-      notes: "Wedding at Kualoa Ranch"
+  // Fetch real invoices from database
+  const { data: invoicesData } = useQuery({
+    queryKey: ['/api/invoices'],
+    queryFn: async () => {
+      const response = await fetch('/api/invoices');
+      return response.json();
     },
-    {
-      id: "INV-2024-090",
-      bookingId: 2,
-      clientName: "Mike Chen",
-      clientEmail: "mike@email.com",
-      invoiceNumber: "INV-2024-090",
-      amount: 1800,
-      status: "pending",
-      dueDate: "2024-12-15",
-      createdDate: "2024-11-15",
-      items: [
-        { description: "Portrait Photography Session", quantity: 1, rate: 1500, amount: 1500 },
-        { description: "Digital Gallery Access", quantity: 1, rate: 300, amount: 300 }
-      ]
-    },
-    {
-      id: "INV-2024-091",
-      bookingId: 3,
-      clientName: "Lisa Wong",
-      clientEmail: "lisa@email.com",
-      invoiceNumber: "INV-2024-091",
-      amount: 3200,
-      status: "overdue",
-      dueDate: "2024-11-15",
-      createdDate: "2024-10-15",
-      items: [
-        { description: "Aerial Photography Session", quantity: 1, rate: 2800, amount: 2800 },
-        { description: "Additional Editing", quantity: 1, rate: 400, amount: 400 }
-      ],
-      notes: "Real estate photography for luxury property"
-    }
-  ];
+  });
+
+  const invoices: Invoice[] = invoicesData || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -585,8 +545,15 @@ export function InvoiceGenerator() {
           <CardTitle>Recent Invoices</CardTitle>
         </CardHeader>
         <CardContent>
+          {invoices.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p className="text-lg font-medium">No invoices yet</p>
+              <p className="text-sm">Create your first invoice using the form above</p>
+            </div>
+          ) : (
           <div className="space-y-4">
-            {mockInvoices.map((invoice) => (
+            {invoices.map((invoice) => (
               <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
                   <div>
@@ -635,6 +602,7 @@ export function InvoiceGenerator() {
               </div>
             ))}
           </div>
+          )}
         </CardContent>
       </Card>
 
