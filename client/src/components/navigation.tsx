@@ -24,7 +24,6 @@ export function Navigation() {
     { href: "#portfolio", label: "Portfolio" },
     { href: "#services", label: "Services" },
     { href: "#about", label: "About" },
-    { href: "/client-portal", label: "Client Portal" },
   ];
 
   return (
