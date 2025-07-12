@@ -366,8 +366,8 @@ export default function Home() {
               <p className="text-white/70 mb-4">
                 Hawaii's premier photographer specializing in weddings, portraits, and aerial photography.
               </p>
-              <div className="text-sm text-white/60">
-                FAA Certified • Fully Insured • AI-Enhanced
+              <div className="text-sm text-white/60 text-left">
+                FAA Certified • AI-Enhanced
               </div>
             </div>
             
