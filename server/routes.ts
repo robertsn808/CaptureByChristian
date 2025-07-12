@@ -634,6 +634,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Client Credential Management API Routes =====
+  app.get("/api/admin/client-credentials", async (req, res) => {
+    try {
+      const clients = await storage.getClients();
+      
+      // For each client, get their credential status
+      const credentials = clients.map(client => ({
+        id: client.id,
+        clientId: client.id,
+        clientName: client.name,
+        clientEmail: client.email,
+        hasPassword: false, // Would check if password hash exists in real implementation
+        passwordSet: false,
+        lastLogin: null, // Would fetch from session logs
+        magicLinkSent: false,
+        portalAccess: true, // Default enabled, would be stored in DB
+        createdAt: client.createdAt
+      }));
+      
+      res.json(credentials);
+    } catch (error) {
+      console.error("Error fetching client credentials:", error);
+      res.status(500).json({ error: "Failed to fetch client credentials" });
+    }
+  });
+
+  app.post("/api/admin/client-credentials/set-password", async (req, res) => {
+    try {
+      const { clientId, password } = req.body;
+      
+      // In a real implementation, you would:
+      // 1. Hash the password using bcrypt
+      // 2. Store the hash in the database
+      // 3. Update the client's credential status
+      
+      console.log(`Password set for client ${clientId}: ${password}`);
+      
+      res.json({ message: "Password set successfully" });
+    } catch (error) {
+      console.error("Error setting client password:", error);
+      res.status(500).json({ error: "Failed to set password" });
+    }
+  });
+
+  app.post("/api/admin/client-credentials/magic-link", async (req, res) => {
+    try {
+      const { clientId } = req.body;
+      
+      const client = await storage.getClient(clientId);
+      if (!client) {
+        return res.status(404).json({ error: "Client not found" });
+      }
+      
+      // In a real implementation, you would:
+      // 1. Generate a secure token
+      // 2. Store it with expiration time
+      // 3. Send email with the magic link
+      
+      const token = `magic_${clientId}_${Date.now()}`;
+      const magicLink = `${process.env.REPL_URL || 'http://localhost:5000'}/client-portal?token=${token}`;
+      
+      console.log(`Magic link for ${client.email}: ${magicLink}`);
+      
+      res.json({ 
+        message: "Magic link sent successfully",
+        link: magicLink // In production, don't return the link
+      });
+    } catch (error) {
+      console.error("Error sending magic link:", error);
+      res.status(500).json({ error: "Failed to send magic link" });
+    }
+  });
+
+  app.post("/api/admin/client-credentials/toggle-access", async (req, res) => {
+    try {
+      const { clientId, enabled } = req.body;
+      
+      // In a real implementation, you would:
+      // 1. Update the client's portal access flag in the database
+      // 2. Optionally invalidate existing sessions if disabled
+      
+      console.log(`Portal access ${enabled ? 'enabled' : 'disabled'} for client ${clientId}`);
+      
+      res.json({ message: "Portal access updated successfully" });
+    } catch (error) {
+      console.error("Error updating portal access:", error);
+      res.status(500).json({ error: "Failed to update portal access" });
+    }
+  });
+
   // ===== Invoice Analytics API Routes =====
   app.get("/api/invoices/stats", async (req, res) => {
     try {

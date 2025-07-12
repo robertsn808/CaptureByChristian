@@ -11,6 +11,7 @@ import { AdvancedAIChat } from "@/components/admin/advanced-ai-chat";
 import { PredictiveIntelligence } from "@/components/admin/predictive-intelligence";
 import { InvoiceGenerator } from "@/components/admin/invoice-generator";
 import { AdminInbox } from "@/components/admin/inbox";
+import { ClientCredentials } from "@/components/admin/client-credentials";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +39,8 @@ import {
   Target,
   TrendingUp,
   Zap,
-  LogOut
+  LogOut,
+  Key
 } from "lucide-react";
 
 const menuSections = [
@@ -73,6 +75,8 @@ const menuSections = [
     items: [
       { id: "gallery", label: "Portfolio Management", icon: Camera },
       { id: "portal", label: "Client Portal", icon: Settings },
+      { id: "credentials", label: "Client Credentials", icon: Key },
+      { id: "credentials", label: "Client Credentials", icon: Key },
     ]
   }
 ];
@@ -397,6 +401,8 @@ export default function Admin() {
               </CardContent>
             </Card>
         );
+      case "credentials":
+        return <ClientCredentials />;
       default:
         return <AdminDashboard />;
     }
