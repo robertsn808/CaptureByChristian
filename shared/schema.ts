@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, json, date } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -19,6 +19,18 @@ export const clients = pgTable("clients", {
   phone: text("phone"),
   notes: text("notes"),
   tags: text("tags").array(),
+  status: text("status").default("lead").notNull(), // lead, qualified, booked, repeat, archived
+  leadSource: text("lead_source"), // instagram, website, referral, tiktok, google
+  leadScore: integer("lead_score").default(0),
+  instagramHandle: text("instagram_handle"),
+  anniversaryDate: text("anniversary_date"),
+  preferredCommunication: text("preferred_communication").default("email"), // email, text, phone
+  timezone: text("timezone").default("America/New_York"),
+  lastContact: timestamp("last_contact"),
+  nextFollowUp: timestamp("next_follow_up"),
+  lifetimeValue: decimal("lifetime_value", { precision: 10, scale: 2 }).default("0.00"),
+  referralSource: text("referral_source"),
+  customFields: json("custom_fields").default({}),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -106,6 +118,104 @@ export const aiChats = pgTable("ai_chats", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Comprehensive CRM Enhancement Tables
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id),
+  source: text("source").notNull(),
+  medium: text("medium"),
+  campaign: text("campaign"),
+  formData: json("form_data"),
+  score: integer("score").default(0),
+  temperature: text("temperature").default("cold"),
+  qualification: text("qualification"),
+  assignedTo: integer("assigned_to").references(() => users.id),
+  convertedAt: timestamp("converted_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const communicationLog = pgTable("communication_log", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  userId: integer("user_id").references(() => users.id),
+  type: text("type").notNull(),
+  direction: text("direction").notNull(),
+  subject: text("subject"),
+  content: text("content"),
+  status: text("status"),
+  metadata: json("metadata"),
+  scheduledFor: timestamp("scheduled_for"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const automationSequences = pgTable("automation_sequences", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  trigger: text("trigger").notNull(),
+  active: boolean("active").default(true),
+  steps: json("steps").$type<Array<{delay: number, type: string, template: string}>>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const questionnaires = pgTable("questionnaires", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  serviceType: text("service_type"),
+  questions: json("questions").$type<Array<{id: string, type: string, question: string, required: boolean}>>(),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const clientPortalSessions = pgTable("client_portal_sessions", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  sessionToken: text("session_token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  cost: decimal("cost", { precision: 10, scale: 2 }),
+  sku: text("sku"),
+  variants: json("variants").$type<Array<{name: string, price: number}>>(),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  galleryId: integer("gallery_id").references(() => galleryImages.id),
+  items: json("items").$type<Array<{productId: number, quantity: number, price: number}>>(),
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  status: text("status").default("pending"),
+  shippingAddress: json("shipping_address"),
+  trackingNumber: text("tracking_number"),
+  fulfilledAt: timestamp("fulfilled_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const teamMembers = pgTable("team_members", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  role: text("role").notNull(),
+  permissions: json("permissions").$type<Array<string>>(),
+  hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const clientsRelations = relations(clients, ({ many }) => ({
   bookings: many(bookings),
@@ -189,6 +299,46 @@ export const insertAiChatSchema = createInsertSchema(aiChats).omit({
   updatedAt: true,
 });
 
+export const insertLeadSchema = createInsertSchema(leads).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCommunicationLogSchema = createInsertSchema(communicationLog).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAutomationSequenceSchema = createInsertSchema(automationSequences).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertQuestionnaireSchema = createInsertSchema(questionnaires).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertClientPortalSessionSchema = createInsertSchema(clientPortalSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -213,3 +363,27 @@ export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
 
 export type AiChat = typeof aiChats.$inferSelect;
 export type InsertAiChat = z.infer<typeof insertAiChatSchema>;
+
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = z.infer<typeof insertLeadSchema>;
+
+export type CommunicationLog = typeof communicationLog.$inferSelect;
+export type InsertCommunicationLog = z.infer<typeof insertCommunicationLogSchema>;
+
+export type AutomationSequence = typeof automationSequences.$inferSelect;
+export type InsertAutomationSequence = z.infer<typeof insertAutomationSequenceSchema>;
+
+export type Questionnaire = typeof questionnaires.$inferSelect;
+export type InsertQuestionnaire = z.infer<typeof insertQuestionnaireSchema>;
+
+export type ClientPortalSession = typeof clientPortalSessions.$inferSelect;
+export type InsertClientPortalSession = z.infer<typeof insertClientPortalSessionSchema>;
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
+
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;

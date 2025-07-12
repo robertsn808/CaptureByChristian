@@ -4,6 +4,12 @@ import { AdminDashboard } from "@/components/admin/dashboard";
 import { AdminCalendar } from "@/components/admin/calendar";
 import { ClientManagement } from "@/components/admin/client-management";
 import { PortfolioManagement } from "@/components/admin/portfolio-management";
+import { LeadManagement } from "@/components/admin/lead-management";
+import { AutomationWorkflows } from "@/components/admin/automation-workflows";
+import { ClientPortal } from "@/components/admin/client-portal";
+import { ProductSales } from "@/components/admin/product-sales";
+import { AdvancedAnalytics } from "@/components/admin/advanced-analytics";
+import { QuestionnaireSystem } from "@/components/admin/questionnaire-system";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,7 +29,12 @@ const adminTabs = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "calendar", label: "Calendar", icon: Calendar },
   { id: "clients", label: "Clients", icon: Users },
-  { id: "gallery", label: "Gallery AI", icon: Camera },
+  { id: "leads", label: "Leads", icon: Users },
+  { id: "gallery", label: "Portfolio", icon: Camera },
+  { id: "automation", label: "Automation", icon: Brain },
+  { id: "products", label: "Products", icon: Upload },
+  { id: "portal", label: "Portal", icon: Settings },
+  { id: "forms", label: "Forms", icon: FileText },
   { id: "contracts", label: "Contracts", icon: FileText },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
@@ -61,7 +72,7 @@ export default function Admin() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 xl:grid-cols-10 gap-2 h-auto p-2">
             {adminTabs.map((tab) => (
               <TabsTrigger 
                 key={tab.id} 
@@ -89,9 +100,34 @@ export default function Admin() {
             <ClientManagement />
           </TabsContent>
 
-          {/* Gallery AI Tab */}
+          {/* Leads Tab */}
+          <TabsContent value="leads" className="space-y-6">
+            <LeadManagement />
+          </TabsContent>
+
+          {/* Portfolio Tab */}
           <TabsContent value="gallery" className="space-y-6">
             <PortfolioManagement />
+          </TabsContent>
+
+          {/* Automation Tab */}
+          <TabsContent value="automation" className="space-y-6">
+            <AutomationWorkflows />
+          </TabsContent>
+
+          {/* Products Tab */}
+          <TabsContent value="products" className="space-y-6">
+            <ProductSales />
+          </TabsContent>
+
+          {/* Client Portal Tab */}
+          <TabsContent value="portal" className="space-y-6">
+            <ClientPortal />
+          </TabsContent>
+
+          {/* Forms Tab */}
+          <TabsContent value="forms" className="space-y-6">
+            <QuestionnaireSystem />
           </TabsContent>
 
           {/* Contracts Tab */}
@@ -131,41 +167,7 @@ export default function Admin() {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Business Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <BarChart3 className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">Advanced Analytics Dashboard</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Track revenue, booking trends, client satisfaction, and performance metrics
-                  </p>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-bronze">89%</div>
-                      <div className="text-sm text-muted-foreground">Client Satisfaction</div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-bronze">1,247</div>
-                      <div className="text-sm text-muted-foreground">Photos Processed</div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-bronze">23</div>
-                      <div className="text-sm text-muted-foreground">Bookings This Month</div>
-                    </div>
-                    <div className="p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-bronze">$12,450</div>
-                      <div className="text-sm text-muted-foreground">Monthly Revenue</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <AdvancedAnalytics />
           </TabsContent>
         </Tabs>
       </div>
