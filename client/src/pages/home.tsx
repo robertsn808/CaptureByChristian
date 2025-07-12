@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/hero";
 import { Portfolio } from "@/components/portfolio";
 import { Services } from "@/components/services";
+import { ContactForm } from "@/components/contact-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -199,6 +200,16 @@ export default function Home() {
               <h3 className="font-bold text-xl mb-2">Based In</h3>
               <p className="text-white/70">Honolulu, Hawaii</p>
             </div>
+          </div>
+          
+          {/* Contact Form */}
+          <div className="text-center mb-12">
+            <ContactForm trigger={
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-charcoal">
+                <Mail className="mr-2 h-5 w-5" />
+                Send Us a Message
+              </Button>
+            } />
           </div>
           
           {/* Social Links */}

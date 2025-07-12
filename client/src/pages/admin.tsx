@@ -11,6 +11,7 @@ import { RealTimeAnalytics } from "@/components/admin/real-time-analytics";
 import { AdvancedAIChat } from "@/components/admin/advanced-ai-chat";
 import { PredictiveIntelligence } from "@/components/admin/predictive-intelligence";
 import { InvoiceGenerator } from "@/components/admin/invoice-generator";
+import { AdminInbox } from "@/components/admin/inbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,6 +39,7 @@ const adminTabs = [
   { id: "leads", label: "Leads", icon: Users },
   { id: "gallery", label: "Portfolio", icon: Camera },
   { id: "portal", label: "Client Portal", icon: Settings },
+  { id: "inbox", label: "Inbox", icon: Mail },
   { id: "invoices", label: "Invoices", icon: FileText },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
@@ -139,6 +141,11 @@ export default function Admin() {
           {/* Portfolio Tab */}
           <TabsContent value="gallery" className="space-y-6">
             <PortfolioManagement />
+          </TabsContent>
+
+          {/* Inbox Tab */}
+          <TabsContent value="inbox" className="space-y-6">
+            <AdminInbox />
           </TabsContent>
 
           {/* Client Portal Tab */}

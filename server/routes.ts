@@ -603,6 +603,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Contact Messages API Routes =====
+  app.get("/api/contact-messages", async (req, res) => {
+    try {
+      const messages = await storage.getContactMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching contact messages:", error);
+      res.status(500).json({ error: "Failed to fetch contact messages" });
+    }
+  });
+
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, phone, subject, message, priority, source } = req.body;
+      
+      const contactMessage = await storage.createContactMessage({
+        name,
+        email,
+        phone,
+        subject,
+        message,
+        priority: priority || "normal",
+        source: source || "website",
+        status: "unread",
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+      });
+      
+      res.json(contactMessage);
+    } catch (error) {
+      console.error("Error creating contact message:", error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  app.patch("/api/contact-messages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const message = await storage.updateContactMessage(parseInt(id), updates);
+      res.json(message);
+    } catch (error) {
+      console.error("Error updating contact message:", error);
+      res.status(500).json({ error: "Failed to update message" });
+    }
+  });
+
+  app.delete("/api/contact-messages/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteContactMessage(parseInt(id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting contact message:", error);
+      res.status(500).json({ error: "Failed to delete message" });
+    }
+  });
+
   // ===== Invoices API Routes =====
   app.get("/api/invoices", async (req, res) => {
     try {
