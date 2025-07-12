@@ -7,6 +7,7 @@ import { ContactForm } from "@/components/contact-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Award, 
   Shield, 
@@ -22,6 +23,11 @@ import {
 import { Link } from "wouter";
 
 export default function Home() {
+  // Fetch profile data for dynamic content
+  const { data: profile } = useQuery({
+    queryKey: ["/api/profile"],
+  });
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -192,16 +198,16 @@ export default function Home() {
                   </div>
                 </div>
                 <h2 className="font-playfair text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-charcoal via-bronze to-charcoal bg-clip-text text-transparent">
-                  About Christian
+                  About {profile?.name?.split(' ')[0] || 'Christian'}
                 </h2>
               </div>
               
               <div className="space-y-6 mb-10">
                 <p className="text-xl text-muted-foreground leading-relaxed">
-                  Born and raised in Hawaii, Christian has spent over a decade mastering the art of photography across the Hawaiian Islands. His passion for capturing life's most precious moments stems from a deep connection to the islands' natural beauty and cultural richness.
+                  {profile?.bio || "Born and raised in Hawaii, Christian has spent over a decade mastering the art of photography across the Hawaiian Islands. His passion for capturing life's most precious moments stems from a deep connection to the islands' natural beauty and cultural richness."}
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  As an FAA-certified drone pilot and AI-enhanced photographer, Christian brings both traditional artistry and cutting-edge technology to every shoot. His work has been featured in Pacific Weddings, Hawaii Magazine, and has garnered international recognition across social media platforms worldwide.
+                  As an FAA-certified drone pilot and AI-enhanced photographer, {profile?.name?.split(' ')[0] || 'Christian'} brings both traditional artistry and cutting-edge technology to every shoot. His work has been featured in Pacific Weddings, Hawaii Magazine, and has garnered international recognition across social media platforms worldwide.
                 </p>
               </div>
               
@@ -282,8 +288,8 @@ export default function Home() {
             
             <div className="relative">
               <img 
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=1000" 
-                alt="Professional photographer portrait"
+                src={profile?.headshot || "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=1000"} 
+                alt={`${profile?.name || 'Professional photographer'} portrait`}
                 className="rounded-xl shadow-2xl w-full"
               />
               <div className="absolute -bottom-6 -left-6 bg-bronze text-white p-6 rounded-lg shadow-lg">
@@ -311,21 +317,21 @@ export default function Home() {
                 <Phone className="h-8 w-8" />
               </div>
               <h3 className="font-bold text-xl mb-2">Call</h3>
-              <p className="text-white/70">(808) 555-PHOTO</p>
+              <p className="text-white/70">{profile?.phone || "(808) 555-PHOTO"}</p>
             </div>
             <div className="text-center">
               <div className="bg-bronze rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Mail className="h-8 w-8" />
               </div>
               <h3 className="font-bold text-xl mb-2">Email</h3>
-              <p className="text-white/70">christian@picaso.photography</p>
+              <p className="text-white/70">{profile?.email || "christian@picaso.photography"}</p>
             </div>
             <div className="text-center">
               <div className="bg-bronze rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <MapPin className="h-8 w-8" />
               </div>
               <h3 className="font-bold text-xl mb-2">Based In</h3>
-              <p className="text-white/70">Honolulu, Hawaii</p>
+              <p className="text-white/70">{profile?.address || "Honolulu, Hawaii"}</p>
             </div>
           </div>
           
@@ -361,10 +367,10 @@ export default function Home() {
             <div>
               <h3 className="font-playfair text-2xl font-bold mb-4 flex items-center">
                 <Camera className="h-6 w-6 mr-2 text-bronze" />
-                Christian Picaso
+                {profile?.name || "Christian Picaso"}
               </h3>
               <p className="text-white/70 mb-4">
-                Hawaii's premier photographer specializing in weddings, portraits, and aerial photography.
+                {profile?.title || "Hawaii's premier photographer specializing in weddings, portraits, and aerial photography."}
               </p>
               <div className="text-sm text-white/60 text-left">
                 FAA Certified • AI-Enhanced
@@ -404,7 +410,7 @@ export default function Home() {
           
           <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60 relative">
             <p className="mb-2">
-              &copy; 2024 Christian Picaso Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
+              &copy; 2024 {profile?.name || "Christian Picaso"} Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
             </p>
             
             {/* Admin Access Options */}
