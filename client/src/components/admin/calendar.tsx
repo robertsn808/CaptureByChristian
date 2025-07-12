@@ -38,7 +38,7 @@ export function AdminCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: bookings, isLoading } = useQuery({
+  const { data: bookings = [], isLoading } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
   });
@@ -99,11 +99,19 @@ export function AdminCalendar() {
   };
 
   const getBookingsForDate = (date: Date) => {
-    if (!bookings) return [];
+    if (!bookings || !Array.isArray(bookings)) return [];
     
     return bookings.filter((booking: any) => {
-      const bookingDate = new Date(booking.date);
-      return bookingDate.toDateString() === date.toDateString();
+      if (!booking || !booking.date) return false;
+      try {
+        const bookingDate = new Date(booking.date);
+        // Ensure both dates are valid
+        if (isNaN(bookingDate.getTime()) || isNaN(date.getTime())) return false;
+        return bookingDate.toDateString() === date.toDateString();
+      } catch (error) {
+        console.error('Error parsing booking date:', booking.date, error);
+        return false;
+      }
     });
   };
 
@@ -158,18 +166,23 @@ export function AdminCalendar() {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 35 }).map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded"></div>
-              ))}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Calendar</h2>
+        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-muted rounded w-1/3"></div>
+              <div className="grid grid-cols-7 gap-2">
+                {Array.from({ length: 35 }).map((_, i) => (
+                  <div key={i} className="h-20 bg-muted rounded"></div>
+                ))}
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -207,17 +220,29 @@ export function AdminCalendar() {
                 {dayBookings.slice(0, 2).map((booking: any) => (
                   <div
                     key={booking.id}
-                    className={`text-xs p-1 rounded border cursor-pointer ${getStatusColor(booking.status)}`}
+                    className={`text-xs p-1 rounded border cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(booking.status)}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedBooking(booking);
                     }}
+                    title={`${booking.client?.name || 'Unknown Client'} - ${booking.service?.name || 'Service'}`}
                   >
-                    {formatTime(booking.date)} - {booking.client.name}
+                    <div className="font-medium truncate">
+                      {formatTime(booking.date)}
+                    </div>
+                    <div className="truncate">
+                      {booking.client?.name || 'Unknown Client'}
+                    </div>
                   </div>
                 ))}
                 {dayBookings.length > 2 && (
-                  <div className="text-xs text-muted-foreground">
+                  <div 
+                    className="text-xs text-muted-foreground cursor-pointer hover:text-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedDate(day);
+                    }}
+                  >
                     +{dayBookings.length - 2} more
                   </div>
                 )}
@@ -275,19 +300,28 @@ export function AdminCalendar() {
                 {[9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(hour => (
                   <div key={hour} className="h-16 border-b p-1">
                     {dayBookings.map((booking: any) => {
-                      const bookingHour = new Date(booking.date).getHours();
-                      if (bookingHour === hour) {
-                        return (
-                          <div
-                            key={booking.id}
-                            className={`text-xs p-1 rounded cursor-pointer ${getStatusColor(booking.status)}`}
-                            onClick={() => setSelectedBooking(booking)}
-                          >
-                            {booking.client.name}
-                            <br />
-                            {booking.service.name}
-                          </div>
-                        );
+                      try {
+                        const bookingDate = new Date(booking.date);
+                        const bookingHour = bookingDate.getHours();
+                        if (bookingHour === hour) {
+                          return (
+                            <div
+                              key={booking.id}
+                              className={`text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(booking.status)}`}
+                              onClick={() => setSelectedBooking(booking)}
+                              title={`${booking.client?.name || 'Unknown'} - ${booking.service?.name || 'Service'}`}
+                            >
+                              <div className="font-medium">
+                                {booking.client?.name || 'Unknown'}
+                              </div>
+                              <div className="text-muted-foreground">
+                                {booking.service?.name || 'Service'}
+                              </div>
+                            </div>
+                          );
+                        }
+                      } catch (error) {
+                        console.error('Error processing booking in week view:', booking, error);
                       }
                       return null;
                     })}
@@ -335,21 +369,32 @@ export function AdminCalendar() {
                 </div>
                 <div className="flex-1 p-4">
                   {dayBookings.map((booking: any) => {
-                    const bookingHour = new Date(booking.date).getHours();
-                    if (bookingHour === hour) {
-                      return (
-                        <div
-                          key={booking.id}
-                          className={`p-3 rounded-lg border cursor-pointer ${getStatusColor(booking.status)}`}
-                          onClick={() => setSelectedBooking(booking)}
-                        >
-                          <div className="font-medium">{booking.client.name}</div>
-                          <div className="text-sm">{booking.service.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {formatTime(booking.date)} • {booking.duration} hours
+                    try {
+                      const bookingDate = new Date(booking.date);
+                      const bookingHour = bookingDate.getHours();
+                      if (bookingHour === hour) {
+                        return (
+                          <div
+                            key={booking.id}
+                            className={`p-3 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity ${getStatusColor(booking.status)}`}
+                            onClick={() => setSelectedBooking(booking)}
+                          >
+                            <div className="font-medium">{booking.client?.name || 'Unknown Client'}</div>
+                            <div className="text-sm">{booking.service?.name || 'Service'}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {formatTime(booking.date)} • {booking.duration || 2} hours
+                            </div>
+                            {booking.location && (
+                              <div className="text-xs text-muted-foreground flex items-center mt-1">
+                                <MapPin className="h-3 w-3 mr-1" />
+                                {booking.location}
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      );
+                        );
+                      }
+                    } catch (error) {
+                      console.error('Error processing booking in day view:', booking, error);
                     }
                     return null;
                   })}
@@ -420,12 +465,22 @@ export function AdminCalendar() {
           </div>
 
           <Button
-            onClick={() => setCurrentDate(new Date())}
+            onClick={() => {
+              setCurrentDate(new Date());
+              console.log('Calendar Debug - Current bookings:', bookings);
+            }}
             variant="outline"
             size="sm"
           >
             Today
           </Button>
+          
+          {/* Debug info - remove in production */}
+          {process.env.NODE_ENV === 'development' && bookings && (
+            <div className="text-xs text-muted-foreground">
+              {bookings.length} bookings loaded
+            </div>
+          )}
         </div>
       </div>
 
@@ -437,6 +492,55 @@ export function AdminCalendar() {
           {viewMode === 'day' && renderDayView()}
         </CardContent>
       </Card>
+
+      {/* Selected Date Dialog */}
+      <Dialog open={!!selectedDate} onOpenChange={() => setSelectedDate(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Bookings for {selectedDate?.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedDate && (
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {getBookingsForDate(selectedDate).length > 0 ? (
+                getBookingsForDate(selectedDate).map((booking: any) => (
+                  <div
+                    key={booking.id}
+                    className={`p-3 rounded-lg border cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(booking.status)}`}
+                    onClick={() => {
+                      setSelectedDate(null);
+                      setSelectedBooking(booking);
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">{booking.client?.name || 'Unknown Client'}</div>
+                        <div className="text-sm text-muted-foreground">{booking.service?.name || 'Service'}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {formatTime(booking.date)} • {booking.duration || 2} hours
+                        </div>
+                      </div>
+                      <Badge variant="outline" className={getStatusColor(booking.status)}>
+                        {booking.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No bookings scheduled for this date
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Booking Details Dialog */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
@@ -450,37 +554,44 @@ export function AdminCalendar() {
                 <div className="space-y-2">
                   <div className="flex items-center text-sm">
                     <User className="h-4 w-4 mr-2" />
-                    {selectedBooking.client.name}
+                    {selectedBooking.client?.name || 'Unknown Client'}
                   </div>
                   <div className="flex items-center text-sm">
                     <Mail className="h-4 w-4 mr-2" />
-                    {selectedBooking.client.email}
+                    {selectedBooking.client?.email || 'No email'}
                   </div>
                   <div className="flex items-center text-sm">
                     <Phone className="h-4 w-4 mr-2" />
-                    {selectedBooking.client.phone}
+                    {selectedBooking.client?.phone || 'No phone'}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center text-sm">
                     <CalendarIcon className="h-4 w-4 mr-2" />
-                    {new Date(selectedBooking.date).toLocaleDateString()}
+                    {selectedBooking.date ? new Date(selectedBooking.date).toLocaleDateString() : 'No date'}
                   </div>
                   <div className="flex items-center text-sm">
                     <Clock className="h-4 w-4 mr-2" />
-                    {formatTime(selectedBooking.date)}
+                    {selectedBooking.date ? formatTime(selectedBooking.date) : 'No time'}
                   </div>
                   <div className="flex items-center text-sm">
                     <MapPin className="h-4 w-4 mr-2" />
-                    {selectedBooking.location || 'TBD'}
+                    {selectedBooking.location || 'Location TBD'}
                   </div>
                 </div>
               </div>
 
               <div>
                 <h4 className="font-medium mb-2">Service</h4>
-                <p className="text-sm">{selectedBooking.service.name}</p>
-                <p className="text-xs text-muted-foreground">{selectedBooking.service.description}</p>
+                <p className="text-sm">{selectedBooking.service?.name || 'Service details unavailable'}</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedBooking.service?.description || 'No description available'}
+                </p>
+                {selectedBooking.totalPrice && (
+                  <p className="text-sm font-medium mt-2">
+                    Total: ${selectedBooking.totalPrice}
+                  </p>
+                )}
               </div>
 
               <div>
