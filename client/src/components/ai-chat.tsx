@@ -16,7 +16,7 @@ export function AIChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm Kai's AI assistant. I can help you find the perfect photography package, check availability, and answer any questions. What kind of shoot are you planning?",
+      content: "Hi! I'm Christian's AI assistant. I can help you find the perfect photography package, check availability, and answer any questions. What kind of shoot are you planning?",
       timestamp: Date.now(),
     }
   ]);

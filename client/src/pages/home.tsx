@@ -223,7 +223,7 @@ export default function Home() {
             <div>
               <h3 className="font-playfair text-2xl font-bold mb-4 flex items-center">
                 <Camera className="h-6 w-6 mr-2 text-bronze" />
-                Kai Nakamura
+                Christian Picaso
               </h3>
               <p className="text-white/70 mb-4">
                 Hawaii's premier photographer specializing in weddings, portraits, and aerial photography.
@@ -265,7 +265,7 @@ export default function Home() {
           </div>
           
           <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60">
-            <p>&copy; 2024 Kai Nakamura Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography</p>
+            <p>&copy; 2024 Christian Picaso Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography</p>
           </div>
         </div>
       </footer>

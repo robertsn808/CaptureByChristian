@@ -38,7 +38,7 @@ export function Navigation() {
             <div className="flex items-center space-x-2 cursor-pointer">
               <Camera className="h-8 w-8 text-bronze" />
               <span className="font-playfair text-2xl font-bold text-ultra-black dark:text-white">
-                Kai Nakamura
+                Christian Picaso
               </span>
             </div>
           </Link>

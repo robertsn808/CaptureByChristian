@@ -13,7 +13,7 @@ export async function generateBookingResponse(
 
     // Simple rule-based responses for demo purposes
     let response = {
-      message: "I'm Kai's AI assistant. I can help you with photography bookings!",
+      message: "I'm Christian's AI assistant. I can help you with photography bookings!",
       bookingData: { ...bookingData }
     };
 
@@ -33,14 +33,14 @@ export async function generateBookingResponse(
     } else if (lastMessage.includes('location')) {
       response.message = "I shoot all over Hawaii! Popular locations include:\n• Beaches: Lanikai, Hanauma Bay, Sunset Beach\n• Mountains: Diamond Head, Makapuu Lighthouse\n• Urban: Honolulu, Waikiki\n• Hidden gems: I know many secret spots!\n\nDo you have a specific vibe in mind?";
     } else if (lastMessage.includes('hello') || lastMessage.includes('hi')) {
-      response.message = "Aloha! I'm Kai's AI booking assistant. I can help you find the perfect photography package, check availability, and answer questions about our services. What brings you here today?";
+      response.message = "Aloha! I'm Christian's AI booking assistant. I can help you find the perfect photography package, check availability, and answer questions about our services. What brings you here today?";
     }
 
     return response;
   } catch (error) {
     console.error("AI response error:", error);
     return {
-      message: "I'm having trouble processing your request right now. Please try again or contact us directly at kai@nakamura.photography.",
+      message: "I'm having trouble processing your request right now. Please try again or contact us directly at christian@picaso.photography.",
       bookingData: {},
     };
   }

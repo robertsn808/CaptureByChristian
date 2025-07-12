@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a sophisticated AI-powered photography business platform built for Kai Nakamura, a Hawaii-based photographer specializing in FAA-certified drone photography. The application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and business administration platform.
+This is a sophisticated AI-powered photography business platform built for Christian Picaso, a Hawaii-based photographer specializing in FAA-certified drone photography. The application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and business administration platform.
 
 ## User Preferences
 
