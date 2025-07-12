@@ -76,7 +76,25 @@ export function AutomationWorkflows() {
 
   const workflowStats = calculateWorkflowStats();
 
-  // Display real workflow data or setup instructions if none exist
+  // Create workflow mutation for adding new workflows
+  const createWorkflowMutation = useMutation({
+    mutationFn: async (workflowData: any) => {
+      const response = await fetch('/api/automation-sequences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(workflowData)
+      });
+      if (!response.ok) throw new Error('Failed to create workflow');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/automation-sequences'] });
+      setNewWorkflowOpen(false);
+      toast({ title: "Workflow created successfully!" });
+    }
+  });
+
+  // Display real workflow data with comprehensive statistics
   const displayWorkflows = workflows.length > 0 ? workflows : [
     {
       id: 2,

@@ -100,11 +100,11 @@ export function Services() {
           ))}
         </div>
 
-        {/* AI Features Banner */}
+        {/* Professional Features Banner */}
         <div className="mt-16 bg-gradient-to-r from-teal via-bronze to-teal rounded-xl p-8 text-white text-center">
-          <h3 className="font-playfair text-3xl font-bold mb-4">AI-Enhanced Experience</h3>
+          <h3 className="font-playfair text-3xl font-bold mb-4">Professional Photography Experience</h3>
           <p className="text-xl mb-6">
-            Our advanced AI helps you select the perfect shots and creates personalized galleries automatically
+            Expert photography services with professional editing, client portals, and comprehensive gallery management
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
