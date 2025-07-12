@@ -142,9 +142,9 @@ export function InvoiceGenerator() {
     updated[index] = { ...updated[index], [field]: value };
     
     if (field === 'quantity' || field === 'rate') {
-      const quantity = field === 'quantity' ? Number(value) : updated[index].quantity;
-      const rate = field === 'rate' ? Number(value) : updated[index].rate;
-      updated[index].amount = quantity * rate;
+      const quantity = field === 'quantity' ? Number(value) || 0 : (updated[index].quantity || 0);
+      const rate = field === 'rate' ? Number(value) || 0 : (updated[index].rate || 0);
+      updated[index].amount = Number((quantity * rate).toFixed(2));
     }
     
     setInvoiceItems(updated);
@@ -157,7 +157,7 @@ export function InvoiceGenerator() {
   };
 
   const getTotalAmount = () => {
-    return invoiceItems.reduce((total, item) => total + (item.amount || 0), 0);
+    return invoiceItems.reduce((total, item) => total + (typeof item.amount === 'number' ? item.amount : 0), 0);
   };
 
   const generateInvoiceNumber = () => {
@@ -239,11 +239,12 @@ export function InvoiceGenerator() {
                     const booking = pendingBookings?.find((b: any) => b.id.toString() === value);
                     setSelectedBooking(booking);
                     if (booking) {
+                      const servicePrice = Number(booking.service.price) || 0;
                       setInvoiceItems([{
                         description: booking.service.name,
                         quantity: 1,
-                        rate: booking.service.price || 0,
-                        amount: booking.service.price || 0
+                        rate: servicePrice,
+                        amount: servicePrice
                       }]);
                     }
                   }}>
@@ -330,7 +331,7 @@ export function InvoiceGenerator() {
                         </div>
                         <div>
                           <Label>Amount ($)</Label>
-                          <Input value={(item.amount || 0).toFixed(2)} disabled />
+                          <Input value={typeof item.amount === 'number' ? item.amount.toFixed(2) : '0.00'} disabled />
                         </div>
                         <div>
                           <Button
@@ -353,7 +354,7 @@ export function InvoiceGenerator() {
                     <div className="border-t pt-4">
                       <div className="flex justify-between items-center text-lg font-semibold">
                         <span>Total Amount:</span>
-                        <span>${getTotalAmount().toFixed(2)}</span>
+                        <span>${typeof getTotalAmount() === 'number' ? getTotalAmount().toFixed(2) : '0.00'}</span>
                       </div>
                     </div>
                   </div>
