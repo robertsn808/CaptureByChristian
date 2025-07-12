@@ -44,12 +44,17 @@ export function Services() {
   }
 
   return (
-    <section id="services" className="py-20 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6">Services & Packages</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Professional photography services tailored to capture your unique story
+    <section id="services" className="section-spacing bg-gradient-to-b from-cream to-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="inline-block">
+            <h2 className="font-playfair text-5xl font-bold text-charcoal mb-6 gradient-text">
+              Photography Services
+            </h2>
+            <div className="h-1 w-24 mx-auto bg-gradient-to-r from-bronze to-teal rounded-full mb-6" />
+          </div>
+          <p className="text-xl text-charcoal/70 max-w-3xl mx-auto leading-relaxed">
+            Professional photography services capturing Hawaii's beauty through both traditional and cutting-edge aerial perspectives
           </p>
         </div>
 
@@ -69,7 +74,7 @@ export function Services() {
                   </Badge>
                 )}
               </div>
-              
+
               <CardHeader>
                 <CardTitle className="font-playfair text-2xl">{service.name}</CardTitle>
                 <p className="text-muted-foreground">{service.description}</p>
@@ -100,11 +105,11 @@ export function Services() {
           ))}
         </div>
 
-        {/* Professional Features Banner */}
+        {/* AI Features Banner */}
         <div className="mt-16 bg-gradient-to-r from-teal via-bronze to-teal rounded-xl p-8 text-white text-center">
-          <h3 className="font-playfair text-3xl font-bold mb-4">Professional Photography Experience</h3>
+          <h3 className="font-playfair text-3xl font-bold mb-4">AI-Enhanced Experience</h3>
           <p className="text-xl mb-6">
-            Expert photography services with professional editing, client portals, and comprehensive gallery management
+            Our advanced AI helps you select the perfect shots and creates personalized galleries automatically
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">

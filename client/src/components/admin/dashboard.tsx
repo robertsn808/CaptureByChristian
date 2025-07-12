@@ -81,7 +81,7 @@ export function AdminDashboard() {
   ];
 
   const recentBookings = bookings?.slice(0, 5) || [];
-  
+
   const getUpcomingBookings = () => {
     if (!bookings) return [];
     const today = new Date();
@@ -205,7 +205,7 @@ export function AdminDashboard() {
                   <p className="text-sm text-muted-foreground mt-1">No pending actions</p>
                 </div>
               )}
-              
+
               {pendingActions.length > 0 && (
                 <Button variant="outline" className="w-full mt-4">
                   Review All Pending Bookings

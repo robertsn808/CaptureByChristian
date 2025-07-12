@@ -30,7 +30,7 @@ export function Hero() {
           />
         </video>
       </div>
-      
+
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
 
@@ -41,18 +41,18 @@ export function Hero() {
             <Award className="h-8 w-8 text-bronze mr-3" />
             <span className="text-lg font-medium">FAA Certified Drone Operator</span>
           </div>
-          
+
           <h1 className="font-playfair text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Licensed to Fly<br />
             <span className="text-4xl md:text-6xl text-[var(--sandstone)]">
               Trained to Thrill
             </span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto font-light">
             FAA-Certified Aerial Photography — capturing Hawaii's beauty from every angle, legally and spectacularly
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"

@@ -163,6 +163,66 @@
   .animate-parallax {
     animation: parallax 20s linear infinite;
   }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.8s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s ease-out;
+  }
+
+  .card-hover-effect {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover-effect:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--bronze), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-spacing {
+    padding: 6rem 0;
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
 }
 
 @keyframes fadeIn {
@@ -184,4 +244,52 @@
 @keyframes parallax {
   0% { transform: translateY(0); }
   100% { transform: translateY(-100px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 20px rgba(200, 120, 80, 0.4); }
+  to { box-shadow: 0 0 30px rgba(200, 120, 80, 0.8); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-50px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(50px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
 }

@@ -1,3 +1,7 @@
+The code modifies the navigation styling and animations by updating the nav component's appearance and effects.
+```
+
+```replit_final_file
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -27,21 +31,17 @@ export function Navigation() {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-background/95 dark:bg-background/95 backdrop-blur-md shadow-sm' 
-        : 'glass-morphism'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/">
-            <div className="flex items-center space-x-2 cursor-pointer">
-              <Camera className="h-8 w-8 text-bronze" />
-              <span className="font-playfair text-2xl font-bold text-ultra-black dark:text-white">
-                Christian Picaso
-              </span>
+    <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism backdrop-blur-md border-b border-white/20 transition-all duration-300">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-3 hover-lift">
+            <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
+              <Camera className="h-6 w-6 text-white" />
             </div>
-          </Link>
+            <span className="font-playfair text-xl font-bold gradient-text">
+              Christian Picaso
+            </span>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -54,7 +54,7 @@ export function Navigation() {
                 {link.label}
               </a>
             ))}
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -93,7 +93,7 @@ export function Navigation() {
                 <Sun className="h-4 w-4" />
               )}
             </Button>
-            
+
             <Button
               variant="ghost"
               size="sm"
