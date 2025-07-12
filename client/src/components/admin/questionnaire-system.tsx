@@ -40,7 +40,8 @@ export function QuestionnaireSystem() {
   const [newQuestionnaireOpen, setNewQuestionnaireOpen] = useState(false);
   const [questionnaireBuilder, setQuestionnaireBuilder] = useState(false);
 
-  // Mock questionnaires data
+  // Note: Questionnaire system not yet connected to database
+  // This would require implementing questionnaires table and API endpoints
   const questionnaires = [
     {
       id: 1,

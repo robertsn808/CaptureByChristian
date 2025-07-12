@@ -34,7 +34,8 @@ export function ProductSales() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [newProductOpen, setNewProductOpen] = useState(false);
 
-  // Mock products data
+  // Note: Product sales feature not yet connected to database
+  // This would require implementing a products table and API endpoints
   const products = [
     {
       id: 1,

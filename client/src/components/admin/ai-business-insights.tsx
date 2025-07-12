@@ -121,34 +121,24 @@ export function AIBusinessInsights() {
         color: "text-purple-600"
       },
       {
-        type: "location_analytics",
-        title: "Location Performance Analysis",
-        insight: "North Shore locations generate 35% higher client satisfaction scores and 60% more social media shares, increasing referral bookings.",
-        confidence: 91,
+        type: "service_optimization",
+        title: "Service Performance Analysis",
+        insight: `${topService ? `${topService.name} is your top revenue service with $${topService.revenue.toLocaleString()} generated.` : 'All services are performing at baseline levels.'} Focus on promoting your highest-value offerings.`,
+        confidence: 90,
         impact: "Medium",
-        action: "Develop premium North Shore package with transportation included",
+        action: topService ? `Market ${topService.name} more aggressively to increase revenue` : "Analyze service demand and adjust offerings",
         icon: MapPin,
         color: "text-orange-600"
       },
       {
-        type: "pricing_strategy",
-        title: "Dynamic Pricing Recommendation",
-        insight: "Your current pricing is 15% below market rate for FAA-certified drone work. Competitors charge $200-400 more for similar aerial packages.",
-        confidence: 96,
+        type: "growth_strategy",
+        title: "Business Growth Recommendations",
+        insight: `With ${bookingsData.length} active bookings and $${totalRevenue.toLocaleString()} revenue, your business shows ${totalRevenue > 5000 ? 'strong growth potential' : 'foundation for expansion'}. ${confirmedBookings > 0 ? 'Focus on converting pending bookings.' : 'Prioritize lead generation.'}`,
+        confidence: 88,
         impact: "High",
-        action: "Implement tiered pricing: Standard, Premium, Luxury aerial packages",
+        action: totalRevenue > 5000 ? "Consider expanding service offerings or geographic reach" : "Focus on confirming existing bookings and generating new leads",
         icon: DollarSign,
         color: "text-emerald-600"
-      },
-      {
-        type: "technology_edge",
-        title: "AI Enhancement Opportunities",
-        insight: "Clients spend 23% more when they see AI-enhanced portfolio previews. Real-time editing demos increase booking conversion by 45%.",
-        confidence: 82,
-        impact: "High",
-        action: "Add live AI editing demonstrations to consultation process",
-        icon: Brain,
-        color: "text-indigo-600"
       }
     ];
 
@@ -157,7 +147,7 @@ export function AIBusinessInsights() {
       businessInsights.unshift({
         type: "custom_analysis",
         title: "Custom Business Analysis",
-        insight: `Based on your query "${aiQuery}" and current business data: Your photography business shows strong fundamentals with 5 active clients and diverse service offerings. The AI recommends focusing on your unique FAA certification advantage and expanding aerial photography marketing to luxury real estate market in Hawaii.`,
+        insight: `Based on your query "${aiQuery}" and current business data: Your photography business has ${clientsData.length} clients and ${bookingsData.length} bookings generating $${totalRevenue.toLocaleString()} revenue. ${totalRevenue > 0 ? 'Focus on scaling successful services and optimizing booking conversion.' : 'Prioritize lead generation and client acquisition strategies.'}`,
         confidence: 85,
         impact: "High",
         action: "Develop luxury real estate photography partnerships",
