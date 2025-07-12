@@ -63,13 +63,13 @@ export function Hero() {
           </h1>
 
           {/* Enhanced Description with Background and Better Typography */}
-          <div className="mb-10">
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 mb-6 max-w-5xl mx-auto">
-              <p className="text-xl md:text-2xl mb-4 font-light text-white leading-relaxed drop-shadow-lg">
+          <div className="mb-6 md:mb-10">
+            <div className="bg-black/30 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 mb-4 md:mb-6 max-w-5xl mx-auto">
+              <p className="text-lg md:text-xl lg:text-2xl mb-3 md:mb-4 font-light text-white leading-relaxed drop-shadow-lg">
                 FAA-Certified Aerial Photography — capturing Hawaii's beauty from every angle, 
                 <span className="text-bronze font-medium"> legally and spectacularly</span>
               </p>
-              <div className="flex justify-center items-center space-x-4 text-sm text-white/90">
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 text-xs sm:text-sm text-white/90">
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-bronze rounded-full mr-2"></div>
                   10+ Years Experience

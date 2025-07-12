@@ -53,7 +53,7 @@ export function AdminDashboard() {
   const pendingBookings = bookings?.filter((b: any) => b.status === 'pending').length || 0;
   const confirmedBookings = bookings?.filter((b: any) => b.status === 'confirmed').length || 0;
   const completedBookings = bookings?.filter((b: any) => b.status === 'completed').length || 0;
-  
+
   // Calculate real growth rates (would need historical data for accurate calculations)
   const bookingGrowth = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
   const revenueGrowth = totalRevenue > 0 ? Math.round((completedBookings / totalBookings) * 100) : 0;
