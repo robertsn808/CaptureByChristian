@@ -98,33 +98,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create a custom booking request schema
+  const bookingRequestSchema = z.object({
+    serviceId: z.number().or(z.string().transform(val => parseInt(val))),
+    date: z.string().transform(val => new Date(val)),
+    location: z.string(),
+    totalPrice: z.string(),
+    clientName: z.string(),
+    clientEmail: z.string().email(),
+    clientPhone: z.string().optional(),
+    notes: z.string().optional(),
+    status: z.string().optional(),
+    addOns: z.array(z.any()).optional(),
+    duration: z.number().optional(),
+  });
+
   app.post("/api/bookings", async (req, res) => {
     try {
-      const bookingData = insertBookingSchema.parse(req.body);
+      console.log("Received booking data:", req.body);
 
-      // Create or find existing client
-      let client = await storage.getClientByEmail(req.body.clientEmail);
-      if (!client) {
-        client = await storage.createClient({
-          name: req.body.clientName,
-          email: req.body.clientEmail,
-          phone: req.body.clientPhone || null,
-          notes: req.body.notes || null,
-        });
+      // Validate the incoming request
+      const requestData = bookingRequestSchema.parse(req.body);
+      console.log("Request validation passed:", requestData);
+
+      // Create or find existing client first
+      let client;
+      try {
+        client = await storage.getClientByEmail(requestData.clientEmail);
+      } catch (error) {
+        console.log("Client lookup error:", error);
+        client = null;
       }
 
-      // Create booking
-      const booking = await storage.createBooking({
-        ...bookingData,
+      if (!client) {
+        console.log("Creating new client...");
+        client = await storage.createClient({
+          name: requestData.clientName,
+          email: requestData.clientEmail,
+          phone: requestData.clientPhone || null,
+          notes: requestData.notes || null,
+        });
+        console.log("Created client:", client);
+      }
+
+      // Get service to extract duration
+      const service = await storage.getService(requestData.serviceId);
+      if (!service) {
+        return res.status(400).json({ error: "Invalid service ID" });
+      }
+      console.log("Found service:", service);
+
+      // Prepare booking data for database insertion
+      const bookingData = {
         clientId: client.id,
-      });
+        serviceId: requestData.serviceId,
+        date: requestData.date,
+        duration: requestData.duration || service.duration,
+        location: requestData.location,
+        totalPrice: requestData.totalPrice,
+        status: requestData.status || "pending",
+        notes: requestData.notes || null,
+        addOns: requestData.addOns || null,
+      };
+
+      console.log("Final booking data:", bookingData);
+
+      // Validate booking data with schema before creating
+      const validatedBookingData = insertBookingSchema.parse(bookingData);
+      console.log("Validated booking data:", validatedBookingData);
+
+      // Create booking directly using storage
+      const booking = await storage.createBooking(validatedBookingData);
 
       res.json(booking);
     } catch (error) {
+      console.error("Booking creation error:", error);
       if (error instanceof z.ZodError) {
         res.status(400).json({ error: "Invalid booking data", details: error.errors });
       } else {
-        res.status(500).json({ error: "Failed to create booking" });
+        res.status(500).json({ error: "Failed to create booking", details: error.message });
       }
     }
   });
