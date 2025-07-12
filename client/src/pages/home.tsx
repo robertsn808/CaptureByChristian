@@ -264,8 +264,24 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60">
-            <p>&copy; 2024 Christian Picaso Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography</p>
+          <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60 relative">
+            <p>
+              &copy; 2024 Christian Picaso Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
+              <Link 
+                href="/admin" 
+                className="ml-1 text-white/20 hover:text-bronze transition-colors duration-300 text-xs"
+                title="Business Portal"
+              >
+                ●
+              </Link>
+            </p>
+            
+            {/* Ultra-hidden corner access for fallback */}
+            <div 
+              className="absolute bottom-0 right-0 w-4 h-4 cursor-pointer"
+              onClick={() => window.location.href = '/admin'}
+              title="Admin Access"
+            />
           </div>
         </div>
       </footer>
