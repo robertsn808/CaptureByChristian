@@ -410,7 +410,7 @@ export default function Home() {
           
           <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60 relative">
             <p className="mb-2">
-              &copy; 2024 {profile?.name || "Christian Picaso"} Photography. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
+              &copy; 2024 {profile?.name || "Captured by Christian"}. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
             </p>
             
             {/* Admin Access Options */}
