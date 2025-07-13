@@ -227,7 +227,7 @@ The application is designed for Replit deployment with:
 
 ## 📝 License
 
-This project is proprietary software for Captured by Christian photography business.
+This project is proprietary software for Christian Falonzo photography business.
 
 ## 🤝 Support
 
