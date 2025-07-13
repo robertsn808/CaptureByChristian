@@ -483,7 +483,7 @@ export function AdvancedAnalytics() {
                     <span className="font-medium">Client Success</span>
                   </div>
                   <p className="text-sm text-purple-600 dark:text-purple-300 mt-1">
-                    94% satisfaction drives 73% referral rate
+                    No satisfaction data available yet
                   </p>
                 </div>
               </div>

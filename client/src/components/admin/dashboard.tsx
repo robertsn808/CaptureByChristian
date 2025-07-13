@@ -141,7 +141,7 @@ export function AdminDashboard() {
                 <div className="text-white/80 text-sm font-medium">Total Shoots</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-2xl lg:text-3xl font-bold">98%</div>
+                <div className="text-2xl lg:text-3xl font-bold">N/A</div>
                 <div className="text-white/80 text-sm font-medium">Satisfaction</div>
               </div>
             </div>

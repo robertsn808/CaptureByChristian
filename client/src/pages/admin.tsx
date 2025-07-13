@@ -344,19 +344,19 @@ export default function Admin() {
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">247</div>
+                          <div className="text-2xl font-bold text-blue-600">0</div>
                           <div className="text-sm text-muted-foreground">Total Logins</div>
                         </div>
                         <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">89%</div>
+                          <div className="text-2xl font-bold text-green-600">0%</div>
                           <div className="text-sm text-muted-foreground">Access Rate</div>
                         </div>
                         <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                          <div className="text-2xl font-bold text-purple-600">156</div>
+                          <div className="text-2xl font-bold text-purple-600">0</div>
                           <div className="text-sm text-muted-foreground">Downloads</div>
                         </div>
                         <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
-                          <div className="text-2xl font-bold text-orange-600">4.8</div>
+                          <div className="text-2xl font-bold text-orange-600">N/A</div>
                           <div className="text-sm text-muted-foreground">Avg Rating</div>
                         </div>
                       </div>
