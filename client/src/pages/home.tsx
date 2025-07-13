@@ -378,41 +378,41 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-playfair text-2xl font-bold mb-4 flex items-center">
+              <h3 className="font-playfair text-2xl font-bold mb-4 flex items-center text-[#f5f5f5]">
                 <Camera className="h-6 w-6 mr-2 text-bronze" />
                 {profile?.name || "Christian Picaso"}
               </h3>
-              <p className="text-white/70 mb-4">
+              <p className="text-[#f5f5f5]/70 mb-4">
                 {profile?.title || "Hawaii's premier photographer specializing in weddings, portraits, and aerial photography."}
               </p>
-              <div className="text-sm text-white/60 text-left">
+              <div className="text-sm text-[#f5f5f5]/60 text-left">
                 FAA Certified • AI-Enhanced
               </div>
             </div>
             
             <div>
-              <h4 className="font-bold mb-4">Services</h4>
-              <ul className="space-y-2 text-white/70">
-                <li><a href="#" className="hover:text-white transition-colors duration-200">Wedding Photography</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-200">Portrait Sessions</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-200">Aerial Photography</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-200">Event Coverage</a></li>
+              <h4 className="font-bold mb-4 text-[#f5f5f5]">Services</h4>
+              <ul className="space-y-2 text-[#f5f5f5]/70">
+                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Wedding Photography</a></li>
+                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Portrait Sessions</a></li>
+                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Aerial Photography</a></li>
+                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Event Coverage</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-white/70">
-                <li><a href="#portfolio" className="hover:text-white transition-colors duration-200">Portfolio</a></li>
-                <li><a href="#services" className="hover:text-white transition-colors duration-200">Pricing</a></li>
-                <li><Link href="/booking" className="hover:text-white transition-colors duration-200">Booking</Link></li>
-                <li><a href="#contact" className="hover:text-white transition-colors duration-200">Contact</a></li>
+              <h4 className="font-bold mb-4 text-[#f5f5f5]">Quick Links</h4>
+              <ul className="space-y-2 text-[#f5f5f5]/70">
+                <li><a href="#portfolio" className="hover:text-[#f5f5f5] transition-colors duration-200">Portfolio</a></li>
+                <li><a href="#services" className="hover:text-[#f5f5f5] transition-colors duration-200">Pricing</a></li>
+                <li><a href="#booking" className="hover:text-[#f5f5f5] transition-colors duration-200">Booking</a></li>
+                <li><a href="#contact" className="hover:text-[#f5f5f5] transition-colors duration-200">Contact</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold mb-4">AI Features</h4>
-              <ul className="space-y-2 text-white/70 text-sm">
+              <h4 className="font-bold mb-4 text-[#f5f5f5]">AI Features</h4>
+              <ul className="space-y-2 text-[#f5f5f5]/70 text-sm">
                 <li>Smart Photo Selection</li>
                 <li>Auto Gallery Creation</li>
                 <li>24/7 Booking Assistant</li>
@@ -421,7 +421,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60 relative">
+          <div className="border-t border-[#f5f5f5]/20 mt-8 pt-8 text-center text-[#f5f5f5]/60 relative">
             <p className="mb-2">
               &copy; 2024 {profile?.name || "Captured by Christian"}. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
             </p>
@@ -430,17 +430,17 @@ export default function Home() {
             <div className="flex justify-center items-center space-x-4 text-xs">
               <Link 
                 href="/admin" 
-                className="text-white/30 hover:text-bronze transition-colors duration-300 hover:scale-110 transform"
+                className="text-[#f5f5f5]/30 hover:text-bronze transition-colors duration-300 hover:scale-110 transform"
                 title="Business Management Portal"
               >
                 ⚙️ Admin
               </Link>
               
-              <span className="text-white/20">|</span>
+              <span className="text-[#f5f5f5]/20">|</span>
               
               <Link 
                 href="/admin" 
-                className="text-white/20 hover:text-bronze transition-all duration-300 hover:bg-white/5 px-2 py-1 rounded"
+                className="text-[#f5f5f5]/20 hover:text-bronze transition-all duration-300 hover:bg-[#f5f5f5]/5 px-2 py-1 rounded"
                 title="CRM Portal"
               >
                 Dashboard
