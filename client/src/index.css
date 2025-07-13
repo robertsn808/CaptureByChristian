@@ -84,7 +84,7 @@
 }
 
 :root {
-  --background: hsl(0, 0%, 99%);
+  --background: hsl(0, 0%, 96%);
   --foreground: hsl(0, 0%, 8%);
   --muted: hsl(33, 12%, 95%);
   --muted-foreground: hsl(0, 0%, 35%);
