@@ -165,6 +165,7 @@ export function ContractManagement() {
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
   const [newContractOpen, setNewContractOpen] = useState(false);
   const [editTemplateOpen, setEditTemplateOpen] = useState(false);
+  const [viewContractOpen, setViewContractOpen] = useState(false);
   const [contractForm, setContractForm] = useState({
     contractType: 'individual' as 'individual' | 'business',
     clientId: '',
@@ -214,14 +215,27 @@ export function ContractManagement() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(contractData)
       });
-      if (!response.ok) throw new Error('Failed to create contract');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create contract');
+      }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (newContract) => {
       queryClient.invalidateQueries({ queryKey: ['/api/contracts'] });
       setNewContractOpen(false);
       resetForm();
-      toast({ title: "Contract created successfully!" });
+      toast({ 
+        title: "Contract created successfully!", 
+        description: `Contract "${newContract.title}" has been created and is ready to send.`
+      });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Failed to create contract", 
+        description: error.message,
+        variant: "destructive" 
+      });
     }
   });
 
@@ -295,14 +309,31 @@ export function ContractManagement() {
       return;
     }
 
+    if (!contractForm.title.trim()) {
+      toast({ title: "Please enter a contract title", variant: "destructive" });
+      return;
+    }
+
     const contractData = {
-      ...contractForm,
       clientId: parseInt(contractForm.clientId),
+      contractType: contractForm.contractType,
+      serviceType: contractForm.serviceType || null,
+      title: contractForm.title.trim(),
       templateContent: generateContractContent(),
-      totalAmount: parseFloat(contractForm.totalAmount) || 0,
-      retainerAmount: parseFloat(contractForm.retainerAmount) || 0,
-      balanceAmount: parseFloat(contractForm.balanceAmount) || 0,
-      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate).toISOString() : null
+      status: "draft",
+      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate).toISOString() : null,
+      location: contractForm.location || null,
+      packageType: contractForm.packageType || null,
+      totalAmount: contractForm.totalAmount ? parseFloat(contractForm.totalAmount).toString() : null,
+      retainerAmount: contractForm.retainerAmount ? parseFloat(contractForm.retainerAmount).toString() : null,
+      balanceAmount: contractForm.balanceAmount ? parseFloat(contractForm.balanceAmount).toString() : null,
+      paymentTerms: contractForm.paymentTerms || null,
+      deliverables: contractForm.deliverables || null,
+      timeline: contractForm.timeline || null,
+      usageRights: contractForm.usageRights || null,
+      cancellationPolicy: contractForm.cancellationPolicy || null,
+      additionalTerms: contractForm.additionalTerms || null,
+      bookingId: null
     };
 
     createContractMutation.mutate(contractData);
@@ -644,7 +675,14 @@ export function ContractManagement() {
                       )}
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedContract(contract);
+                          setViewContractOpen(true);
+                        }}
+                      >
                         <Eye className="h-4 w-4 mr-1" />
                         View
                       </Button>
@@ -655,13 +693,21 @@ export function ContractManagement() {
                           disabled={sendContractMutation.isPending}
                         >
                           <Send className="h-4 w-4 mr-1" />
-                          Send
+                          {sendContractMutation.isPending ? "Sending..." : "Send"}
                         </Button>
                       )}
                       {contract.status === 'sent' && (
-                        <Button variant="outline" size="sm">
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          Portal Link
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const portalLink = `${window.location.origin}/client-portal?token=${contract.portalAccessToken}`;
+                            navigator.clipboard.writeText(portalLink);
+                            toast({ title: "Portal link copied to clipboard!" });
+                          }}
+                        >
+                          <Copy className="h-4 w-4 mr-1" />
+                          Copy Link
                         </Button>
                       )}
                     </div>
@@ -672,6 +718,108 @@ export function ContractManagement() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Contract Dialog */}
+      <Dialog open={viewContractOpen} onOpenChange={setViewContractOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <FileText className="h-5 w-5" />
+              <span>{selectedContract?.title}</span>
+              {selectedContract && getStatusBadge(selectedContract.status)}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedContract && (
+            <div className="space-y-6">
+              {/* Contract Info */}
+              <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
+                <div>
+                  <h4 className="font-semibold mb-2">Contract Details</h4>
+                  <div className="space-y-1 text-sm">
+                    <p><span className="font-medium">Client:</span> {selectedContract.client?.name}</p>
+                    <p><span className="font-medium">Type:</span> {selectedContract.contractType}</p>
+                    <p><span className="font-medium">Service:</span> {selectedContract.serviceType || 'N/A'}</p>
+                    {selectedContract.sessionDate && (
+                      <p><span className="font-medium">Date:</span> {format(new Date(selectedContract.sessionDate), 'MMM dd, yyyy')}</p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2">Financial Details</h4>
+                  <div className="space-y-1 text-sm">
+                    {selectedContract.totalAmount && (
+                      <p><span className="font-medium">Total:</span> ${selectedContract.totalAmount}</p>
+                    )}
+                    {selectedContract.retainerAmount && (
+                      <p><span className="font-medium">Retainer:</span> ${selectedContract.retainerAmount}</p>
+                    )}
+                    {selectedContract.balanceAmount && (
+                      <p><span className="font-medium">Balance:</span> ${selectedContract.balanceAmount}</p>
+                    )}
+                    {selectedContract.location && (
+                      <p><span className="font-medium">Location:</span> {selectedContract.location}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Contract Content */}
+              <div>
+                <h4 className="font-semibold mb-2">Contract Content</h4>
+                <div className="border rounded-lg p-4 bg-white max-h-96 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap text-sm font-mono">
+                    {selectedContract.templateContent}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-between items-center pt-4 border-t">
+                <div className="flex items-center space-x-2">
+                  {selectedContract.status === 'draft' && (
+                    <Button 
+                      onClick={() => sendContractMutation.mutate(selectedContract.id)}
+                      disabled={sendContractMutation.isPending}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      {sendContractMutation.isPending ? "Sending..." : "Send to Client Portal"}
+                    </Button>
+                  )}
+                  {selectedContract.status === 'sent' && (
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        const portalLink = `${window.location.origin}/client-portal?token=${selectedContract.portalAccessToken}`;
+                        navigator.clipboard.writeText(portalLink);
+                        toast({ title: "Portal link copied to clipboard!" });
+                      }}
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Portal Link
+                    </Button>
+                  )}
+                  <Button variant="outline">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" onClick={() => setViewContractOpen(false)}>
+                    Close
+                  </Button>
+                  {selectedContract.status === 'draft' && (
+                    <Button variant="outline">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Contract
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
