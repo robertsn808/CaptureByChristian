@@ -7,6 +7,7 @@ This is a sophisticated AI-powered photography business platform built for "Capt
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+UI Design preference: Clean, minimal interface without decorative bubble elements or status indicators.
 
 ## System Architecture
 

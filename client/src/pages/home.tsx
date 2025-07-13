@@ -58,16 +58,6 @@ export default function Home() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
-            <div className="inline-block mb-6">
-              <div className="bg-gradient-to-r from-bronze to-teal rounded-full p-1">
-                <div className="bg-white dark:bg-background rounded-full px-6 py-2">
-                  <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-transparent">
-                    Ready to Get Started?
-                  </span>
-                </div>
-              </div>
-            </div>
-            
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Let's create something beautiful together. Choose your preferred way to get started with 
               <span className="text-bronze font-medium"> professional photography services</span>.
@@ -183,13 +173,6 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
               <div className="mb-8">
-                <div className="inline-block bg-gradient-to-r from-bronze to-teal rounded-full p-1 mb-6">
-                  <div className="bg-white dark:bg-background rounded-full px-4 py-2">
-                    <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-transparent">
-                      Meet the Artist
-                    </span>
-                  </div>
-                </div>
                 <h2 className="font-playfair text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-charcoal via-bronze to-charcoal bg-clip-text text-transparent">
                   About {profile?.name?.split(' ')[0] || 'Christian'}
                 </h2>
