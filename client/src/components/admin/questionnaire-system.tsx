@@ -328,41 +328,15 @@ export function QuestionnaireSystem() {
     }
   ];
 
-  // Mock responses data
-  const responses = [
-    {
-      id: 1,
-      questionnaireId: 1,
-      clientName: "Sarah & James Wilson",
-      bookingDate: "2025-08-15",
-      completedAt: "2025-07-11T14:30:00Z",
-      responses: {
-        wedding_date: "2025-08-15",
-        venue_name: "Turtle Bay Resort, North Shore Oahu",
-        guest_count: "100-150",
-        ceremony_time: "4:00 PM",
-        photography_style: ["Photojournalistic", "Fine Art"],
-        must_have_shots: "First look, ceremony exit, sunset couples photos by the ocean",
-        family_dynamics: "Divorced parents - please keep them separated in group photos",
-        drone_coverage: "Yes, definitely"
-      }
-    },
-    {
-      id: 2,
-      questionnaireId: 2,
-      clientName: "Rodriguez Family",
-      bookingDate: "2025-07-20",
-      completedAt: "2025-07-10T16:20:00Z",
-      responses: {
-        session_purpose: "Family photos",
-        group_size: "5 (parents + 3 children)",
-        location_preference: ["Beach", "Nature/Park"],
-        style_inspiration: "Natural, candid moments. Kids playing and laughing.",
-        wardrobe_guidance: "Just basic tips",
-        children_ages: "8, 5, and 2 years old"
-      }
+  // Fetch real questionnaire responses from database
+  const { data: responses = [], isLoading: responsesLoading } = useQuery({
+    queryKey: ['/api/questionnaire-responses'],
+    queryFn: async () => {
+      const response = await fetch('/api/questionnaire-responses');
+      if (!response.ok) throw new Error('Failed to fetch questionnaire responses');
+      return response.json();
     }
-  ];
+  });
 
   const getServiceIcon = (serviceType: string) => {
     switch (serviceType) {

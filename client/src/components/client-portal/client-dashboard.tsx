@@ -139,7 +139,13 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => {
+                    // Use proper routing instead of window.location
+                    import('wouter').then(({ useLocation }) => {
+                      window.history.pushState({}, '', '/');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                    });
+                  }}
                   className="text-muted-foreground hover:text-foreground"
                 >
                   <Camera className="h-4 w-4 mr-2" />
@@ -148,7 +154,10 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => window.location.href = '/booking'}
+                  onClick={() => {
+                    window.history.pushState({}, '', '/booking');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
                   className="text-muted-foreground hover:text-foreground"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
@@ -160,7 +169,10 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
             <div className="flex items-center space-x-3">
               {/* Mobile Navigation Menu */}
               <div className="md:hidden">
-                <Button variant="outline" size="sm" onClick={() => window.location.href = '/'}>
+                <Button variant="outline" size="sm" onClick={() => {
+                  window.history.pushState({}, '', '/');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}>
                   Homepage
                 </Button>
               </div>

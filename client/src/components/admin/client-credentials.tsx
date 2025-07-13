@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,7 +101,7 @@ export function ClientCredentials() {
         body: JSON.stringify({ clientId }),
       });
       if (!response.ok) throw new Error('Failed to send magic link');
-      
+
       toast({
         title: "Magic Link Sent",
         description: "Secure login link has been sent to the client's email.",
@@ -215,12 +215,12 @@ export function ClientCredentials() {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                       <Badge className={status.color}>
                         {status.label}
                       </Badge>
-                      
+
                       <div className="flex space-x-2">
                         {/* Set Password */}
                         <Dialog>
@@ -245,7 +245,7 @@ export function ClientCredentials() {
                                   {credential.clientName} ({credential.clientEmail})
                                 </div>
                               </div>
-                              
+
                               <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
                                 <div className="flex space-x-2">
@@ -285,7 +285,7 @@ export function ClientCredentials() {
                                   )}
                                 </div>
                               </div>
-                              
+
                               <div className="flex space-x-2">
                                 <Button
                                   onClick={() => generatePasswordMutation.mutate({
@@ -392,7 +392,7 @@ export function ClientCredentials() {
                         </div>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-sm">Access Settings</CardTitle>
@@ -413,7 +413,7 @@ export function ClientCredentials() {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   {/* Email Templates */}
                   <Card>
                     <CardHeader>
@@ -436,7 +436,7 @@ export function ClientCredentials() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <div className="flex justify-end space-x-2">
                     <Button variant="outline">Cancel</Button>
                     <Button>Save Settings</Button>

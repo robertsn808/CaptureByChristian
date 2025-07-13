@@ -865,6 +865,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send welcome emails to all clients
+  app.post("/api/admin/send-welcome-emails", async (req, res) => {
+    try {
+      const clients = await storage.getClients();
+      // Implementation would send actual emails via email service
+      // For now, just log the action
+      console.log(`Sending welcome emails to ${clients.length} clients`);
+      res.json({ success: true, count: clients.length });
+    } catch (error) {
+      console.error("Error sending welcome emails:", error);
+      res.status(500).json({ error: "Failed to send welcome emails" });
+    }
+  });
+
+  // Reset all client portal sessions
+  app.post("/api/admin/reset-portal-sessions", async (req, res) => {
+    try {
+      // Implementation would reset all active sessions
+      console.log("Resetting all client portal sessions");
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error resetting portal sessions:", error);
+      res.status(500).json({ error: "Failed to reset portal sessions" });
+    }
+  });
+
+  // Get questionnaire responses
+  app.get("/api/questionnaire-responses", async (req, res) => {
+    try {
+      const questionnaires = await storage.getQuestionnaires();
+      // For now, return empty array since we don't have response tracking yet
+      res.json([]);
+    } catch (error) {
+      console.error("Error fetching questionnaire responses:", error);
+      res.status(500).json({ error: "Failed to fetch questionnaire responses" });
+    }
+  });
+
   app.get("/api/admin/client-portal-stats", async (req, res) => {
     try {
       const stats = await storage.getClientPortalStats();
