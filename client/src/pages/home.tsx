@@ -392,21 +392,21 @@ export default function Home() {
             
             <div>
               <h4 className="font-bold mb-4 text-[#f5f5f5]">Services</h4>
-              <ul className="space-y-2 text-[#f5f5f5]/70">
-                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Wedding Photography</a></li>
-                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Portrait Sessions</a></li>
-                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Aerial Photography</a></li>
-                <li><a href="#" className="hover:text-[#f5f5f5] transition-colors duration-200">Event Coverage</a></li>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Wedding Photography</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Portrait Sessions</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Aerial Photography</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Event Coverage</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-bold mb-4 text-[#f5f5f5]">Quick Links</h4>
-              <ul className="space-y-2 text-[#f5f5f5]/70">
-                <li><a href="#portfolio" className="hover:text-[#f5f5f5] transition-colors duration-200">Portfolio</a></li>
-                <li><a href="#services" className="hover:text-[#f5f5f5] transition-colors duration-200">Pricing</a></li>
-                <li><a href="#booking" className="hover:text-[#f5f5f5] transition-colors duration-200">Booking</a></li>
-                <li><a href="#contact" className="hover:text-[#f5f5f5] transition-colors duration-200">Contact</a></li>
+              <ul className="space-y-2">
+                <li><a href="#portfolio" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Portfolio</a></li>
+                <li><a href="#services" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Pricing</a></li>
+                <li><a href="#booking" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Booking</a></li>
+                <li><a href="#contact" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Contact</a></li>
               </ul>
             </div>
             
@@ -421,8 +421,8 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-[#f5f5f5]/20 mt-8 pt-8 text-center text-[#f5f5f5]/60 relative">
-            <p className="mb-2">
+          <div className="border-t border-[#f5f5f5]/20 mt-8 pt-8 text-center text-[#f5f5f5]/80 relative">
+            <p className="mb-2 text-[#f5f5f5]/80">
               &copy; 2024 {profile?.name || "Captured by Christian"}. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
             </p>
             
