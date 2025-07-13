@@ -110,17 +110,17 @@ export function Hero() {
           <div className="mt-12 bg-black/25 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto">
             <div className="flex justify-center items-center space-x-8 text-white">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white drop-shadow-lg">500+</div>
+                <div className="text-2xl font-bold drop-shadow-lg text-[#fcfcfc]">500+</div>
                 <div className="text-sm text-white/90">Happy Clients</div>
               </div>
               <div className="w-px h-8 bg-white/40"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white drop-shadow-lg">15K+</div>
+                <div className="text-2xl font-bold drop-shadow-lg text-[#fcfcfc]">15K+</div>
                 <div className="text-sm text-white/90">Photos Captured</div>
               </div>
               <div className="w-px h-8 bg-white/40"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white drop-shadow-lg">★★★★★</div>
+                <div className="text-2xl font-bold drop-shadow-lg text-[#fcfcfc]">★★★★★</div>
                 <div className="text-sm text-white/90">Client Reviews</div>
               </div>
             </div>
