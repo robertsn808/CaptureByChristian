@@ -1033,29 +1033,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookings = await storage.getBookings();
       const invoicesList = [];
       
-      // Convert completed bookings to invoices format for display
+      // Convert ALL bookings to invoices format for display, showing proper service pricing
       for (const booking of bookings) {
-        if (booking.status === 'completed' || booking.status === 'confirmed') {
-          const invoice = {
-            id: `INV-${booking.id}`,
-            bookingId: booking.id,
-            clientName: booking.client?.name || 'Unknown Client',
-            clientEmail: booking.client?.email || '',
-            invoiceNumber: `INV-${booking.id}-${new Date(booking.date).getFullYear()}`,
-            amount: Number(booking.service?.price || 0),
-            status: 'pending',
-            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-            createdDate: booking.createdAt || new Date().toISOString(),
-            items: [{
-              description: booking.service?.name || 'Photography Service',
+        // Calculate invoice items from service and add-ons
+        const items = [];
+        
+        // Base service item
+        const baseServicePrice = Number(booking.service?.price || 0);
+        items.push({
+          description: booking.service?.name || 'Photography Service',
+          quantity: 1,
+          rate: baseServicePrice,
+          amount: baseServicePrice
+        });
+        
+        // Add-on items from booking
+        let addOnTotal = 0;
+        if (booking.addOns && Array.isArray(booking.addOns)) {
+          booking.addOns.forEach(addOn => {
+            const addOnPrice = Number(addOn.price || 0);
+            items.push({
+              description: addOn.name || 'Add-on Service',
               quantity: 1,
-              rate: Number(booking.service?.price || 0),
-              amount: Number(booking.service?.price || 0)
-            }],
-            notes: `Photography session for ${booking.client?.name || 'client'} on ${new Date(booking.date).toLocaleDateString()}`
-          };
-          invoicesList.push(invoice);
+              rate: addOnPrice,
+              amount: addOnPrice
+            });
+            addOnTotal += addOnPrice;
+          });
         }
+        
+        // Calculate totals using totalPrice from booking (which includes base + add-ons)
+        const totalAmount = Number(booking.totalPrice || baseServicePrice);
+        
+        const invoice = {
+          id: `INV-${booking.id}`,
+          bookingId: booking.id,
+          clientName: booking.client?.name || 'Unknown Client',
+          clientEmail: booking.client?.email || '',
+          invoiceNumber: `INV-${booking.id}-${new Date(booking.date).getFullYear()}`,
+          amount: totalAmount,
+          status: booking.status === 'confirmed' ? 'pending' : 'draft',
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+          createdDate: booking.createdAt || new Date().toISOString(),
+          items: items,
+          subtotal: totalAmount,
+          total: totalAmount,
+          notes: `Photography session for ${booking.client?.name || 'client'} on ${new Date(booking.date).toLocaleDateString()}. ${booking.notes || ''}`
+        };
+        invoicesList.push(invoice);
       }
       
       res.json(invoicesList);
@@ -1065,27 +1090,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new invoice
+  // Create new invoice (auto-generate from booking)
   app.post("/api/invoices", async (req, res) => {
     try {
-      const invoiceData = req.body;
+      const { bookingId } = req.body;
       
-      // In a real implementation, save to database using storage.createInvoice()
-      const newInvoice = {
-        id: `INV-${Date.now()}`,
-        invoiceNumber: `INV-${Date.now()}`,
-        createdDate: new Date().toISOString(),
-        status: 'pending',
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        ...invoiceData
+      if (!bookingId) {
+        return res.status(400).json({ error: "Booking ID is required" });
+      }
+      
+      // Get the booking with service and client details
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      // Create invoice data automatically from booking  
+      const invoiceNumber = `INV-${booking.id}-${new Date().getFullYear()}`;
+      const invoiceData = {
+        bookingId: booking.id,
+        clientId: booking.clientId,
+        invoiceNumber: invoiceNumber,
+        amount: booking.totalPrice, // This comes as string from DB
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        status: 'pending' as const,
+        notes: `Invoice for ${booking.service?.name} session on ${new Date(booking.date).toLocaleDateString()}`
       };
       
-      console.log("Created invoice:", newInvoice);
+      // Save to database using real storage
+      const invoice = await storage.createInvoice(invoiceData);
+      console.log("Created invoice from booking:", invoice);
       
-      res.json(newInvoice);
+      res.json(invoice);
     } catch (error) {
       console.error("Error creating invoice:", error);
-      res.status(500).json({ error: "Failed to create invoice" });
+      res.status(500).json({ error: "Failed to create invoice", details: error.message });
     }
   });
 

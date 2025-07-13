@@ -30,6 +30,173 @@ import {
   DollarSign,
   Eye
 } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertClientSchema } from "@shared/schema";
+import { z } from "zod";
+import { apiRequest } from "@/lib/queryClient";
+
+const addClientFormSchema = insertClientSchema.extend({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Valid email is required"),
+});
+
+function AddClientForm() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof addClientFormSchema>>({
+    resolver: zodResolver(addClientFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      status: "lead",
+      leadSource: "website",
+      preferredCommunication: "email",
+      timezone: "America/New_York",
+      leadScore: 0,
+      lifetimeValue: "0.00",
+    },
+  });
+
+  const createClientMutation = useMutation({
+    mutationFn: (data: z.infer<typeof addClientFormSchema>) =>
+      apiRequest("/api/clients", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
+      toast({
+        title: "Success",
+        description: "Client added successfully",
+      });
+      form.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add client",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof addClientFormSchema>) => {
+    createClientMutation.mutate(data);
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Client name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email *</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="client@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input placeholder="(808) 555-0123" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="leadSource"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Lead Source</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select source" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="website">Website</SelectItem>
+                    <SelectItem value="instagram">Instagram</SelectItem>
+                    <SelectItem value="referral">Referral</SelectItem>
+                    <SelectItem value="google">Google</SelectItem>
+                    <SelectItem value="facebook">Facebook</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Additional notes about the client..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => form.reset()}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={createClientMutation.isPending}
+            className="btn-bronze"
+          >
+            {createClientMutation.isPending ? "Adding..." : "Add Client"}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+}
 
 export function ClientManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -98,10 +265,20 @@ export function ClientManagement() {
             <Users className="h-5 w-5 mr-2" />
             Client Management
           </CardTitle>
-          <Button className="btn-bronze">
-            <Plus className="h-4 w-4 mr-1" />
-            Add Client
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="btn-bronze">
+                <Plus className="h-4 w-4 mr-1" />
+                Add Client
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Client</DialogTitle>
+              </DialogHeader>
+              <AddClientForm />
+            </DialogContent>
+          </Dialog>
         </div>
       </CardHeader>
       <CardContent>
