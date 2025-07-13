@@ -278,7 +278,7 @@ export const profiles = pgTable("profiles", {
     instagram: string;
     facebook: string;
     youtube: string;
-  }>().default({}),
+  }>().default({ instagram: "", facebook: "", youtube: "" }),
   isActive: boolean("is_active").default(true).notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
