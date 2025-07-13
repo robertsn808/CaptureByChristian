@@ -168,6 +168,7 @@ export function ContractManagement() {
   const [viewContractOpen, setViewContractOpen] = useState(false);
   const [aiAssistOpen, setAiAssistOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState<any>(null);
   const [contractForm, setContractForm] = useState({
     contractType: 'individual' as 'individual' | 'business',
     clientId: '',
@@ -269,60 +270,79 @@ export function ContractManagement() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `Based on this request: "${prompt}", please help fill out a photography contract. Provide suggestions for service type, pricing, timeline, deliverables, usage rights, and cancellation policy. Format as JSON with keys: serviceType, packageType, totalAmount, retainerAmount, timeline, deliverables, usageRights, cancellationPolicy, additionalTerms.`,
+          message: `Based on this photography session request: "${prompt}", provide detailed contract suggestions. 
+
+Please provide:
+1. Service Type (e.g., "Wedding Photography", "Portrait Session", "Corporate Event")
+2. Package Type (e.g., "Premium", "Standard", "Basic")
+3. Total Amount (dollar amount without $ symbol)
+4. Retainer Amount (typically 25-50% of total)
+5. Timeline (delivery timeframe)
+6. Deliverables (what client receives)
+7. Usage Rights (how client can use photos)
+8. Cancellation Policy (terms for canceling/rescheduling)
+9. Additional Terms (any special considerations)
+
+Format your response as a clear list with these exact headings so I can easily copy the information.`,
           sessionId: 'contract-assist-' + Date.now()
         })
       });
       if (!response.ok) throw new Error('Failed to get AI assistance');
       const data = await response.json();
-      
-      // Try to parse JSON from AI response
-      try {
-        const suggestions = JSON.parse(data.response.replace(/```json|```/g, ''));
-        return suggestions;
-      } catch {
-        // Fallback if not JSON
-        return { suggestions: data.response };
-      }
+      return data.response;
     },
-    onSuccess: (suggestions) => {
-      // Apply AI suggestions to form
-      if (suggestions.serviceType) {
-        setContractForm(prev => ({ ...prev, serviceType: suggestions.serviceType }));
-      }
-      if (suggestions.packageType) {
-        setContractForm(prev => ({ ...prev, packageType: suggestions.packageType }));
-      }
-      if (suggestions.totalAmount) {
-        setContractForm(prev => ({ ...prev, totalAmount: suggestions.totalAmount.toString() }));
-      }
-      if (suggestions.retainerAmount) {
-        setContractForm(prev => ({ ...prev, retainerAmount: suggestions.retainerAmount.toString() }));
-      }
-      if (suggestions.timeline) {
-        setContractForm(prev => ({ ...prev, timeline: suggestions.timeline }));
-      }
-      if (suggestions.deliverables) {
-        setContractForm(prev => ({ ...prev, deliverables: suggestions.deliverables }));
-      }
-      if (suggestions.usageRights) {
-        setContractForm(prev => ({ ...prev, usageRights: suggestions.usageRights }));
-      }
-      if (suggestions.cancellationPolicy) {
-        setContractForm(prev => ({ ...prev, cancellationPolicy: suggestions.cancellationPolicy }));
-      }
-      if (suggestions.additionalTerms) {
-        setContractForm(prev => ({ ...prev, additionalTerms: suggestions.additionalTerms }));
-      }
-      
-      setAiAssistOpen(false);
-      setAiPrompt('');
-      toast({ title: "AI suggestions applied to contract form!" });
+    onSuccess: (response) => {
+      setAiSuggestions(response);
+      toast({ title: "AI suggestions generated! Review and apply them below." });
     },
     onError: () => {
       toast({ title: "Failed to get AI assistance", variant: "destructive" });
     }
   });
+
+  const applyAiSuggestions = () => {
+    if (!aiSuggestions) return;
+    
+    // Parse the AI response for specific values
+    const lines = aiSuggestions.split('\n');
+    
+    lines.forEach((line: string) => {
+      const lower = line.toLowerCase();
+      if (lower.includes('service type') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, serviceType: value }));
+      } else if (lower.includes('package type') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, packageType: value }));
+      } else if (lower.includes('total amount') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/[\$"]/g, '');
+        if (value && !isNaN(Number(value))) setContractForm(prev => ({ ...prev, totalAmount: value }));
+      } else if (lower.includes('retainer amount') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/[\$"]/g, '');
+        if (value && !isNaN(Number(value))) setContractForm(prev => ({ ...prev, retainerAmount: value }));
+      } else if (lower.includes('timeline') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, timeline: value }));
+      } else if (lower.includes('deliverables') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, deliverables: value }));
+      } else if (lower.includes('usage rights') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, usageRights: value }));
+      } else if (lower.includes('cancellation policy') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, cancellationPolicy: value }));
+      } else if (lower.includes('additional terms') && lower.includes(':')) {
+        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        if (value) setContractForm(prev => ({ ...prev, additionalTerms: value }));
+      }
+    });
+    
+    setAiAssistOpen(false);
+    setAiSuggestions(null);
+    setAiPrompt('');
+    toast({ title: "AI suggestions applied to contract form!" });
+  };
 
   const resetForm = () => {
     setContractForm({
@@ -390,7 +410,7 @@ export function ContractManagement() {
       serviceType: contractForm.serviceType || null,
       title: contractForm.title.trim(),
       templateContent: generateContractContent(),
-      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate) : null,
+      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate).toISOString() : null,
       location: contractForm.location || null,
       packageType: contractForm.packageType || null,
       totalAmount: contractForm.totalAmount ? contractForm.totalAmount : null,
@@ -922,28 +942,65 @@ export function ContractManagement() {
               />
             </div>
             
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h4 className="font-medium mb-2">AI will help suggest:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Service type and package recommendations</li>
-                <li>• Appropriate pricing structure</li>
-                <li>• Timeline and deliverables</li>
-                <li>• Usage rights and policies</li>
-                <li>• Cancellation terms</li>
-              </ul>
-            </div>
+            {!aiSuggestions ? (
+              <>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2">AI will help suggest:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Service type and package recommendations</li>
+                    <li>• Appropriate pricing structure</li>
+                    <li>• Timeline and deliverables</li>
+                    <li>• Usage rights and policies</li>
+                    <li>• Cancellation terms</li>
+                  </ul>
+                </div>
 
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setAiAssistOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => aiAssistMutation.mutate(aiPrompt)}
-                disabled={!aiPrompt.trim() || aiAssistMutation.isPending}
-              >
-                {aiAssistMutation.isPending ? "Getting AI suggestions..." : "Get AI Suggestions"}
-              </Button>
-            </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setAiAssistOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => aiAssistMutation.mutate(aiPrompt)}
+                    disabled={!aiPrompt.trim() || aiAssistMutation.isPending}
+                  >
+                    {aiAssistMutation.isPending ? "Getting AI suggestions..." : "Get AI Suggestions"}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  <h4 className="font-medium">AI Suggestions:</h4>
+                  <div className="bg-muted/50 p-4 rounded-lg border max-h-64 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap text-sm">{aiSuggestions}</pre>
+                  </div>
+                </div>
+
+                <div className="flex justify-between space-x-2">
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(aiSuggestions);
+                      toast({ title: "AI suggestions copied to clipboard!" });
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Suggestions
+                  </Button>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" onClick={() => {
+                      setAiSuggestions(null);
+                      setAiPrompt('');
+                    }}>
+                      Start Over
+                    </Button>
+                    <Button onClick={applyAiSuggestions}>
+                      Apply to Form
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
