@@ -1118,8 +1118,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Save to database using real storage
-      const invoice = await storage.createInvoice(invoiceData);
-      console.log("Created invoice from booking:", invoice);
+      try {
+        const validatedData = insertInvoiceSchema.parse(invoiceData);
+        const invoice = await storage.createInvoice(validatedData);
+        console.log("Created invoice from booking:", invoice);
+        
+        res.json(invoice);
+      } catch (validationError) {
+        console.error("Invoice validation error:", validationError);
+        return res.status(400).json({ error: "Invalid invoice data", details: validationError.errors });
+      }
       
       res.json(invoice);
     } catch (error) {

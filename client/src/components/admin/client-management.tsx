@@ -38,6 +38,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertClientSchema } from "@shared/schema";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const addClientFormSchema = insertClientSchema.extend({
   name: z.string().min(1, "Name is required"),
