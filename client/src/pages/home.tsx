@@ -272,6 +272,8 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              </div>
+              
               <Button 
                 className="btn-bronze"
                 onClick={() => scrollToSection('contact')}

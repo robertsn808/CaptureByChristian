@@ -62,6 +62,44 @@ export function FeaturedGallery() {
         {/* Featured Images Grid */}
         {featuredImages && featuredImages.length > 0 ? (
           <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {featuredImages.map((image: any, index: number) => (
+                <div
+                  key={image.id || index}
+                  className="group relative aspect-square overflow-hidden rounded-2xl bg-muted cursor-pointer transform hover:scale-105 transition-all duration-500 hover:shadow-2xl"
+                  onClick={() => openLightbox(image)}
+                >
+                  <img
+                    src={image.url}
+                    alt={image.originalName || image.filename || 'Featured image'}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-white font-semibold text-lg">
+                            {image.originalName || image.filename || 'Featured Work'}
+                          </h4>
+                          {image.category && (
+                            <Badge variant="secondary" className="mt-1 bg-white/20 text-white border-white/30">
+                              {image.category}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Expand className="h-5 w-5 text-white" />
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
             {/* View Full Portfolio CTA */}
             <div className="text-center">
