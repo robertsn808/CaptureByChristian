@@ -450,15 +450,17 @@ function ImageDetailView({
           />
         </div>
         
-        <div className="flex items-center space-x-2">
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onToggleFeatured(image.id, !image.featured)}
             disabled={toggleFeaturedMutation.isPending}
+            className="w-full"
           >
             <Star className={`h-4 w-4 mr-1 ${image.featured ? 'fill-current text-yellow-500' : ''}`} />
-            {image.featured ? 'Remove from Featured' : 'Add to Featured'}
+            {image.featured ? 'Unfeatured' : 'Featured'}
           </Button>
           
           <Button 
@@ -470,6 +472,7 @@ function ImageDetailView({
               link.download = image.filename;
               link.click();
             }}
+            className="w-full"
           >
             <Download className="h-4 w-4 mr-1" />
             Download
@@ -480,8 +483,12 @@ function ImageDetailView({
             size="sm"
             onClick={() => {
               navigator.clipboard.writeText(image.url);
-              // Could add toast notification here
+              toast({
+                title: "Link Copied",
+                description: "Image URL copied to clipboard.",
+              });
             }}
+            className="w-full"
           >
             <Share className="h-4 w-4 mr-1" />
             Copy Link
@@ -492,9 +499,10 @@ function ImageDetailView({
             size="sm" 
             onClick={() => onDelete(image.id)}
             disabled={deleteMutation.isPending}
+            className="w-full"
           >
             <Trash2 className="h-4 w-4 mr-1" />
-            Delete
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </Button>
         </div>
       </div>
