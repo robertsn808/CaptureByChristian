@@ -79,39 +79,37 @@ export default function Home() {
             <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-cream/50 dark:from-background dark:to-background/50">
               <div className="absolute inset-0 bg-gradient-to-br from-bronze/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <CardContent className="p-10 relative z-10">
-                <div className="text-center">
-                  <div className="relative mb-6">
-                    <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-2xl p-6 w-24 h-24 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                      <Camera className="h-12 w-12 text-white" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
+                <div className="relative mb-6">
+                  <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-2xl p-6 w-24 h-24 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <Camera className="h-12 w-12 text-white" />
                   </div>
-                  <h3 className="font-playfair text-3xl font-bold mb-6 text-charcoal dark:text-white">Book Your Session</h3>
-                  <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                    Complete booking system with calendar integration, contract management, and secure payment processing. Professional workflow from start to finish.
-                  </p>
-                  <div className="space-y-3 mb-8">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
-                      Instant availability check
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
-                      Digital contract signing
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
-                      Secure payment gateway
-                    </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
                   </div>
-                  <Link href="/booking">
-                    <Button size="lg" className="btn-bronze w-full py-4 text-lg font-medium group-hover:shadow-lg transition-all duration-300">
-                      Start Booking Process
-                    </Button>
-                  </Link>
                 </div>
+                <h3 className="font-playfair text-3xl font-bold mb-6 text-charcoal dark:text-white">Book Your Session</h3>
+                <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+                  Complete booking system with calendar integration, contract management, and secure payment processing. Professional workflow from start to finish.
+                </p>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center justify-center text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
+                    Instant availability check
+                  </div>
+                  <div className="flex items-center justify-center text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
+                    Digital contract signing
+                  </div>
+                  <div className="flex items-center justify-center text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-bronze rounded-full mr-3"></div>
+                    Secure payment gateway
+                  </div>
+                </div>
+                <Link href="/booking">
+                  <Button size="lg" className="btn-bronze w-full py-4 text-lg font-medium group-hover:shadow-lg transition-all duration-300">
+                    Start Booking Process
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 

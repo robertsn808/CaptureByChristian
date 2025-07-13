@@ -43,7 +43,7 @@ export function FeaturedGallery() {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-6">
-            <div className="bg-gradient-to-r from-bronze to-teal rounded-full p-1">
+            <div className="from-bronze to-teal rounded-full p-1 bg-[#7e698a]">
               <div className="bg-white dark:bg-background rounded-full px-6 py-2">
                 <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-[#39312e]">
                   Featured Work
@@ -64,32 +64,30 @@ export function FeaturedGallery() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {featuredImages.map((image: any) => (
-                <div key={image.id} className="group cursor-pointer relative">
-                  <div className="relative overflow-hidden rounded-lg shadow-lg">
-                    <img
-                      src={image.url}
-                      alt={image.originalName || "Featured image"}
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                      onClick={() => openLightbox(image)}
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Expand className="text-white text-2xl" />
-                    </div>
-                    
-                    {/* Featured Badge */}
-                    <Badge className="absolute top-4 left-4 bg-gradient-to-r from-bronze to-teal text-white border-0">
-                      <Star className="h-3 w-3 mr-1 fill-current" />
-                      Featured
-                    </Badge>
-                    
-                    {/* Aerial Badge for drone shots */}
-                    {image.category === 'aerial' && (
-                      <Badge className="absolute top-4 right-4 bg-bronze text-white">
-                        <Award className="h-3 w-3 mr-1" />
-                        FAA Certified
-                      </Badge>
-                    )}
+                <div className="relative overflow-hidden rounded-lg shadow-lg">
+                  <img
+                    src={image.url}
+                    alt={image.originalName || "Featured image"}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                    onClick={() => openLightbox(image)}
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <Expand className="text-white text-2xl" />
                   </div>
+                  
+                  {/* Featured Badge */}
+                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-bronze to-teal text-white border-0">
+                    <Star className="h-3 w-3 mr-1 fill-current" />
+                    Featured
+                  </Badge>
+                  
+                  {/* Aerial Badge for drone shots */}
+                  {image.category === 'aerial' && (
+                    <Badge className="absolute top-4 right-4 bg-bronze text-white">
+                      <Award className="h-3 w-3 mr-1" />
+                      FAA Certified
+                    </Badge>
+                  )}
                 </div>
               ))}
             </div>
