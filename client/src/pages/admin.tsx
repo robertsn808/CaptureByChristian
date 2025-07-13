@@ -15,6 +15,7 @@ import { AdminInbox } from "@/components/admin/inbox";
 import { ClientCredentials } from "@/components/admin/client-credentials";
 import { ProfileManagement } from "@/components/admin/profile-management";
 import { ClientPortal } from "@/components/admin/client-portal";
+import { ServiceManagement } from "@/components/admin/service-management";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +70,7 @@ const menuSections = [
       { id: "calendar", label: "Calendar", icon: Calendar },
       { id: "clients", label: "Client Management", icon: Users },
       { id: "leads", label: "Lead Management", icon: TrendingUp },
+      { id: "services", label: "Service Management", icon: Settings },
       { id: "inbox", label: "Messages", icon: Mail },
       { id: "contracts", label: "Contracts", icon: FileText },
       { id: "invoices", label: "Invoices", icon: FileText },
@@ -281,6 +283,8 @@ export default function Admin() {
         return <ClientManagement />;
       case "leads":
         return <LeadManagement />;
+      case "services":
+        return <ServiceManagement />;
       case "gallery":
         return <PortfolioManagement />;
       case "inbox":

@@ -43,6 +43,7 @@ export const services = pgTable("services", {
   category: text("category").notNull(),
   active: boolean("active").default(true),
   addOns: json("add_ons").$type<Array<{id: string, name: string, price: number}>>(),
+  images: text("images").array(),
 });
 
 export const bookings = pgTable("bookings", {

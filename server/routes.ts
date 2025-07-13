@@ -88,6 +88,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update service
+  app.patch('/api/services/:id', async (req, res) => {
+    try {
+      const serviceId = parseInt(req.params.id);
+      const updateSchema = insertServiceSchema.partial();
+      const validatedData = updateSchema.parse(req.body);
+      
+      const updatedService = await storage.updateService(serviceId, validatedData);
+      res.json(updatedService);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Invalid service data', details: error.errors });
+        return;
+      }
+      log(`Error updating service: ${error}`, "express");
+      res.status(500).json({ error: 'Failed to update service' });
+    }
+  });
+
+  // Delete service
+  app.delete('/api/services/:id', async (req, res) => {
+    try {
+      await storage.deleteService(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (error) {
+      log(`Error deleting service: ${error}`, "express");
+      res.status(500).json({ error: 'Failed to delete service' });
+    }
+  });
+
+  // Get all services (including inactive) for admin
+  app.get('/api/services/admin', async (req, res) => {
+    try {
+      const services = await storage.getServices();
+      res.json(services);
+    } catch (error) {
+      log(`Error fetching admin services: ${error}`, "express");
+      res.status(500).json({ error: 'Failed to fetch services' });
+    }
+  });
+
   // Booking routes
   app.get("/api/bookings", async (req, res) => {
     try {
