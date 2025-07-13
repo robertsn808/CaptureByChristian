@@ -45,7 +45,7 @@ export function FeaturedGallery() {
           <div className="inline-block mb-6">
             <div className="bg-gradient-to-r from-bronze to-teal rounded-full p-1">
               <div className="bg-white dark:bg-background rounded-full px-6 py-2">
-                <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-transparent">
+                <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-[#39312e]">
                   Featured Work
                 </span>
               </div>
