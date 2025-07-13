@@ -500,7 +500,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold text-green-600">$24,650</p>
+                <p className="text-2xl font-bold text-green-600">${invoiceStats.totalRevenue?.toLocaleString() || '0'}</p>
               </div>
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
