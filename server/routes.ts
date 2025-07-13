@@ -1106,15 +1106,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create invoice data automatically from booking  
-      const invoiceNumber = `INV-${booking.id}-${new Date().getFullYear()}`;
       const invoiceData = {
         bookingId: booking.id,
-        clientId: booking.clientId,
-        invoiceNumber: invoiceNumber,
         amount: booking.totalPrice, // This comes as string from DB
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        status: 'pending' as const,
-        notes: `Invoice for ${booking.service?.name} session on ${new Date(booking.date).toLocaleDateString()}`
+        status: 'pending' as const
       };
       
       // Save to database using real storage
@@ -1128,8 +1124,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Invoice validation error:", validationError);
         return res.status(400).json({ error: "Invalid invoice data", details: validationError.errors });
       }
-      
-      res.json(invoice);
     } catch (error) {
       console.error("Error creating invoice:", error);
       res.status(500).json({ error: "Failed to create invoice", details: error.message });
