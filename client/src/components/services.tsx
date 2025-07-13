@@ -105,30 +105,7 @@ export function Services() {
           ))}
         </div>
 
-        {/* AI Features Banner */}
-        <div className="mt-8 md:mt-16 bg-gradient-to-r from-teal via-bronze to-teal rounded-lg md:rounded-xl p-4 md:p-8 text-white text-center">
-          <h3 className="font-playfair text-2xl md:text-3xl font-bold mb-3 md:mb-4">AI-Enhanced Experience</h3>
-          <p className="text-lg md:text-xl mb-4 md:mb-6 px-2">
-            Our advanced AI helps you select the perfect shots and creates personalized galleries automatically
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            <div className="text-center">
-              <Brain className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-2 md:mb-3" />
-              <h4 className="font-bold text-sm md:text-base">Smart Photo Selection</h4>
-              <p className="text-xs md:text-sm opacity-90">AI helps identify your best shots</p>
-            </div>
-            <div className="text-center">
-              <Palette className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-2 md:mb-3" />
-              <h4 className="font-bold text-sm md:text-base">Auto Gallery Creation</h4>
-              <p className="text-xs md:text-sm opacity-90">Organized by theme and style</p>
-            </div>
-            <div className="text-center sm:col-span-2 md:col-span-1">
-              <MessageSquare className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-2 md:mb-3" />
-              <h4 className="font-bold text-sm md:text-base">24/7 Booking Assistant</h4>
-              <p className="text-xs md:text-sm opacity-90">AI chat for instant responses</p>
-            </div>
-          </div>
-        </div>
+
       </div>
     </section>
   );
