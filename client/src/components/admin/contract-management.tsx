@@ -390,7 +390,7 @@ export function ContractManagement() {
       serviceType: contractForm.serviceType || null,
       title: contractForm.title.trim(),
       templateContent: generateContractContent(),
-      sessionDate: contractForm.sessionDate ? contractForm.sessionDate : null,
+      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate) : null,
       location: contractForm.location || null,
       packageType: contractForm.packageType || null,
       totalAmount: contractForm.totalAmount ? contractForm.totalAmount : null,
