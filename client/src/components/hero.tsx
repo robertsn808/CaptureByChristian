@@ -53,7 +53,7 @@ export function Hero() {
 
           {/* Enhanced Title with Stronger Shadows and Backgrounds */}
           <h1 className="font-playfair text-6xl md:text-8xl font-bold mb-8 leading-tight">
-            <span className="text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] filter">
+            <span className="drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] filter text-[#fcfcfc]">
               Licensed to Fly
             </span>
             <br />
@@ -65,7 +65,7 @@ export function Hero() {
           {/* Enhanced Description with Background and Better Typography */}
           <div className="mb-6 md:mb-10">
             <div className="bg-black/30 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 mb-4 md:mb-6 max-w-5xl mx-auto">
-              <p className="text-lg md:text-xl lg:text-2xl mb-3 md:mb-4 font-light text-white leading-relaxed drop-shadow-lg">
+              <p className="text-lg md:text-xl lg:text-2xl mb-3 md:mb-4 font-light leading-relaxed drop-shadow-lg text-[#e9e7eb]">
                 FAA-Certified Aerial Photography — capturing Hawaii's beauty from every angle, 
                 <span className="text-bronze font-medium"> legally and spectacularly</span>
               </p>
