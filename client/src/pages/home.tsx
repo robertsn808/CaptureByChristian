@@ -83,9 +83,6 @@ export default function Home() {
                   <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-2xl p-6 w-24 h-24 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                     <Camera className="h-12 w-12 text-white" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                  </div>
                 </div>
                 <h3 className="font-playfair text-3xl font-bold mb-6 text-charcoal dark:text-white">Book Your Session</h3>
                 <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
