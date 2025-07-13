@@ -60,6 +60,31 @@ export function ContactForm({ trigger }: ContactFormProps) {
 
   const submitContactMutation = useMutation({
     mutationFn: async (data: ContactFormData) => {
+      // First, get AI categorization for the contact
+      let aiCategory = "general_inquiry";
+      let suggestedResponse = "";
+      
+      try {
+        const aiResponse = await fetch("/api/ai/categorize-contact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            subject: data.subject,
+            message: data.message,
+          }),
+        });
+        
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          aiCategory = aiData.category || "general_inquiry";
+          suggestedResponse = aiData.suggestedResponse || "";
+        }
+      } catch (error) {
+        console.log("AI categorization failed, using default");
+      }
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
@@ -70,6 +95,8 @@ export function ContactForm({ trigger }: ContactFormProps) {
           source: "website",
           ipAddress: "127.0.0.1", // Will be set by server
           userAgent: navigator.userAgent,
+          aiCategory,
+          suggestedResponse,
         }),
       });
 

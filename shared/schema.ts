@@ -251,6 +251,8 @@ export const contactMessages = pgTable("contact_messages", {
   source: text("source").default("website").notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
+  aiCategory: text("ai_category").default("general_inquiry").notNull(),
+  suggestedResponse: text("suggested_response"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

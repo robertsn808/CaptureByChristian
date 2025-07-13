@@ -94,7 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const serviceId = parseInt(req.params.id);
       const updateSchema = insertServiceSchema.partial();
       const validatedData = updateSchema.parse(req.body);
-      
+
       const updatedService = await storage.updateService(serviceId, validatedData);
       res.json(updatedService);
     } catch (error: any) {
@@ -382,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const files = req.files as Express.Multer.File[];
         const { category = "portfolio", description = "" } = req.body;
-        
+
         if (!files || files.length === 0) {
           return res.status(400).json({ 
             error: "No files uploaded",
@@ -397,11 +397,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const filename = `${Date.now()}_${i}_${file.originalname}`;
-          
+
           // For demo: using base64 data URL since we don't have cloud storage
           const base64Data = file.buffer.toString('base64');
           const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
-          
+
           try {
             const imageData = {
               filename,
@@ -413,11 +413,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               featured: false,
               bookingId: null,
             };
-            
+
             // Save to database
             const savedImage = await storage.createGalleryImage(imageData);
             uploadedImages.push(savedImage);
-            
+
             console.log(`Saved image ${i + 1}/${files.length}: ${file.originalname}`);
           } catch (dbError) {
             console.error(`Failed to save image ${file.originalname}:`, dbError);
@@ -433,7 +433,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         console.log(`Successfully uploaded ${uploadedImages.length} image(s) to gallery`);
-        
+
         res.json({ 
           message: `${uploadedImages.length} image(s) uploaded successfully`,
           images: uploadedImages
@@ -452,9 +452,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/gallery/:id", async (req, res) => {
     try {
       const imageId = parseInt(req.params.id);
-      
+
       await storage.deleteGalleryImage(imageId);
-      
+
       res.json({ message: "Image deleted successfully" });
     } catch (error) {
       console.error("Error deleting image:", error);
@@ -466,9 +466,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const imageId = parseInt(req.params.id);
       const { featured } = req.body;
-      
+
       await storage.updateGalleryImage(imageId, { featured });
-      
+
       res.json({ 
         message: "Image featured status updated",
         featured
@@ -573,13 +573,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get contact messages
       const contactMessages = await storage.getContactMessages();
-      
+
       // Calculate actual real-time metrics
       const recentBookings = bookings.filter(b => new Date(b.createdAt) >= oneHourAgo);
       const todayBookings = bookings.filter(b => new Date(b.createdAt) >= oneDayAgo);
       const recentClients = clients.filter(c => new Date(c.createdAt) >= oneDayAgo);
       const todayMessages = contactMessages.filter(m => new Date(m.createdAt) >= oneDayAgo);
-      
+
       const realTimeData = {
         activeVisitors: 0, // No real-time visitor tracking available
         pageViews: 0, // No page view tracking available
@@ -668,16 +668,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/client-portal/login", async (req, res) => {
     try {
       const { email, password } = req.body;
-      
+
       // Find client by email
       const client = await storage.getClientByEmail(email);
       if (!client) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
-      
+
       // In a real app, you'd verify password hash
       // For demo purposes, we'll accept any password
-      
+
       res.json({
         id: client.id,
         name: client.name,
@@ -693,16 +693,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/client-portal/magic-link", async (req, res) => {
     try {
       const { email } = req.body;
-      
+
       const client = await storage.getClientByEmail(email);
       if (!client) {
         return res.status(404).json({ error: "Client not found" });
       }
-      
+
       // In a real app, you'd send an email with a secure token
       // For demo purposes, we'll just return success
       console.log(`Magic link would be sent to: ${email}`);
-      
+
       res.json({ message: "Magic link sent" });
     } catch (error) {
       console.error("Magic link error:", error);
@@ -715,7 +715,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const clientId = parseInt(req.query.clientId as string);
       const bookings = await storage.getBookings();
       const clientBookings = bookings.filter(b => b.clientId === clientId);
-      
+
       res.json(clientBookings);
     } catch (error) {
       console.error("Error fetching client bookings:", error);
@@ -726,13 +726,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/client-portal/galleries", async (req, res) => {
     try {
       const clientId = parseInt(req.query.clientId as string);
-      
+
       // Get real galleries from bookings and gallery images
       const bookings = await storage.getBookings();
       const galleryImages = await storage.getGalleryImages();
-      
+
       const clientBookings = bookings.filter(b => b.clientId === clientId);
-      
+
       const galleries = clientBookings.map(booking => {
         const bookingImages = galleryImages.filter(img => img.bookingId === booking.id);
         return {
@@ -745,7 +745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           createdAt: booking.createdAt
         };
       });
-      
+
       res.json(galleries);
     } catch (error) {
       console.error("Error fetching client galleries:", error);
@@ -757,15 +757,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { galleryId } = req.params;
       const bookingId = parseInt(galleryId);
-      
+
       // Get real gallery data from booking and images
       const booking = await storage.getBooking(bookingId);
       const galleryImages = await storage.getImagesByBooking(bookingId);
-      
+
       if (!booking) {
         return res.status(404).json({ error: "Gallery not found" });
       }
-      
+
       const gallery = {
         id: galleryId,
         name: `${booking.service?.name || 'Photography Session'} - ${new Date(booking.date).toLocaleDateString()}`,
@@ -778,7 +778,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filename: img.filename
         }))
       };
-      
+
       res.json(gallery);
     } catch (error) {
       console.error("Error fetching gallery:", error);
@@ -790,7 +790,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { galleryId } = req.params;
       const clientId = req.query.clientId;
-      
+
       // Get real gallery selections from database
       // For now, return empty selections since we haven't implemented selection storage yet
       const selections = {
@@ -799,7 +799,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         favorites: [],
         comments: {}
       };
-      
+
       res.json(selections);
     } catch (error) {
       console.error("Error fetching selections:", error);
@@ -811,13 +811,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { galleryId } = req.params;
       const { clientId, favorites, comments } = req.body;
-      
+
       // In a real app, save to database
       console.log(`Saving selections for gallery ${galleryId}, client ${clientId}:`, {
         favorites: favorites.length,
         comments: Object.keys(comments).length
       });
-      
+
       res.json({ message: "Selections saved successfully" });
     } catch (error) {
       console.error("Error saving selections:", error);
@@ -828,11 +828,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/client-portal/contracts", async (req, res) => {
     try {
       const clientId = parseInt(req.query.clientId as string);
-      
+
       // Get real contracts from bookings
       const bookings = await storage.getBookings();
       const clientBookings = bookings.filter(b => b.clientId === clientId);
-      
+
       const contracts = [];
       for (const booking of clientBookings) {
         const contract = await storage.getContract(booking.id);
@@ -846,7 +846,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       }
-      
+
       res.json(contracts);
     } catch (error) {
       console.error("Error fetching contracts:", error);
@@ -917,7 +917,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/client-credentials", async (req, res) => {
     try {
       const clients = await storage.getClients();
-      
+
       // For each client, get their credential status
       const credentials = clients.map(client => ({
         id: client.id,
@@ -931,7 +931,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         portalAccess: true, // Default enabled, would be stored in DB
         createdAt: client.createdAt
       }));
-      
+
       res.json(credentials);
     } catch (error) {
       console.error("Error fetching client credentials:", error);
@@ -942,14 +942,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/client-credentials/set-password", async (req, res) => {
     try {
       const { clientId, password } = req.body;
-      
+
       // In a real implementation, you would:
       // 1. Hash the password using bcrypt
       // 2. Store the hash in the database
       // 3. Update the client's credential status
-      
+
       console.log(`Password set for client ${clientId}: ${password}`);
-      
+
       res.json({ message: "Password set successfully" });
     } catch (error) {
       console.error("Error setting client password:", error);
@@ -960,7 +960,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/client-credentials/magic-link", async (req, res) => {
     try {
       const { clientId } = req.body;
-      
+
       const client = await storage.getClient(clientId);
       if (!client) {
         return res.status(404).json({ error: "Client not found" });
@@ -969,14 +969,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!client.phone) {
         return res.status(400).json({ error: "Client phone number is required for SMS delivery" });
       }
-      
+
       // Generate secure token with expiration
       const token = `magic_${clientId}_${Date.now()}`;
       const magicLink = `${process.env.REPL_URL || 'http://localhost:5000'}/client-portal?token=${token}`;
-      
+
       // Import SMS functionality
       const { sendMagicLinkSMS, isTwilioConfigured } = await import('./twilio');
-      
+
       if (!isTwilioConfigured()) {
         console.log(`Magic link for ${client.email}: ${magicLink}`);
         return res.json({ 
@@ -988,7 +988,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send magic link via SMS
       const smsSuccess = await sendMagicLinkSMS(client.name, client.phone, magicLink);
-      
+
       if (smsSuccess) {
         res.json({ 
           message: "Magic link sent via SMS successfully",
@@ -1014,7 +1014,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/client-credentials", async (req, res) => {
     try {
       const clients = await storage.getClients();
-      
+
       // Convert clients to credentials format with portal access info
       const credentials = clients.map(client => ({
         id: client.id,
@@ -1028,7 +1028,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         portalAccess: true, // Default to true for existing clients
         createdAt: client.createdAt || new Date().toISOString()
       }));
-      
+
       res.json(credentials);
     } catch (error) {
       console.error("Error fetching client credentials:", error);
@@ -1039,13 +1039,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/client-credentials/toggle-access", async (req, res) => {
     try {
       const { clientId, enabled } = req.body;
-      
+
       // In a real implementation, you would:
       // 1. Update the client's portal access flag in the database
       // 2. Optionally invalidate existing sessions if disabled
-      
+
       console.log(`Portal access ${enabled ? 'enabled' : 'disabled'} for client ${clientId}`);
-      
+
       res.json({ message: "Portal access updated successfully" });
     } catch (error) {
       console.error("Error updating portal access:", error);
@@ -1070,12 +1070,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get real invoices from database
       const bookings = await storage.getBookings();
       const invoicesList = [];
-      
+
       // Convert ALL bookings to invoices format for display, showing proper service pricing
       for (const booking of bookings) {
         // Calculate invoice items from service and add-ons
         const items = [];
-        
+
         // Base service item
         const baseServicePrice = Number(booking.service?.price || 0);
         items.push({
@@ -1084,7 +1084,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           rate: baseServicePrice,
           amount: baseServicePrice
         });
-        
+
         // Add-on items from booking
         let addOnTotal = 0;
         if (booking.addOns && Array.isArray(booking.addOns)) {
@@ -1099,10 +1099,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             addOnTotal += addOnPrice;
           });
         }
-        
+
         // Calculate totals using totalPrice from booking (which includes base + add-ons)
         const totalAmount = Number(booking.totalPrice || baseServicePrice);
-        
+
         const invoice = {
           id: `INV-${booking.id}`,
           bookingId: booking.id,
@@ -1120,7 +1120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         invoicesList.push(invoice);
       }
-      
+
       res.json(invoicesList);
     } catch (error) {
       console.error("Error fetching invoices:", error);
@@ -1132,17 +1132,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/invoices", async (req, res) => {
     try {
       const { bookingId } = req.body;
-      
+
       if (!bookingId) {
         return res.status(400).json({ error: "Booking ID is required" });
       }
-      
+
       // Get the booking with service and client details
       const booking = await storage.getBooking(bookingId);
       if (!booking) {
         return res.status(404).json({ error: "Booking not found" });
       }
-      
+
       // Create invoice data automatically from booking  
       const invoiceData = {
         bookingId: booking.id,
@@ -1150,13 +1150,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
         status: 'pending' as const
       };
-      
+
       // Save to database using real storage
       try {
         const validatedData = insertInvoiceSchema.parse(invoiceData);
         const invoice = await storage.createInvoice(validatedData);
         console.log("Created invoice from booking:", invoice);
-        
+
         res.json(invoice);
       } catch (validationError) {
         console.error("Invoice validation error:", validationError);
@@ -1199,10 +1199,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI contact categorization endpoint
+  app.post("/api/ai/categorize-contact", async (req, res) => {
+    try {
+      const { subject, message } = req.body;
+
+      // Use Replit AI to categorize the contact and suggest response
+      const prompt = `Analyze this contact form submission and categorize it:
+
+Subject: ${subject}
+Message: ${message}
+
+Please respond with a JSON object containing:
+{
+  "category": "wedding_inquiry|portrait_inquiry|event_inquiry|pricing_question|general_inquiry|complaint|booking_request",
+  "suggestedResponse": "A brief, personalized response to acknowledge their inquiry and next steps"
+}`;
+
+      let category = "general_inquiry";
+      let suggestedResponse = "Thank you for your inquiry! We'll get back to you within 24 hours.";
+
+      try {
+        const response = await fetch('https://api.replit.com/v1/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.REPLIT_AI_TOKEN || 'demo-token'}`
+          },
+          body: JSON.stringify({
+            model: 'replit-agent',
+            messages: [
+              { role: 'user', content: prompt }
+            ],
+            max_tokens: 200,
+            temperature: 0.3
+          })
+        });
+
+        if (response.ok) {
+          const aiData = await response.json();
+          const aiResponse = aiData.choices?.[0]?.message?.content;
+
+          if (aiResponse) {
+            try {
+              const parsed = JSON.parse(aiResponse);
+              category = parsed.category || category;
+              suggestedResponse = parsed.suggestedResponse || suggestedResponse;
+            } catch (parseError) {
+              // If JSON parsing fails, extract manually
+              if (aiResponse.toLowerCase().includes('wedding')) category = 'wedding_inquiry';
+              else if (aiResponse.toLowerCase().includes('portrait')) category = 'portrait_inquiry';
+              else if (aiResponse.toLowerCase().includes('event')) category = 'event_inquiry';
+              else if (aiResponse.toLowerCase().includes('pricing')) category = 'pricing_question';
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Replit AI categorization failed:', error);
+      }
+
+      res.json({ category, suggestedResponse });
+    } catch (error) {
+      console.error("AI categorization error:", error);
+      res.status(500).json({ 
+        category: "general_inquiry",
+        suggestedResponse: "Thank you for your inquiry! We'll get back to you within 24 hours."
+      });
+    }
+  });
+
+  // Contact form submission endpoint
   app.post("/api/contact", async (req, res) => {
     try {
-      const { name, email, phone, subject, message, priority, source } = req.body;
-      
+      const { 
+        name, email, phone, subject, message, priority, 
+        source, ipAddress, userAgent, aiCategory, suggestedResponse 
+      } = req.body;
+
+      // Insert contact message into database
       const contactMessage = await storage.createContactMessage({
         name,
         email,
@@ -1215,7 +1289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ipAddress: req.ip,
         userAgent: req.get('User-Agent'),
       });
-      
+
       res.json(contactMessage);
     } catch (error) {
       console.error("Error creating contact message:", error);
@@ -1227,7 +1301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const updates = req.body;
-      
+
       const message = await storage.updateContactMessage(parseInt(id), updates);
       res.json(message);
     } catch (error) {
@@ -1264,10 +1338,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { invoiceNumber } = req.params;
       const invoiceData = req.body;
-      
+
       // Import PDF generator
       const { generateInvoiceHTML } = await import("./pdf-generator");
-      
+
       // Convert invoice data to proper format
       const pdfData = {
         invoiceNumber: invoiceData.invoiceNumber,
@@ -1283,15 +1357,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         taxRate: 0,
         discount: 0
       };
-      
+
       const html = generateInvoiceHTML(pdfData);
-      
+
       // In production, you would convert HTML to PDF here using puppeteer or similar
       // For now, we'll return the HTML as a simulated PDF download
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoiceNumber}.pdf"`);
       res.send(html);
-      
+
     } catch (error) {
       console.error("PDF generation error:", error);
       res.status(500).json({ error: "Failed to generate PDF" });
@@ -1302,10 +1376,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { invoiceNumber } = req.params;
       const { invoice, includePaymentLink } = req.body;
-      
+
       // Import email functionality
       const { emailInvoice } = await import("./pdf-generator");
-      
+
       // Convert invoice data
       const emailData = {
         invoiceNumber: invoice.invoiceNumber,
@@ -1318,10 +1392,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         total: invoice.amount,
         notes: invoice.notes
       };
-      
+
       // Generate PDF and send email (mock implementation)
       const success = await emailInvoice(emailData, "");
-      
+
       if (success) {
         res.json({ 
           success: true, 
@@ -1331,7 +1405,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ error: "Failed to send email" });
       }
-      
+
     } catch (error) {
       console.error("Email send error:", error);
       res.status(500).json({ error: "Failed to send invoice email" });
@@ -1344,30 +1418,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookings = await storage.getBookings();
       const clients = await storage.getClients();
       const contactMessages = await storage.getContactMessages();
-      
+
       // Calculate real-time metrics from actual data
       const today = new Date();
       const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      
+
       const todayBookings = bookings.filter(b => new Date(b.createdAt) >= todayStart);
       const todayClients = clients.filter(c => new Date(c.createdAt) >= todayStart);
       const todayMessages = contactMessages.filter(m => new Date(m.createdAt) >= todayStart);
-      
+
       // Calculate authentic metrics from real business data
       const totalRevenue = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
       const recentMessages = contactMessages.filter(m => new Date(m.createdAt) >= new Date(Date.now() - 24 * 60 * 60 * 1000));
       const recentBookings = bookings.filter(b => new Date(b.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
-      
+
       // Estimate visitors based on contact messages and bookings activity
       const estimatedVisitors = Math.max(5, recentMessages.length * 3 + recentBookings.length * 2);
-      
+
       // Calculate lead sources from actual client data
       const leadSources = clients.reduce((acc: any, client: any) => {
         const source = client.source || 'Direct';
         acc[source] = (acc[source] || 0) + 1;
         return acc;
       }, {});
-      
+
       const totalLeads = clients.length;
       const trafficSources = Object.entries(leadSources).map(([source, count]: [string, any]) => ({
         source,
@@ -1413,7 +1487,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           { city: "No tracking data", state: "", visitors: 0 }
         ]
       };
-      
+
       res.json(realTimeData);
     } catch (error) {
       console.error("Error fetching real-time analytics:", error);
@@ -1426,13 +1500,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const bookings = await storage.getBookings();
       const clients = await storage.getClients();
-      
+
       // Calculate real workflow performance from booking data
       const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
       const totalBookings = bookings.length;
       const successRate = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
       const activeClients = clients.filter(c => c.status === 'active').length;
-      
+
       // Real workflow templates based on actual business operations
       const workflows = [
         {
@@ -1509,7 +1583,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           createdAt: new Date().toISOString()
         }
       ];
-      
+
       res.json(workflows);
     } catch (error) {
       console.error("Error fetching automation sequences:", error);
@@ -1521,7 +1595,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/automation-sequences", async (req, res) => {
     try {
       const { name, trigger, steps, active } = req.body;
-      
+
       // In a production system, this would save to the automation_sequences table
       const newWorkflow = {
         id: Date.now(),
@@ -1537,7 +1611,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         createdAt: new Date().toISOString()
       };
-      
+
       res.json(newWorkflow);
     } catch (error) {
       console.error("Error creating automation sequence:", error);
@@ -1549,7 +1623,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/client-portal/messages", async (req, res) => {
     try {
       const clientId = parseInt(req.query.clientId as string);
-      
+
       if (!clientId) {
         return res.status(400).json({ error: "Client ID is required" });
       }
@@ -1565,7 +1639,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/client-portal/send-message", async (req, res) => {
     try {
       const { clientId, message, senderName, senderEmail } = req.body;
-      
+
       if (!clientId || !message || !senderName || !senderEmail) {
         return res.status(400).json({ error: "Missing required fields" });
       }
