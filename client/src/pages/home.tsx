@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/hero";
-import { Portfolio } from "@/components/portfolio";
+import { FeaturedGallery } from "@/components/featured-gallery";
 import { Services } from "@/components/services";
 import { ContactForm } from "@/components/contact-form";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,8 +42,8 @@ export default function Home() {
       {/* Hero Section */}
       <Hero />
       
-      {/* Portfolio Section */}
-      <Portfolio />
+      {/* Featured Gallery Section */}
+      <FeaturedGallery />
       
       {/* Services Section */}
       <Services />
