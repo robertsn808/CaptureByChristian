@@ -393,20 +393,20 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4">Services</h4>
               <ul className="space-y-2 text-white/70">
-                <li><a href="#" className="hover:text-bronze transition-colors duration-200">Wedding Photography</a></li>
-                <li><a href="#" className="hover:text-bronze transition-colors duration-200">Portrait Sessions</a></li>
-                <li><a href="#" className="hover:text-bronze transition-colors duration-200">Aerial Photography</a></li>
-                <li><a href="#" className="hover:text-bronze transition-colors duration-200">Event Coverage</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-200">Wedding Photography</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-200">Portrait Sessions</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-200">Aerial Photography</a></li>
+                <li><a href="#" className="hover:text-white transition-colors duration-200">Event Coverage</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-bold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-white/70">
-                <li><a href="#portfolio" className="hover:text-bronze transition-colors duration-200">Portfolio</a></li>
-                <li><a href="#services" className="hover:text-bronze transition-colors duration-200">Pricing</a></li>
-                <li><Link href="/booking" className="hover:text-bronze transition-colors duration-200">Booking</Link></li>
-                <li><a href="#contact" className="hover:text-bronze transition-colors duration-200">Contact</a></li>
+                <li><a href="#portfolio" className="hover:text-white transition-colors duration-200">Portfolio</a></li>
+                <li><a href="#services" className="hover:text-white transition-colors duration-200">Pricing</a></li>
+                <li><Link href="/booking" className="hover:text-white transition-colors duration-200">Booking</Link></li>
+                <li><a href="#contact" className="hover:text-white transition-colors duration-200">Contact</a></li>
               </ul>
             </div>
             
