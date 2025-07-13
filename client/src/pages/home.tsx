@@ -426,26 +426,7 @@ export default function Home() {
               &copy; 2024 {profile?.name || "Captured by Christian"}. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
             </p>
             
-            {/* Admin Access Options */}
-            <div className="flex justify-center items-center space-x-4 text-xs">
-              <Link 
-                href="/admin" 
-                className="text-[#f5f5f5]/30 hover:text-bronze transition-colors duration-300 hover:scale-110 transform"
-                title="Business Management Portal"
-              >
-                ⚙️ Admin
-              </Link>
-              
-              <span className="text-[#f5f5f5]/20">|</span>
-              
-              <Link 
-                href="/admin" 
-                className="text-[#f5f5f5]/20 hover:text-bronze transition-all duration-300 hover:bg-[#f5f5f5]/5 px-2 py-1 rounded"
-                title="CRM Portal"
-              >
-                Dashboard
-              </Link>
-            </div>
+
           </div>
         </div>
       </footer>
