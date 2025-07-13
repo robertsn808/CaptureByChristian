@@ -66,6 +66,7 @@ export function PredictiveIntelligence() {
     const totalRevenue = bookingsData.reduce((sum: number, booking: any) => sum + (booking.totalPrice || 0), 0);
     const avgBookingValue = bookingsData.length > 0 ? totalRevenue / bookingsData.length : 0;
     const confirmedBookings = bookingsData.filter((b: any) => b.status === 'confirmed').length;
+    const conversionRate = clientsData.length > 0 ? (confirmedBookings / clientsData.length) * 100 : 0;
     const quarterlyProjection = totalRevenue * 3; // Simple projection based on current data
     
     const predictiveModels: PredictionModel[] = [
