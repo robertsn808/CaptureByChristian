@@ -423,13 +423,29 @@ Base your recommendations on current photography industry standards and the spec
       return;
     }
 
+    // Validate date format if provided
+    let validatedSessionDate = null;
+    if (contractForm.sessionDate) {
+      try {
+        const dateObj = new Date(contractForm.sessionDate);
+        if (isNaN(dateObj.getTime())) {
+          toast({ title: "Please enter a valid session date", variant: "destructive" });
+          return;
+        }
+        validatedSessionDate = contractForm.sessionDate;
+      } catch (error) {
+        toast({ title: "Please enter a valid session date", variant: "destructive" });
+        return;
+      }
+    }
+
     const contractData = {
       clientId: parseInt(contractForm.clientId),
       contractType: contractForm.contractType,
       serviceType: contractForm.serviceType || null,
       title: contractForm.title.trim(),
       templateContent: generateContractContent(),
-      sessionDate: contractForm.sessionDate ? contractForm.sessionDate : null,
+      sessionDate: validatedSessionDate,
       location: contractForm.location || null,
       packageType: contractForm.packageType || null,
       totalAmount: contractForm.totalAmount ? contractForm.totalAmount : null,

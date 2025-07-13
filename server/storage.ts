@@ -282,6 +282,52 @@ export class DatabaseStorage implements IStorage {
     return contract || undefined;
   }
 
+  async getContracts(): Promise<Contract[]> {
+    const contractsWithClients = await db
+      .select({
+        id: contracts.id,
+        bookingId: contracts.bookingId,
+        clientId: contracts.clientId,
+        contractType: contracts.contractType,
+        serviceType: contracts.serviceType,
+        status: contracts.status,
+        title: contracts.title,
+        templateContent: contracts.templateContent,
+        signedContent: contracts.signedContent,
+        sessionDate: contracts.sessionDate,
+        location: contracts.location,
+        packageType: contracts.packageType,
+        totalAmount: contracts.totalAmount,
+        retainerAmount: contracts.retainerAmount,
+        balanceAmount: contracts.balanceAmount,
+        paymentTerms: contracts.paymentTerms,
+        deliverables: contracts.deliverables,
+        timeline: contracts.timeline,
+        usageRights: contracts.usageRights,
+        cancellationPolicy: contracts.cancellationPolicy,
+        additionalTerms: contracts.additionalTerms,
+        signatureData: contracts.signatureData,
+        signedAt: contracts.signedAt,
+        photographerSignature: contracts.photographerSignature,
+        photographerSignedAt: contracts.photographerSignedAt,
+        signatureRequestSent: contracts.signatureRequestSent,
+        portalAccessToken: contracts.portalAccessToken,
+        createdAt: contracts.createdAt,
+        updatedAt: contracts.updatedAt,
+        client: {
+          id: clients.id,
+          name: clients.name,
+          email: clients.email,
+          phone: clients.phone
+        }
+      })
+      .from(contracts)
+      .leftJoin(clients, eq(contracts.clientId, clients.id))
+      .orderBy(desc(contracts.createdAt));
+
+    return contractsWithClients as Contract[];
+  }
+
   async createContract(insertContract: InsertContract): Promise<Contract> {
     const [contract] = await db
       .insert(contracts)

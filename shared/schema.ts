@@ -438,6 +438,28 @@ export type InsertService = z.infer<typeof insertServiceSchema>;
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 
+// Contract schema
+export const insertContractSchema = z.object({
+  clientId: z.number(),
+  contractType: z.enum(['individual', 'business']),
+  serviceType: z.string().nullable(),
+  title: z.string().min(1),
+  templateContent: z.string(),
+  sessionDate: z.string().nullable(),
+  location: z.string().nullable(),
+  packageType: z.string().nullable(),
+  totalAmount: z.string().nullable(),
+  retainerAmount: z.string().nullable(),
+  balanceAmount: z.string().nullable(),
+  paymentTerms: z.string().nullable(),
+  deliverables: z.string().nullable(),
+  timeline: z.string().nullable(),
+  usageRights: z.string().nullable(),
+  cancellationPolicy: z.string().nullable(),
+  additionalTerms: z.string().nullable(),
+  bookingId: z.number().nullable(),
+});
+
 export type Contract = typeof contracts.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 
