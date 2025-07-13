@@ -13,6 +13,7 @@ import { InvoiceGenerator } from "@/components/admin/invoice-generator";
 import { AdminInbox } from "@/components/admin/inbox";
 import { ClientCredentials } from "@/components/admin/client-credentials";
 import { ProfileManagement } from "@/components/admin/profile-management";
+import { ClientPortal } from "@/components/admin/client-portal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -286,127 +287,10 @@ export default function Admin() {
         return <InvoiceGenerator />;
       case "analytics":
         return <AdvancedAnalytics />;
+      case "portal-management":
+        return <ClientPortal />;
       case "portal":
-        return (
-          <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="h-5 w-5 mr-2" />
-                  Client Portal Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {/* Portal Access Management */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Portal Access</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                        <div>
-                          <h4 className="font-medium">Sarah Johnson</h4>
-                          <p className="text-sm text-muted-foreground">Wedding - Nov 15, 2024</p>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="outline">Gallery Access</Button>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700">Active</Button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                        <div>
-                          <h4 className="font-medium">Mike Chen</h4>
-                          <p className="text-sm text-muted-foreground">Portrait - Dec 2, 2024</p>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="outline">Send Access</Button>
-                          <Button size="sm" variant="secondary">Pending</Button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                        <div>
-                          <h4 className="font-medium">Lisa Wong</h4>
-                          <p className="text-sm text-muted-foreground">Engagement - Oct 20, 2024</p>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="outline">Revoke Access</Button>
-                          <Button size="sm" className="bg-red-600 hover:bg-red-700">Expired</Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Portal Analytics */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Portal Analytics</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">0</div>
-                          <div className="text-sm text-muted-foreground">Total Logins</div>
-                        </div>
-                        <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">0%</div>
-                          <div className="text-sm text-muted-foreground">Access Rate</div>
-                        </div>
-                        <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                          <div className="text-2xl font-bold text-purple-600">0</div>
-                          <div className="text-sm text-muted-foreground">Downloads</div>
-                        </div>
-                        <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
-                          <div className="text-2xl font-bold text-orange-600">N/A</div>
-                          <div className="text-sm text-muted-foreground">Avg Rating</div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <h4 className="font-medium">Recent Activity</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span>Sarah Johnson logged in</span>
-                            <span className="text-muted-foreground">2 hours ago</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Mike Chen downloaded 12 photos</span>
-                            <span className="text-muted-foreground">5 hours ago</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Lisa Wong left 5-star review</span>
-                            <span className="text-muted-foreground">1 day ago</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Portal Settings */}
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Portal Settings</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <Users className="h-6 w-6 mb-2" />
-                        Bulk Access Management
-                      </Button>
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <Settings className="h-6 w-6 mb-2" />
-                        Portal Customization
-                      </Button>
-                      <Button variant="outline" className="h-20 flex flex-col">
-                        <Mail className="h-6 w-6 mb-2" />
-                        Email Templates
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
-        );
+        return <ClientPortal />;
       case "credentials":
         return <ClientCredentials />;
       case "profile":

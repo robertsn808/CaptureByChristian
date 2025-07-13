@@ -405,17 +405,40 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getClientPortalStats(): Promise<any> {
-    const totalClients = await db.select({ count: sql<number>`count(*)` }).from(clients);
-    const totalBookings = await db.select({ count: sql<number>`count(*)` }).from(bookings);
-    const totalImages = await db.select({ count: sql<number>`count(*)` }).from(galleryImages);
+    // Get actual portal session data
+    const allSessions = await db.select().from(clientPortalSessions);
+    const activeSessions = allSessions.filter(s => s.status === 'active');
+    
+    // Calculate total logins (session starts)
+    const totalLogins = allSessions.length;
+    
+    // Calculate access rate (active vs total clients)
+    const totalClientsResult = await db.select({ count: sql<number>`count(*)` }).from(clients);
+    const totalClients = totalClientsResult[0]?.count || 0;
+    const accessRate = totalClients > 0 ? Math.round((activeSessions.length / totalClients) * 100) : 0;
+    
+    // Count downloads from activity logs
+    const downloadCount = allSessions.reduce((sum, session) => {
+      const activities = session.activityLog || [];
+      return sum + activities.filter((activity: any) => activity.type === 'download').length;
+    }, 0);
+    
+    // Calculate average rating from sessions with ratings
+    const sessionsWithRatings = allSessions.filter(s => s.rating && s.rating > 0);
+    const avgRating = sessionsWithRatings.length > 0 
+      ? (sessionsWithRatings.reduce((sum, s) => sum + (s.rating || 0), 0) / sessionsWithRatings.length).toFixed(1)
+      : null;
 
     return {
-      activeUsers: 0, // No portal tracking implemented
-      totalSessions: 0, // No session tracking implemented
-      avgSessionTime: "0:00", // No session tracking available
-      topActivity: "No tracking data", // No activity tracking available
-      downloadCount: 0, // No download tracking implemented
-      paymentCount: 0 // No payment tracking implemented
+      activeUsers: activeSessions.length,
+      totalSessions: totalLogins,
+      totalLogins: totalLogins,
+      accessRate: `${accessRate}%`,
+      avgSessionTime: "0:00", // Would need session duration tracking
+      topActivity: downloadCount > 0 ? "Photo downloads" : "Gallery viewing",
+      downloadCount: downloadCount,
+      paymentCount: 0, // Would need payment tracking integration
+      avgRating: avgRating || "No ratings yet"
     };
   }
 
