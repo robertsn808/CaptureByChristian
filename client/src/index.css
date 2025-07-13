@@ -149,6 +149,56 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-playfair;
   }
+
+  /* Ensure all text elements have proper contrast */
+  p, span, div, a, label {
+    color: var(--foreground);
+  }
+
+  /* Override specific text color classes for proper contrast */
+  .text-white {
+    color: hsl(0, 0%, 8%) !important;
+  }
+
+  .dark .text-white {
+    color: hsl(0, 0%, 95%) !important;
+  }
+
+  .text-black {
+    color: hsl(0, 0%, 8%) !important;
+  }
+
+  .dark .text-black {
+    color: hsl(0, 0%, 95%) !important;
+  }
+
+  /* Muted text should still be readable */
+  .text-muted-foreground {
+    color: hsl(0, 0%, 35%) !important;
+  }
+
+  .dark .text-muted-foreground {
+    color: hsl(0, 0%, 70%) !important;
+  }
+
+  /* Card and other component text */
+  .text-card-foreground {
+    color: var(--card-foreground) !important;
+  }
+
+  /* Button text fixes */
+  button {
+    color: var(--foreground);
+  }
+
+  button.text-white {
+    color: white !important;
+  }
+
+  /* Input and form text */
+  input, textarea, select {
+    color: var(--foreground);
+  }
 }
 
 @layer components {
@@ -172,6 +222,56 @@
 
   .text-medium-contrast {
     color: var(--muted-foreground);
+  }
+
+  /* Override problematic text colors */
+  .text-gray-100 {
+    color: hsl(0, 0%, 20%) !important;
+  }
+
+  .dark .text-gray-100 {
+    color: hsl(0, 0%, 85%) !important;
+  }
+
+  .text-gray-200 {
+    color: hsl(0, 0%, 25%) !important;
+  }
+
+  .dark .text-gray-200 {
+    color: hsl(0, 0%, 75%) !important;
+  }
+
+  .text-gray-300 {
+    color: hsl(0, 0%, 35%) !important;
+  }
+
+  .dark .text-gray-300 {
+    color: hsl(0, 0%, 65%) !important;
+  }
+
+  .text-gray-400 {
+    color: hsl(0, 0%, 40%) !important;
+  }
+
+  .dark .text-gray-400 {
+    color: hsl(0, 0%, 60%) !important;
+  }
+
+  .text-gray-500 {
+    color: hsl(0, 0%, 45%) !important;
+  }
+
+  .dark .text-gray-500 {
+    color: hsl(0, 0%, 55%) !important;
+  }
+
+  /* Ensure text on colored backgrounds is visible */
+  .text-on-dark {
+    color: white !important;
+  }
+
+  .text-on-light {
+    color: black !important;
   }
 
   /* Ensure buttons have proper contrast */
