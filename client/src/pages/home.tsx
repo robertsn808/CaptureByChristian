@@ -380,7 +380,9 @@ export default function Home() {
             <div>
               <h3 className="font-playfair text-2xl font-bold mb-4 flex items-center text-[#f5f5f5]">
                 <Camera className="h-6 w-6 mr-2 text-bronze" />
-                {profile?.name || "Christian Picaso"}
+                <Link href="/admin" className="hover:text-bronze transition-colors duration-200">
+                  {profile?.name || "Christian Picaso"}
+                </Link>
               </h3>
               <p className="text-[#f5f5f5]/70 mb-4">
                 {profile?.title || "Hawaii's premier photographer specializing in weddings, portraits, and aerial photography."}
