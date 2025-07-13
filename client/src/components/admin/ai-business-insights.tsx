@@ -150,7 +150,7 @@ export function AIBusinessInsights() {
         insight: `Based on your query "${aiQuery}" and current business data: Your photography business has ${clientsData.length} clients and ${bookingsData.length} bookings generating $${totalRevenue.toLocaleString()} revenue. ${totalRevenue > 0 ? 'Focus on scaling successful services and optimizing booking conversion.' : 'Prioritize lead generation and client acquisition strategies.'}`,
         confidence: 85,
         impact: "High",
-        action: "Develop luxury real estate photography partnerships",
+        action: totalRevenue > 0 ? "Focus on scaling successful services and optimizing booking conversion" : "Prioritize lead generation and client acquisition strategies",
         icon: Lightbulb,
         color: "text-yellow-600"
       });

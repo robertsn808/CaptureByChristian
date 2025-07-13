@@ -381,26 +381,8 @@ export class DatabaseStorage implements IStorage {
 
   // Client Portal Sessions
   async getClientPortalSessions(): Promise<any[]> {
-    const sessions = await db
-      .select({
-        id: clients.id,
-        clientId: clients.id,
-        clientName: clients.name,
-        sessionToken: sql<string>`'portal_' || ${clients.id} || '_' || extract(epoch from ${clients.createdAt})`,
-        lastAccess: clients.createdAt,
-        ipAddress: sql<string>`'192.168.1.100'`,
-        userAgent: sql<string>`'Web Browser'`,
-        device: sql<string>`'Web'`,
-        location: sql<string>`'Hawaii'`,
-        status: sql<string>`'active'`,
-        activities: sql<any[]>`'[]'::json`,
-      })
-      .from(clients)
-      .innerJoin(bookings, eq(bookings.clientId, clients.id))
-      .groupBy(clients.id, clients.name, clients.createdAt)
-      .orderBy(desc(clients.createdAt));
-
-    return sessions;
+    // Return empty sessions since no real portal tracking is implemented
+    return [];
   }
 
   async getActiveClientPortalSessions(): Promise<any[]> {
@@ -423,18 +405,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getClientPortalStats(): Promise<any> {
-    const sessions = await this.getClientPortalSessions();
     const totalClients = await db.select({ count: sql<number>`count(*)` }).from(clients);
     const totalBookings = await db.select({ count: sql<number>`count(*)` }).from(bookings);
     const totalImages = await db.select({ count: sql<number>`count(*)` }).from(galleryImages);
 
     return {
-      activeUsers: sessions.filter(s => s.status === 'active').length,
-      totalSessions: sessions.length,
-      avgSessionTime: "8 min",
-      topActivity: "Gallery Views",
-      downloadCount: Number(totalImages[0]?.count || 0),
-      paymentCount: await this.getMonthlyRevenue(new Date().getFullYear(), new Date().getMonth() + 1) / 100
+      activeUsers: 0, // No portal tracking implemented
+      totalSessions: 0, // No session tracking implemented
+      avgSessionTime: "0:00", // No session tracking available
+      topActivity: "No tracking data", // No activity tracking available
+      downloadCount: 0, // No download tracking implemented
+      paymentCount: 0 // No payment tracking implemented
     };
   }
 
