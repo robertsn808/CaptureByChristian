@@ -166,6 +166,8 @@ export function ContractManagement() {
   const [newContractOpen, setNewContractOpen] = useState(false);
   const [editTemplateOpen, setEditTemplateOpen] = useState(false);
   const [viewContractOpen, setViewContractOpen] = useState(false);
+  const [aiAssistOpen, setAiAssistOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
   const [contractForm, setContractForm] = useState({
     contractType: 'individual' as 'individual' | 'business',
     clientId: '',
@@ -257,6 +259,68 @@ export function ContractManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contracts'] });
       toast({ title: "Contract sent to client's portal successfully!" });
+    }
+  });
+
+  // AI assistance mutation
+  const aiAssistMutation = useMutation({
+    mutationFn: async (prompt: string) => {
+      const response = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Based on this request: "${prompt}", please help fill out a photography contract. Provide suggestions for service type, pricing, timeline, deliverables, usage rights, and cancellation policy. Format as JSON with keys: serviceType, packageType, totalAmount, retainerAmount, timeline, deliverables, usageRights, cancellationPolicy, additionalTerms.`,
+          sessionId: 'contract-assist-' + Date.now()
+        })
+      });
+      if (!response.ok) throw new Error('Failed to get AI assistance');
+      const data = await response.json();
+      
+      // Try to parse JSON from AI response
+      try {
+        const suggestions = JSON.parse(data.response.replace(/```json|```/g, ''));
+        return suggestions;
+      } catch {
+        // Fallback if not JSON
+        return { suggestions: data.response };
+      }
+    },
+    onSuccess: (suggestions) => {
+      // Apply AI suggestions to form
+      if (suggestions.serviceType) {
+        setContractForm(prev => ({ ...prev, serviceType: suggestions.serviceType }));
+      }
+      if (suggestions.packageType) {
+        setContractForm(prev => ({ ...prev, packageType: suggestions.packageType }));
+      }
+      if (suggestions.totalAmount) {
+        setContractForm(prev => ({ ...prev, totalAmount: suggestions.totalAmount.toString() }));
+      }
+      if (suggestions.retainerAmount) {
+        setContractForm(prev => ({ ...prev, retainerAmount: suggestions.retainerAmount.toString() }));
+      }
+      if (suggestions.timeline) {
+        setContractForm(prev => ({ ...prev, timeline: suggestions.timeline }));
+      }
+      if (suggestions.deliverables) {
+        setContractForm(prev => ({ ...prev, deliverables: suggestions.deliverables }));
+      }
+      if (suggestions.usageRights) {
+        setContractForm(prev => ({ ...prev, usageRights: suggestions.usageRights }));
+      }
+      if (suggestions.cancellationPolicy) {
+        setContractForm(prev => ({ ...prev, cancellationPolicy: suggestions.cancellationPolicy }));
+      }
+      if (suggestions.additionalTerms) {
+        setContractForm(prev => ({ ...prev, additionalTerms: suggestions.additionalTerms }));
+      }
+      
+      setAiAssistOpen(false);
+      setAiPrompt('');
+      toast({ title: "AI suggestions applied to contract form!" });
+    },
+    onError: () => {
+      toast({ title: "Failed to get AI assistance", variant: "destructive" });
     }
   });
 
@@ -380,7 +444,18 @@ export function ContractManagement() {
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New Contract</DialogTitle>
+              <DialogTitle className="flex items-center justify-between">
+                <span>Create New Contract</span>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setAiAssistOpen(true)}
+                  className="ml-auto"
+                >
+                  <Camera className="h-4 w-4 mr-2" />
+                  AI Assist
+                </Button>
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-6">
               {/* Contract Type Selection */}
@@ -823,6 +898,53 @@ export function ContractManagement() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Contract Assistant Dialog */}
+      <Dialog open={aiAssistOpen} onOpenChange={setAiAssistOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Camera className="h-5 w-5" />
+              <span>AI Contract Assistant</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Describe your photography session</Label>
+              <Textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="e.g., Wedding photography for 150 guests at beachfront venue, 8-hour coverage, need drone shots for ceremony..."
+                rows={4}
+              />
+            </div>
+            
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">AI will help suggest:</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Service type and package recommendations</li>
+                <li>• Appropriate pricing structure</li>
+                <li>• Timeline and deliverables</li>
+                <li>• Usage rights and policies</li>
+                <li>• Cancellation terms</li>
+              </ul>
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setAiAssistOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => aiAssistMutation.mutate(aiPrompt)}
+                disabled={!aiPrompt.trim() || aiAssistMutation.isPending}
+              >
+                {aiAssistMutation.isPending ? "Getting AI suggestions..." : "Get AI Suggestions"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
