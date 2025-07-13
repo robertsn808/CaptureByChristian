@@ -103,67 +103,51 @@ export function PredictiveIntelligence() {
       },
       {
         type: "client_behavior",
-        title: "Client Lifetime Value Growth",
-        prediction: "Average CLV will reach $4,200 (+45%)",
-        probability: 78,
-        impact: 'Medium',
-        timeframe: "Next 6 months",
-        confidence: 85,
+        title: "Client Lifetime Value Analysis",
+        prediction: `Current CLV: $${avgBookingValue.toFixed(0)} (based on ${bookingsData.length} bookings)`,
+        probability: bookingsData.length > 0 ? 75 : 45,
+        impact: bookingsData.length > 3 ? 'Medium' : 'Low',
+        timeframe: "Current data",
+        confidence: Math.min(85, bookingsData.length * 15),
         factors: [
-          "Repeat booking rate trending upward",
-          "Hawaii visitors return for anniversaries",
-          "AI-enhanced service quality increasing satisfaction",
-          "Premium positioning attracting higher-value clients"
+          `Average booking value: $${avgBookingValue.toFixed(0)}`,
+          `Total clients: ${clientsData.length}`,
+          `Confirmed bookings: ${confirmedBookings}`,
+          `Revenue per client: $${clientsData.length > 0 ? (totalRevenue / clientsData.length).toFixed(0) : '0'}`
         ],
-        recommendation: "Implement loyalty program and anniversary booking reminders"
+        recommendation: bookingsData.length > 0 ? "Focus on increasing repeat booking frequency" : "Establish baseline client value metrics"
       },
       {
         type: "market_expansion",
-        title: "Luxury Market Penetration",
-        prediction: "Capture 15% of Hawaii luxury photography market",
-        probability: 82,
-        impact: 'High',
-        timeframe: "12 months",
-        confidence: 79,
+        title: "Market Position Analysis",
+        prediction: `Current market position: ${bookingsData.length} active bookings, $${totalRevenue.toLocaleString()} revenue`,
+        probability: totalRevenue > 1000 ? 75 : 45,
+        impact: totalRevenue > 5000 ? 'High' : 'Medium',
+        timeframe: "Current analysis",
+        confidence: Math.min(79, bookingsData.length * 10),
         factors: [
-          "Premium positioning with AI enhancement",
-          "FAA certification competitive moat",
-          "High client satisfaction scores (4.8/5)",
-          "Limited luxury-focused competitors"
+          `Current revenue: $${totalRevenue.toLocaleString()}`,
+          `Active bookings: ${bookingsData.length}`,
+          `Client base: ${clientsData.length}`,
+          `Average booking value: $${avgBookingValue.toFixed(0)}`
         ],
-        recommendation: "Develop ultra-premium packages ($5K+) targeting luxury resorts and celebrities"
+        recommendation: totalRevenue > 2000 ? "Focus on scaling current successful services" : "Build market presence through consistent service delivery"
       },
       {
-        type: "seasonal_optimization",
-        title: "Peak Season Capacity",
-        prediction: "100% booking capacity June-September",
-        probability: 91,
-        impact: 'High',
-        timeframe: "Wedding season 2025",
-        confidence: 94,
+        type: "booking_optimization",
+        title: "Booking Conversion Analysis",
+        prediction: `Current conversion rate: ${conversionRate.toFixed(1)}% (${confirmedBookings} of ${clientsData.length} leads)`,
+        probability: clientsData.length > 0 ? 85 : 45,
+        impact: confirmedBookings > 2 ? 'High' : 'Medium',
+        timeframe: "Current performance",
+        confidence: Math.min(90, clientsData.length * 10),
         factors: [
-          "Current booking velocity indicators",
-          "Hawaii wedding industry growth projections",
-          "Limited photographer availability",
-          "Premium positioning attracting advance bookings"
+          `Total leads: ${clientsData.length}`,
+          `Confirmed bookings: ${confirmedBookings}`,
+          `Pending bookings: ${bookingsData.length - confirmedBookings}`,
+          `Average response time: Based on current data`
         ],
-        recommendation: "Hire assistant photographer or implement premium waiting list pricing"
-      },
-      {
-        type: "technology_adoption",
-        title: "AI Service Differentiation",
-        prediction: "AI features will drive 45% of new bookings",
-        probability: 86,
-        impact: 'Medium',
-        timeframe: "Next 8 months",
-        confidence: 81,
-        factors: [
-          "Client interest in AI-enhanced editing",
-          "Real-time preview capabilities unique advantage",
-          "Social media demand for perfect shots",
-          "Technology-forward brand positioning"
-        ],
-        recommendation: "Showcase AI capabilities prominently in marketing and consultations"
+        recommendation: confirmedBookings > 2 ? "Maintain current conversion strategies" : "Focus on improving lead response time and follow-up processes"
       }
     ];
 
@@ -177,10 +161,10 @@ export function PredictiveIntelligence() {
 
   const marketIndicators = [
     {
-      indicator: "Hawaii Tourism Recovery",
-      value: "87%",
-      trend: "up",
-      impact: "Direct correlation with photography demand"
+      indicator: "Current Business Activity",
+      value: `${bookingsData.length} bookings`,
+      trend: bookingsData.length > 0 ? "up" : "neutral",
+      impact: `${bookingsData.length} active bookings in portfolio`
     },
     {
       indicator: "Wedding Industry Growth",

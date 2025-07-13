@@ -536,10 +536,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
       const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+      // Get contact messages
+      const contactMessages = await storage.getContactMessages();
+      
       // Calculate actual real-time metrics
       const recentBookings = bookings.filter(b => new Date(b.createdAt) >= oneHourAgo);
       const todayBookings = bookings.filter(b => new Date(b.createdAt) >= oneDayAgo);
       const recentClients = clients.filter(c => new Date(c.createdAt) >= oneDayAgo);
+      const todayMessages = contactMessages.filter(m => new Date(m.createdAt) >= oneDayAgo);
       
       const realTimeData = {
         activeVisitors: 0, // No real-time visitor tracking available

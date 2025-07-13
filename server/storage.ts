@@ -422,11 +422,7 @@ export class DatabaseStorage implements IStorage {
   // Invoice Analytics
   async getInvoiceStats(): Promise<any> {
     try {
-      const allBookings = await db.select({
-        id: bookings.id,
-        totalPrice: bookings.totalPrice,
-        status: bookings.status
-      }).from(bookings);
+      const allBookings = await db.select().from(bookings);
       
       // Calculate stats from actual bookings since no separate invoices table exists yet
       const completedBookings = allBookings.filter(b => b.status === 'completed');
