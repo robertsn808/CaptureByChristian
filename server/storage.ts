@@ -38,9 +38,12 @@ export interface IStorage {
   updateBooking(id: number, booking: Partial<InsertBooking>): Promise<Booking>;
 
   // Contracts
-  getContract(bookingId: number): Promise<Contract | undefined>;
+  getContracts(): Promise<(Contract & { client: Client })[]>;
+  getContract(id: number): Promise<(Contract & { client: Client }) | undefined>;
+  getContractByBooking(bookingId: number): Promise<Contract | undefined>;
   createContract(contract: InsertContract): Promise<Contract>;
   updateContract(id: number, contract: Partial<InsertContract>): Promise<Contract>;
+  sendContractToPortal(contractId: number): Promise<{ success: boolean; portalLink?: string }>;
 
   // Invoices
   getInvoice(bookingId: number): Promise<Invoice | undefined>;
@@ -53,6 +56,7 @@ export interface IStorage {
   getImagesByBooking(bookingId: number): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
   updateGalleryImage(id: number, image: Partial<InsertGalleryImage>): Promise<GalleryImage>;
+  deleteGalleryImage(id: number): Promise<void>;
 
   // AI Chats
   getAiChat(sessionId: string): Promise<AiChat | undefined>;
@@ -226,19 +230,81 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Contracts
-  async getContract(bookingId: number): Promise<Contract | undefined> {
-    const [contract] = await db.select().from(contracts).where(eq(contracts.bookingId, bookingId));
+  async getContracts(): Promise<(Contract & { client: Client })[]> {
+    const contractsData = await db
+      .select()
+      .from(contracts)
+      .leftJoin(clients, eq(contracts.clientId, clients.id))
+      .orderBy(desc(contracts.createdAt));
+    
+    return contractsData.map(row => ({
+      ...row.contracts,
+      client: row.clients!
+    }));
+  }
+
+  async getContract(id: number): Promise<(Contract & { client: Client }) | undefined> {
+    const [contractData] = await db
+      .select()
+      .from(contracts)
+      .leftJoin(clients, eq(contracts.clientId, clients.id))
+      .where(eq(contracts.id, id));
+    
+    if (!contractData) return undefined;
+    
+    return {
+      ...contractData.contracts,
+      client: contractData.clients!
+    };
+  }
+
+  async getContractByBooking(bookingId: number): Promise<Contract | undefined> {
+    const [contract] = await db
+      .select()
+      .from(contracts)
+      .where(eq(contracts.bookingId, bookingId));
     return contract || undefined;
   }
 
   async createContract(insertContract: InsertContract): Promise<Contract> {
-    const [contract] = await db.insert(contracts).values(insertContract).returning();
+    const [contract] = await db
+      .insert(contracts)
+      .values(insertContract)
+      .returning();
     return contract;
   }
 
   async updateContract(id: number, updateContract: Partial<InsertContract>): Promise<Contract> {
-    const [contract] = await db.update(contracts).set(updateContract).where(eq(contracts.id, id)).returning();
+    const [contract] = await db
+      .update(contracts)
+      .set({ ...updateContract, updatedAt: new Date() })
+      .where(eq(contracts.id, id))
+      .returning();
     return contract;
+  }
+
+  async sendContractToPortal(contractId: number): Promise<{ success: boolean; portalLink?: string }> {
+    // Generate a secure token for client portal access
+    const portalToken = `contract_${contractId}_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+    
+    // Update contract with portal token and sent timestamp
+    await db
+      .update(contracts)
+      .set({
+        status: 'sent',
+        portalAccessToken: portalToken,
+        signatureRequestSent: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(contracts.id, contractId));
+    
+    // Create portal link
+    const portalLink = `${process.env.REPLIT_DOMAINS || 'localhost:3000'}/client-portal/contract/${portalToken}`;
+    
+    return {
+      success: true,
+      portalLink
+    };
   }
 
   // Invoices
@@ -278,6 +344,10 @@ export class DatabaseStorage implements IStorage {
   async updateGalleryImage(id: number, updateImage: Partial<InsertGalleryImage>): Promise<GalleryImage> {
     const [image] = await db.update(galleryImages).set(updateImage).where(eq(galleryImages.id, id)).returning();
     return image;
+  }
+
+  async deleteGalleryImage(id: number): Promise<void> {
+    await db.delete(galleryImages).where(eq(galleryImages.id, id));
   }
 
   // AI Chats

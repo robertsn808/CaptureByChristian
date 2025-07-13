@@ -93,6 +93,17 @@ export function PortfolioManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      toast({
+        title: "Image Deleted",
+        description: "The image has been successfully removed from your portfolio.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -107,8 +118,19 @@ export function PortfolioManagement() {
       if (!response.ok) throw new Error('Update failed');
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      toast({
+        title: `Image ${data.featured ? 'Added to' : 'Removed from'} Featured`,
+        description: `The image has been ${data.featured ? 'featured' : 'unfeatured'} successfully.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -153,13 +175,11 @@ export function PortfolioManagement() {
   };
 
   const toggleFeatured = (imageId: number, featured: boolean) => {
-    // In a real implementation, this would call an API to update the image
-    console.log(`Toggle featured status for image ${imageId} to ${!featured}`);
+    toggleFeaturedMutation.mutate({ imageId, featured: !featured });
   };
 
   const deleteImage = (imageId: number) => {
-    // In a real implementation, this would call an API to delete the image
-    console.log(`Delete image ${imageId}`);
+    deleteMutation.mutate(imageId);
   };
 
   const stats = getImageStats();

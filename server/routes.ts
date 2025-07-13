@@ -412,12 +412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const imageId = parseInt(req.params.id);
       
-      // In a real implementation, you would:
-      // 1. Delete the image file from storage
-      // 2. Remove database record using storage layer
-      // 3. Update any references
-      
-      console.log(`Deleting image ${imageId}`);
+      await storage.deleteGalleryImage(imageId);
       
       res.json({ message: "Image deleted successfully" });
     } catch (error) {
@@ -431,8 +426,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const imageId = parseInt(req.params.id);
       const { featured } = req.body;
       
-      // In a real implementation, you would update using storage.updateGalleryImage()
-      console.log(`Setting image ${imageId} featured: ${featured}`);
+      await storage.updateGalleryImage(imageId, { featured });
       
       res.json({ 
         message: "Image featured status updated",
@@ -1526,6 +1520,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating profile:", error);
       res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
+  // Contract routes
+  app.get("/api/contracts", async (req, res) => {
+    try {
+      const contracts = await storage.getContracts();
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      res.status(500).json({ error: "Failed to fetch contracts", details: error.message });
+    }
+  });
+
+  app.post("/api/contracts", async (req, res) => {
+    try {
+      const contractData = insertContractSchema.parse(req.body);
+      const contract = await storage.createContract(contractData);
+      res.json(contract);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid contract data", details: error.errors });
+      } else {
+        console.error("Error creating contract:", error);
+        res.status(500).json({ error: "Failed to create contract", details: error.message });
+      }
+    }
+  });
+
+  app.get("/api/contracts/:id", async (req, res) => {
+    try {
+      const contract = await storage.getContract(parseInt(req.params.id));
+      if (!contract) {
+        return res.status(404).json({ error: "Contract not found" });
+      }
+      res.json(contract);
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      res.status(500).json({ error: "Failed to fetch contract", details: error.message });
+    }
+  });
+
+  app.put("/api/contracts/:id", async (req, res) => {
+    try {
+      const updates = req.body;
+      const contract = await storage.updateContract(parseInt(req.params.id), updates);
+      res.json(contract);
+    } catch (error) {
+      console.error("Error updating contract:", error);
+      res.status(500).json({ error: "Failed to update contract", details: error.message });
+    }
+  });
+
+  app.post("/api/contracts/:id/send", async (req, res) => {
+    try {
+      const contractId = parseInt(req.params.id);
+      const result = await storage.sendContractToPortal(contractId);
+      res.json(result);
+    } catch (error) {
+      console.error("Error sending contract:", error);
+      res.status(500).json({ error: "Failed to send contract", details: error.message });
     }
   });
 

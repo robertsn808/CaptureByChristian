@@ -62,12 +62,34 @@ export const bookings = pgTable("bookings", {
 
 export const contracts = pgTable("contracts", {
   id: serial("id").primaryKey(),
-  bookingId: integer("booking_id").references(() => bookings.id).notNull(),
+  bookingId: integer("booking_id").references(() => bookings.id),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  contractType: text("contract_type").notNull(), // 'individual', 'business'
+  serviceType: text("service_type"), // 'portrait', 'wedding', 'commercial', etc.
+  status: text("status").notNull().default("draft"), // 'draft', 'sent', 'signed', 'completed', 'cancelled'
+  title: text("title").notNull(),
   templateContent: text("template_content").notNull(),
   signedContent: text("signed_content"),
+  sessionDate: timestamp("session_date"),
+  location: text("location"),
+  packageType: text("package_type"),
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }),
+  retainerAmount: decimal("retainer_amount", { precision: 10, scale: 2 }),
+  balanceAmount: decimal("balance_amount", { precision: 10, scale: 2 }),
+  paymentTerms: text("payment_terms"),
+  deliverables: text("deliverables"),
+  timeline: text("timeline"),
+  usageRights: text("usage_rights"),
+  cancellationPolicy: text("cancellation_policy"),
+  additionalTerms: text("additional_terms"),
   signatureData: text("signature_data"), // base64 signature
   signedAt: timestamp("signed_at"),
-  status: text("status").notNull().default("pending"), // pending, signed
+  photographerSignature: text("photographer_signature"),
+  photographerSignedAt: timestamp("photographer_signed_at"),
+  signatureRequestSent: timestamp("signature_request_sent"),
+  portalAccessToken: text("portal_access_token"), // For client portal access
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 export const invoices = pgTable("invoices", {

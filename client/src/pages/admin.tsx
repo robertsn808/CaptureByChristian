@@ -10,6 +10,7 @@ import { RealTimeAnalytics } from "@/components/admin/real-time-analytics";
 import { AdvancedAIChat } from "@/components/admin/advanced-ai-chat";
 import { PredictiveIntelligence } from "@/components/admin/predictive-intelligence";
 import { InvoiceGenerator } from "@/components/admin/invoice-generator";
+import { ContractManagement } from "@/components/admin/contract-management";
 import { AdminInbox } from "@/components/admin/inbox";
 import { ClientCredentials } from "@/components/admin/client-credentials";
 import { ProfileManagement } from "@/components/admin/profile-management";
@@ -69,6 +70,7 @@ const menuSections = [
       { id: "clients", label: "Client Management", icon: Users },
       { id: "leads", label: "Lead Management", icon: TrendingUp },
       { id: "inbox", label: "Messages", icon: Mail },
+      { id: "contracts", label: "Contracts", icon: FileText },
       { id: "invoices", label: "Invoices", icon: FileText },
     ]
   },
@@ -283,6 +285,8 @@ export default function Admin() {
         return <PortfolioManagement />;
       case "inbox":
         return <AdminInbox />;
+      case "contracts":
+        return <ContractManagement />;
       case "invoices":
         return <InvoiceGenerator />;
       case "analytics":
