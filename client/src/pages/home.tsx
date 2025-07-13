@@ -78,7 +78,7 @@ export default function Home() {
             {/* Enhanced Quick Booking Card */}
             <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-cream/50 dark:from-background dark:to-background/50">
               <div className="absolute inset-0 bg-gradient-to-br from-bronze/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <CardContent className="p-10 relative z-10">
+              <div className="p-10 relative z-10">
                 <div className="relative mb-6">
                   <div className="bg-gradient-to-br from-bronze to-bronze/80 rounded-2xl p-6 w-24 h-24 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                     <Camera className="h-12 w-12 text-white" />
@@ -110,7 +110,7 @@ export default function Home() {
                     Start Booking Process
                   </Button>
                 </Link>
-              </CardContent>
+              </div>
             </Card>
 
             {/* Enhanced AI Assistant Card */}
@@ -272,8 +272,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
-              
               <Button 
                 className="btn-bronze"
                 onClick={() => scrollToSection('contact')}
