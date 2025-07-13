@@ -479,7 +479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Chat routes
+  // AI Chat routes (legacy OpenAI)
   app.post("/api/ai-chat", async (req, res) => {
     try {
       const { sessionId, message, clientEmail } = req.body;
@@ -533,6 +533,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ error: "Failed to process AI chat" });
+    }
+  });
+
+  // Replit AI Chat routes
+  app.post("/api/replit-ai-chat", async (req, res) => {
+    try {
+      const { sessionId, message, agent = 'general-assistant' } = req.body;
+
+      if (!sessionId || !message) {
+        return res.status(400).json({ error: "Session ID and message are required" });
+      }
+
+      // Simulate Replit AI agent response
+      let response = "";
+      
+      if (agent === 'photography-business-consultant') {
+        // Generate photography-specific contract recommendations
+        response = `Service Type: Portrait Photography
+Package Type: Standard
+Total Amount: 1200
+Retainer Amount: 400
+Timeline: 2-3 weeks after session completion
+Deliverables: 40-60 professionally edited high-resolution digital images delivered via secure online gallery
+Usage Rights: Personal use and social media sharing permitted. Client may print for personal use. Commercial use requires separate licensing agreement.
+Cancellation Policy: 48-hour notice required for rescheduling. Cancellations within 24 hours forfeit 50% of retainer. Weather-related cancellations may be rescheduled at no penalty.
+Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu. Drone photography requires suitable weather conditions and FAA-compliant airspace.`;
+      } else {
+        // General AI assistant response
+        response = "I'm here to help you with contract recommendations and business insights. Please provide more details about your photography session requirements.";
+      }
+
+      res.json({
+        response: response,
+        agent: agent,
+        sessionId: sessionId
+      });
+    } catch (error) {
+      console.error("Replit AI chat error:", error);
+      res.status(500).json({ error: "Failed to process Replit AI chat" });
     }
   });
 

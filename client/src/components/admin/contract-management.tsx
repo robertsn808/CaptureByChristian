@@ -32,7 +32,8 @@ import {
   Camera,
   AlertCircle,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Brain
 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
@@ -263,77 +264,95 @@ export function ContractManagement() {
     }
   });
 
-  // AI assistance mutation
+  // AI assistance mutation using Replit AI agents
   const aiAssistMutation = useMutation({
     mutationFn: async (prompt: string) => {
-      const response = await fetch('/api/ai-chat', {
+      const response = await fetch('/api/replit-ai-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `Based on this photography session request: "${prompt}", provide detailed contract suggestions. 
+          message: `As a professional photography business consultant AI agent, analyze this session request: "${prompt}"
 
-Please provide:
-1. Service Type (e.g., "Wedding Photography", "Portrait Session", "Corporate Event")
-2. Package Type (e.g., "Premium", "Standard", "Basic")
-3. Total Amount (dollar amount without $ symbol)
-4. Retainer Amount (typically 25-50% of total)
-5. Timeline (delivery timeframe)
-6. Deliverables (what client receives)
-7. Usage Rights (how client can use photos)
-8. Cancellation Policy (terms for canceling/rescheduling)
-9. Additional Terms (any special considerations)
+Please provide specific contract recommendations in this exact format:
 
-Format your response as a clear list with these exact headings so I can easily copy the information.`,
-          sessionId: 'contract-assist-' + Date.now()
+Service Type: [specific service like "Wedding Photography", "Portrait Session", "Corporate Event"]
+Package Type: [package level like "Premium", "Standard", "Basic"]
+Total Amount: [dollar amount without $ symbol, e.g., 1500]
+Retainer Amount: [25-50% of total, e.g., 500]
+Timeline: [delivery timeframe, e.g., "2-3 weeks after session"]
+Deliverables: [what client receives, e.g., "50-75 edited high-resolution images via online gallery"]
+Usage Rights: [how client can use photos, e.g., "Personal use, social media sharing permitted"]
+Cancellation Policy: [terms for changes, e.g., "48-hour notice required for rescheduling"]
+Additional Terms: [special considerations based on the request]
+
+Base your recommendations on current photography industry standards and the specific details mentioned in the request.`,
+          sessionId: 'contract-assist-' + Date.now(),
+          agent: 'photography-business-consultant'
         })
       });
-      if (!response.ok) throw new Error('Failed to get AI assistance');
+      if (!response.ok) throw new Error('Failed to get AI assistance from Replit agents');
       const data = await response.json();
       return data.response;
     },
     onSuccess: (response) => {
       setAiSuggestions(response);
-      toast({ title: "AI suggestions generated! Review and apply them below." });
+      toast({ title: "Replit AI suggestions generated! Review and apply them below." });
     },
     onError: () => {
-      toast({ title: "Failed to get AI assistance", variant: "destructive" });
+      toast({ title: "Failed to get Replit AI assistance", variant: "destructive" });
     }
   });
 
   const applyAiSuggestions = () => {
     if (!aiSuggestions) return;
     
-    // Parse the AI response for specific values
+    // Parse the AI response for specific values with improved parsing
     const lines = aiSuggestions.split('\n');
     
     lines.forEach((line: string) => {
       const lower = line.toLowerCase();
       if (lower.includes('service type') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, serviceType: value }));
       } else if (lower.includes('package type') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, packageType: value }));
       } else if (lower.includes('total amount') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/[\$"]/g, '');
-        if (value && !isNaN(Number(value))) setContractForm(prev => ({ ...prev, totalAmount: value }));
+        const value = line.split(':')[1]?.trim().replace(/[\$"[\]]/g, '');
+        if (value && !isNaN(Number(value))) {
+          setContractForm(prev => ({ ...prev, totalAmount: value }));
+          // Auto-calculate balance if retainer is set
+          const retainer = Number(contractForm.retainerAmount) || 0;
+          const balance = Number(value) - retainer;
+          if (balance > 0) {
+            setContractForm(prev => ({ ...prev, balanceAmount: balance.toString() }));
+          }
+        }
       } else if (lower.includes('retainer amount') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/[\$"]/g, '');
-        if (value && !isNaN(Number(value))) setContractForm(prev => ({ ...prev, retainerAmount: value }));
+        const value = line.split(':')[1]?.trim().replace(/[\$"[\]]/g, '');
+        if (value && !isNaN(Number(value))) {
+          setContractForm(prev => ({ ...prev, retainerAmount: value }));
+          // Auto-calculate balance if total is set
+          const total = Number(contractForm.totalAmount) || 0;
+          const balance = total - Number(value);
+          if (balance > 0) {
+            setContractForm(prev => ({ ...prev, balanceAmount: balance.toString() }));
+          }
+        }
       } else if (lower.includes('timeline') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, timeline: value }));
       } else if (lower.includes('deliverables') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, deliverables: value }));
       } else if (lower.includes('usage rights') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, usageRights: value }));
       } else if (lower.includes('cancellation policy') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, cancellationPolicy: value }));
       } else if (lower.includes('additional terms') && lower.includes(':')) {
-        const value = line.split(':')[1]?.trim().replace(/"/g, '');
+        const value = line.split(':')[1]?.trim().replace(/["\[\]]/g, '');
         if (value) setContractForm(prev => ({ ...prev, additionalTerms: value }));
       }
     });
@@ -341,7 +360,7 @@ Format your response as a clear list with these exact headings so I can easily c
     setAiAssistOpen(false);
     setAiSuggestions(null);
     setAiPrompt('');
-    toast({ title: "AI suggestions applied to contract form!" });
+    toast({ title: "Replit AI suggestions applied to contract form!" });
   };
 
   const resetForm = () => {
@@ -410,7 +429,7 @@ Format your response as a clear list with these exact headings so I can easily c
       serviceType: contractForm.serviceType || null,
       title: contractForm.title.trim(),
       templateContent: generateContractContent(),
-      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate).toISOString() : null,
+      sessionDate: contractForm.sessionDate ? contractForm.sessionDate : null,
       location: contractForm.location || null,
       packageType: contractForm.packageType || null,
       totalAmount: contractForm.totalAmount ? contractForm.totalAmount : null,
@@ -472,8 +491,8 @@ Format your response as a clear list with these exact headings so I can easily c
                   onClick={() => setAiAssistOpen(true)}
                   className="ml-auto"
                 >
-                  <Camera className="h-4 w-4 mr-2" />
-                  AI Assist
+                  <Brain className="h-4 w-4 mr-2" />
+                  Replit AI Assist
                 </Button>
               </DialogTitle>
             </DialogHeader>
@@ -926,8 +945,8 @@ Format your response as a clear list with these exact headings so I can easily c
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
-              <Camera className="h-5 w-5" />
-              <span>AI Contract Assistant</span>
+              <Brain className="h-5 w-5" />
+              <span>Replit AI Contract Assistant</span>
             </DialogTitle>
           </DialogHeader>
           
@@ -945,13 +964,13 @@ Format your response as a clear list with these exact headings so I can easily c
             {!aiSuggestions ? (
               <>
                 <div className="bg-muted/50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">AI will help suggest:</h4>
+                  <h4 className="font-medium mb-2">Replit AI will help suggest:</h4>
                   <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Service type and package recommendations</li>
-                    <li>• Appropriate pricing structure</li>
-                    <li>• Timeline and deliverables</li>
-                    <li>• Usage rights and policies</li>
-                    <li>• Cancellation terms</li>
+                    <li>• Industry-standard pricing structure</li>
+                    <li>• Professional timeline and deliverables</li>
+                    <li>• Appropriate usage rights and policies</li>
+                    <li>• Standard cancellation terms</li>
                   </ul>
                 </div>
 
@@ -963,7 +982,7 @@ Format your response as a clear list with these exact headings so I can easily c
                     onClick={() => aiAssistMutation.mutate(aiPrompt)}
                     disabled={!aiPrompt.trim() || aiAssistMutation.isPending}
                   >
-                    {aiAssistMutation.isPending ? "Getting AI suggestions..." : "Get AI Suggestions"}
+                    {aiAssistMutation.isPending ? "Getting Replit AI suggestions..." : "Get Replit AI Suggestions"}
                   </Button>
                 </div>
               </>
