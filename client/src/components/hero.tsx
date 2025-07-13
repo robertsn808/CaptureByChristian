@@ -70,15 +70,15 @@ export function Hero() {
                 <span className="text-bronze font-medium"> legally and spectacularly</span>
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 text-xs sm:text-sm text-white/90">
-                <span className="flex items-center">
+                <span className="flex items-center text-[#fcfcfc]">
                   <div className="w-2 h-2 bg-bronze rounded-full mr-2"></div>
                   10+ Years Experience
                 </span>
-                <span className="flex items-center">
+                <span className="flex items-center text-[#fcfcfc]">
                   <div className="w-2 h-2 bg-teal rounded-full mr-2"></div>
                   AI-Enhanced Processing
                 </span>
-                <span className="flex items-center">
+                <span className="flex items-center text-[#fcfcfc]">
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                   Fully Insured
                 </span>
