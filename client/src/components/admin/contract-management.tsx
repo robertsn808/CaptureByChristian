@@ -210,6 +210,7 @@ export function ContractManagement() {
   // Create contract mutation
   const createContractMutation = useMutation({
     mutationFn: async (contractData: any) => {
+      console.log('Sending contract data:', contractData);
       const response = await fetch('/api/contracts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -217,7 +218,11 @@ export function ContractManagement() {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create contract');
+        console.error('Server validation errors:', errorData.details);
+        const errorMessage = errorData.details 
+          ? `Validation errors: ${errorData.details.map((d: any) => `${d.path.join('.')}: ${d.message}`).join(', ')}`
+          : errorData.error || 'Failed to create contract';
+        throw new Error(errorMessage);
       }
       return response.json();
     },
@@ -231,6 +236,7 @@ export function ContractManagement() {
       });
     },
     onError: (error: any) => {
+      console.error("Contract creation error:", error);
       toast({ 
         title: "Failed to create contract", 
         description: error.message,
@@ -320,13 +326,12 @@ export function ContractManagement() {
       serviceType: contractForm.serviceType || null,
       title: contractForm.title.trim(),
       templateContent: generateContractContent(),
-      status: "draft",
-      sessionDate: contractForm.sessionDate ? new Date(contractForm.sessionDate).toISOString() : null,
+      sessionDate: contractForm.sessionDate ? contractForm.sessionDate : null,
       location: contractForm.location || null,
       packageType: contractForm.packageType || null,
-      totalAmount: contractForm.totalAmount ? parseFloat(contractForm.totalAmount).toString() : null,
-      retainerAmount: contractForm.retainerAmount ? parseFloat(contractForm.retainerAmount).toString() : null,
-      balanceAmount: contractForm.balanceAmount ? parseFloat(contractForm.balanceAmount).toString() : null,
+      totalAmount: contractForm.totalAmount ? contractForm.totalAmount : null,
+      retainerAmount: contractForm.retainerAmount ? contractForm.retainerAmount : null,
+      balanceAmount: contractForm.balanceAmount ? contractForm.balanceAmount : null,
       paymentTerms: contractForm.paymentTerms || null,
       deliverables: contractForm.deliverables || null,
       timeline: contractForm.timeline || null,
