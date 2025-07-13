@@ -236,31 +236,42 @@ export class DatabaseStorage implements IStorage {
 
   // Contracts
   async getContracts(): Promise<(Contract & { client: Client })[]> {
-    const contractsData = await db
-      .select()
-      .from(contracts)
-      .leftJoin(clients, eq(contracts.clientId, clients.id))
-      .orderBy(desc(contracts.createdAt));
-    
-    return contractsData.map(row => ({
-      ...row.contracts,
-      client: row.clients!
-    }));
+    try {
+      const contractsData = await db
+        .select()
+        .from(contracts)
+        .leftJoin(clients, eq(contracts.clientId, clients.id))
+        .orderBy(desc(contracts.createdAt));
+      
+      return contractsData.map(row => ({
+        ...row.contracts,
+        client: row.clients!
+      }));
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      // Return empty array if table doesn't exist or has schema issues
+      return [];
+    }
   }
 
   async getContract(id: number): Promise<(Contract & { client: Client }) | undefined> {
-    const [contractData] = await db
-      .select()
-      .from(contracts)
-      .leftJoin(clients, eq(contracts.clientId, clients.id))
-      .where(eq(contracts.id, id));
-    
-    if (!contractData) return undefined;
-    
-    return {
-      ...contractData.contracts,
-      client: contractData.clients!
-    };
+    try {
+      const [contractData] = await db
+        .select()
+        .from(contracts)
+        .leftJoin(clients, eq(contracts.clientId, clients.id))
+        .where(eq(contracts.id, id));
+      
+      if (!contractData) return undefined;
+      
+      return {
+        ...contractData.contracts,
+        client: contractData.clients!
+      };
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      return undefined;
+    }
   }
 
   async getContractByBooking(bookingId: number): Promise<Contract | undefined> {
@@ -530,7 +541,7 @@ export class DatabaseStorage implements IStorage {
         totalRevenue,
         pendingAmount: 0, // No separate invoice tracking yet
         overdueAmount: 0, // No separate invoice tracking yet
-        paymentRate: 100 // All completed bookings are considered paid
+        paymentRate: completedBookings.length > 0 ? 100 : 0 // All completed bookings are considered paid
       };
     } catch (error) {
       console.error("Invoice stats error:", error);
