@@ -374,7 +374,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-ultra-black text-white py-12">
+      <footer className="bg-ultra-black py-12 text-[#f5f5f5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
