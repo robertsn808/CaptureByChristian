@@ -162,34 +162,40 @@ export function AIBusinessInsights() {
     }, 2000);
   };
 
+  // Calculate predictive metrics from real data
+  const totalRevenue = bookingsData.reduce((sum: number, booking: any) => sum + (booking.totalPrice || 0), 0);
+  const avgBookingValue = bookingsData.length > 0 ? totalRevenue / bookingsData.length : 0;
+  const confirmedBookings = bookingsData.filter((b: any) => b.status === 'confirmed').length;
+  const conversionRate = clientsData.length > 0 ? (confirmedBookings / clientsData.length) * 100 : 0;
+
   const predictiveMetrics = [
     {
-      metric: "Revenue Forecast (Next 30 Days)",
-      value: "$12,400",
-      change: "+23%",
-      trend: "up",
-      insight: "Based on booking patterns and seasonal trends"
+      metric: "Current Revenue",
+      value: `$${totalRevenue.toLocaleString()}`,
+      change: totalRevenue > 0 ? "Current data" : "No data",
+      trend: totalRevenue > 0 ? "up" : "neutral",
+      insight: totalRevenue > 0 ? "Based on actual bookings" : "No revenue data available"
     },
     {
-      metric: "Client Lifetime Value",
-      value: "$3,850",
-      change: "+15%",
-      trend: "up",
-      insight: "Hawaii visitors often return for anniversaries"
+      metric: "Average Booking Value",
+      value: `$${avgBookingValue.toFixed(0)}`,
+      change: bookingsData.length > 0 ? "Current avg" : "No data",
+      trend: avgBookingValue > 0 ? "up" : "neutral",
+      insight: bookingsData.length > 0 ? `Based on ${bookingsData.length} bookings` : "No booking data available"
     },
     {
-      metric: "Booking Conversion Rate",
-      value: "68%",
-      change: "+12%",
-      trend: "up",
-      insight: "AI chat assistant improving lead quality"
+      metric: "Conversion Rate",
+      value: `${conversionRate.toFixed(1)}%`,
+      change: clientsData.length > 0 ? "Current rate" : "No data",
+      trend: conversionRate > 50 ? "up" : "neutral",
+      insight: clientsData.length > 0 ? `${confirmedBookings} confirmed of ${clientsData.length} leads` : "No lead data available"
     },
     {
-      metric: "Market Share Potential",
-      value: "8.5%",
-      change: "+2.1%",
-      trend: "up",
-      insight: "FAA certification gives competitive advantage"
+      metric: "Active Bookings",
+      value: `${bookingsData.length}`,
+      change: bookingsData.length > 0 ? "Current count" : "No data",
+      trend: bookingsData.length > 0 ? "up" : "neutral",
+      insight: bookingsData.length > 0 ? "Active business pipeline" : "No active bookings"
     }
   ];
 
