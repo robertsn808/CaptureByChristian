@@ -201,7 +201,7 @@ export default function Home() {
       </section>
 
       {/* Enhanced About Section */}
-      <section id="about" className="py-24 bg-gradient-to-b from-muted/20 to-cream/30 dark:from-muted/10 dark:to-background/50 relative overflow-hidden">
+      <section id="about" className="py-24 bg-gradient-to-b from-muted/20 to-cream/30 dark:from-muted/10 dark:to-background/50 relative overflow-hidden text-[#f5f5f5]">
         {/* Background Elements */}
         <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-bronze/10 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-teal/8 to-transparent rounded-full blur-3xl"></div>
