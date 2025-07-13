@@ -67,9 +67,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <h2 className="font-playfair text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-charcoal via-bronze to-charcoal bg-clip-text text-transparent">
-              Ready to Capture Your Story?
-            </h2>
+            
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Let's create something beautiful together. Choose your preferred way to get started with 
               <span className="text-bronze font-medium"> professional photography services</span>.
