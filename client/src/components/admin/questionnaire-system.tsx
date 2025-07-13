@@ -40,8 +40,23 @@ export function QuestionnaireSystem() {
   const [newQuestionnaireOpen, setNewQuestionnaireOpen] = useState(false);
   const [questionnaireBuilder, setQuestionnaireBuilder] = useState(false);
 
-  // Note: Questionnaire system not yet connected to database
-  // This would require implementing questionnaires table and API endpoints
+  return (
+    <div className="space-y-6">
+      {/* Feature Not Implemented Notice */}
+      <Card className="border-dashed border-2">
+        <CardContent className="p-8 text-center">
+          <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Questionnaire System</h3>
+          <p className="text-muted-foreground mb-4">
+            This advanced questionnaire system requires database implementation for questionnaires, responses, and automation.
+            Feature planned for future development.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // Questionnaire system requires database implementation
   const questionnaires = [
     {
       id: 1,
