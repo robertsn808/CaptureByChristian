@@ -42,15 +42,6 @@ export function FeaturedGallery() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-6">
-            <div className="from-bronze to-teal rounded-full p-1 bg-[#7e698a]">
-              <div className="bg-white dark:bg-background rounded-full px-6 py-2">
-                <span className="text-sm font-medium bg-gradient-to-r from-bronze to-teal bg-clip-text text-[#39312e]">
-                  Featured Work
-                </span>
-              </div>
-            </div>
-          </div>
           <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-charcoal via-bronze to-charcoal bg-clip-text text-transparent">
             Showcasing Excellence
           </h2>
