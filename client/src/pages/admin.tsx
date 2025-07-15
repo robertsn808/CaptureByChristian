@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { AdminDashboard } from "@/components/admin/dashboard";
 import { AdminCalendar } from "@/components/admin/calendar";
 import { ClientManagement } from "@/components/admin/client-management";
@@ -96,6 +98,27 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { isAuthenticated, username, logout } = useAuth();
+  const [, navigate] = useLocation();
+
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/admin-login");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Show loading if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
+          <p>Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -143,6 +166,19 @@ export default function Admin() {
                   <Sun className="h-4 w-4" />
                 )}
               </Button>
+              
+              <div className="flex items-center space-x-2 text-sm text-foreground/80">
+                <span>Welcome, {username}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-400/30"
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
 
               <Link href="/client-portal">
                 <Button variant="outline" size="sm">
