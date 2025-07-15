@@ -53,13 +53,27 @@ export function ClientPortal() {
   // Fetch clients for gallery upload
   const { data: clients = [] } = useQuery({
     queryKey: ['/api/clients'],
-    queryFn: () => fetch('/api/clients').then(r => r.json()),
+    queryFn: async () => {
+      const response = await fetch('/api/clients');
+      if (!response.ok) {
+        throw new Error('Failed to fetch clients');
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
   });
 
   // Fetch bookings for client selection
   const { data: bookings = [] } = useQuery({
     queryKey: ['/api/bookings'],
-    queryFn: () => fetch('/api/bookings').then(r => r.json()),
+    queryFn: async () => {
+      const response = await fetch('/api/bookings');
+      if (!response.ok) {
+        throw new Error('Failed to fetch bookings');
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
   });
 
   // Gallery upload mutation
