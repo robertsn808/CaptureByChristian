@@ -58,7 +58,7 @@ export function ClientPortal() {
   });
 
   // Fetch clients for gallery upload
-  const { data: clientsData, isLoading } = useQuery({
+  const { data: clientsData, isLoading: isLoadingClients } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/clients');
