@@ -292,11 +292,11 @@ export function ClientPortal() {
                         }}
                       >
                         <option value="">Choose a client...</option>
-                        {Array.isArray(clients) ? clients.map((client: any) => (
+                        {Array.isArray(clients) && clients.map((client: any) => (
                           <option key={client.id} value={client.id}>
                             {client.name} ({client.email})
                           </option>
-                        )) : null}
+                        ))}
                       </select>
                     </div>
 
