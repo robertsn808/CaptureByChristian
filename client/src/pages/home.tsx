@@ -395,20 +395,20 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4 text-[#f5f5f5]">Services</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Wedding Photography</a></li>
-                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Portrait Sessions</a></li>
-                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Aerial Photography</a></li>
-                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Event Coverage</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Wedding Photography</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Portrait Sessions</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Aerial Photography</a></li>
+                <li><a href="#" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Event Coverage</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-bold mb-4 text-[#f5f5f5]">Quick Links</h4>
               <ul className="space-y-2">
-                <li><a href="#portfolio" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Portfolio</a></li>
-                <li><a href="#services" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Pricing</a></li>
-                <li><a href="#booking" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Booking</a></li>
-                <li><a href="#contact" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200">Contact</a></li>
+                <li><a href="#portfolio" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Portfolio</a></li>
+                <li><a href="#services" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Pricing</a></li>
+                <li><a href="#booking" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Booking</a></li>
+                <li><a href="#contact" className="text-[#f5f5f5]/70 hover:text-[#f5f5f5] transition-colors duration-200 text-[20px]">Contact</a></li>
               </ul>
             </div>
             
