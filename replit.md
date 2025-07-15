@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a sophisticated AI-powered media business platform built for "CapturedCCollective", a Hawaii-based media team specializing in cinematic, high-impact content creation. At CapturedCCollective, we blend professionalism with creativity to deliver Content and Cinematic visuals with Creative storytelling. The application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and business administration platform.
+This is a sophisticated AI-powered media business platform built for "CapturedCCollective", a Hawai'i-based media team built on the belief that content can be both clean and creative. Our name reflects who we are - a collective of creators focused on Content, Cinematic vision, and Creative execution. With premium gear, real-world experience, and a commitment to excellence, we deliver professional-grade visuals that leave a lasting impression. The application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and business administration platform.
 
 ## User Preferences
 

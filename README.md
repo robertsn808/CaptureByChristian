@@ -1,6 +1,6 @@
 # CapturedCCollective Media Platform
 
-A sophisticated AI-powered media business management platform built for professional media teams specializing in cinematic, high-impact content creation and FAA-certified drone photography. This application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and comprehensive business administration platform.
+A sophisticated AI-powered media business management platform built for CapturedCCollective, a Hawai'i-based media team built on the belief that content can be both clean and creative. Our collective of creators focuses on Content, Cinematic vision, and Creative execution, delivering professional-grade visuals that leave a lasting impression. This application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and comprehensive business administration platform.
 
 ## 🌺 Features
 

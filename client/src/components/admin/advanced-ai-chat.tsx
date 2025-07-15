@@ -38,7 +38,7 @@ export function AdvancedAIChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "👋 I'm your advanced AI business consultant for CapturedCCollective. I can analyze your business performance, suggest marketing strategies, predict booking trends, optimize pricing, provide strategic insights, and discuss social media content ideas and industry trends. I have access to all your business data including clients, bookings, revenue, and market analytics. What would you like to explore?",
+      content: "👋 I'm your advanced AI business consultant for CapturedCCollective - a Hawai'i-based media team where content is both clean and creative. As a collective focused on Content, Cinematic vision, and Creative execution, I can analyze your business performance, suggest marketing strategies, predict booking trends, optimize pricing, and provide strategic insights. I have access to all your business data including clients, bookings, revenue, and market analytics. What would you like to explore?",
       timestamp: Date.now(),
       type: 'normal'
     }
