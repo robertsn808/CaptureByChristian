@@ -40,6 +40,16 @@ export function ClientPortal() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const queryClient = useQueryClient();
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <div className="text-muted-foreground">Loading client portal data...</div>
+        </div>
+      </div>
+    );
+  }
+
   // Fetch real client portal sessions from database
   const { data: portalSessions = [], isLoading } = useQuery({
     queryKey: ['/api/admin/client-portal-sessions'],
@@ -50,11 +60,30 @@ export function ClientPortal() {
   });
 
   // Fetch real portal statistics
-  const { data: portalStats = {} } = useQuery({
+  const { data: portalStats = {
+    activeUsers: 0,
+    totalSessions: 0,
+    avgSessionTime: '0m',
+    downloadCount: 0,
+    accessRate: 0,
+    avgRating: 0
+  } } = useQuery({
     queryKey: ['/api/admin/client-portal-stats'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/admin/client-portal-stats');
-      return response.json();
+      try {
+        const response = await apiRequest('GET', '/api/admin/client-portal-stats');
+        return response.json();
+      } catch (error) {
+        console.error('Failed to fetch portal stats:', error);
+        return {
+          activeUsers: 0,
+          totalSessions: 0,
+          avgSessionTime: '0m',
+          downloadCount: 0,
+          accessRate: 0,
+          avgRating: 0
+        };
+      }
     },
   });
 
@@ -62,9 +91,14 @@ export function ClientPortal() {
   const { data: clientsData = [], isLoading: isLoadingClients } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/clients');
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
+      try {
+        const response = await apiRequest('GET', '/api/clients');
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Failed to fetch clients:', error);
+        return [];
+      }
     },
   });
 

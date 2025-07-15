@@ -100,14 +100,14 @@ export default function Admin() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
   const { isAuthenticated, username, logout } = useAuth();
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
 
   // Check authentication on component mount
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/admin-login");
+      setLocation("/admin-login");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, setLocation]);
 
   // Show loading if not authenticated
   if (!isAuthenticated) {
@@ -126,7 +126,7 @@ export default function Admin() {
                   <Camera className="h-6 w-6 text-white" />
                 </div>
                 <span className="font-playfair text-xl font-bold gradient-text">
-                  CapturedCCollective
+                  CapturedCollective
                 </span>
               </div>
             </Link>

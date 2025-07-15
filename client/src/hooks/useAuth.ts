@@ -13,7 +13,7 @@ export function useAuth() {
     username: null,
     loginTime: null,
   });
-  const [, navigate] = useLocation();
+  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     const checkAuth = () => {
@@ -53,12 +53,12 @@ export function useAuth() {
       username: null,
       loginTime: null,
     });
-    navigate("/admin-login");
+    setLocation("/admin-login");
   };
 
   const requireAuth = () => {
     if (!authState.isAuthenticated) {
-      navigate("/admin-login");
+      setLocation("/admin-login");
       return false;
     }
     return true;
