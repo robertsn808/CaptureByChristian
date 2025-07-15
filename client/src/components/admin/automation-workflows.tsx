@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { 
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -415,6 +416,9 @@ export function AutomationWorkflows() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Create New Automation Workflow</DialogTitle>
+            <DialogDescription>
+              Set up automated email sequences and tasks triggered by specific events.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>

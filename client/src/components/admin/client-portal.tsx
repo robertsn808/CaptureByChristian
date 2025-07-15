@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -275,6 +276,9 @@ export function ClientPortal() {
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>Upload Gallery for Client</DialogTitle>
+                    <DialogDescription>
+                      Select a client and upload photos to their private gallery.
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
@@ -412,6 +416,9 @@ export function ClientPortal() {
             <DialogTitle>
               Portal Session Details - {selectedSession?.clientName}
             </DialogTitle>
+            <DialogDescription>
+              View detailed session information and complete activity log for this client.
+            </DialogDescription>
           </DialogHeader>
           {selectedSession && (
             <div className="space-y-4">

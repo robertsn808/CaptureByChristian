@@ -589,6 +589,9 @@ export function QuestionnaireSystem() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Create New Questionnaire</DialogTitle>
+            <DialogDescription>
+              Create custom questionnaires for different photography services and client types.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
