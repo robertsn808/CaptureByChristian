@@ -14,6 +14,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
@@ -36,11 +37,34 @@ export function AdminCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newAppointment, setNewAppointment] = useState({
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    serviceId: '',
+    date: '',
+    time: '',
+    location: '',
+    notes: '',
+    totalPrice: '',
+    duration: 120
+  });
   const queryClient = useQueryClient();
 
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
+  });
+
+  const { data: services = [] } = useQuery({
+    queryKey: ['/api/services'],
+    queryFn: () => fetch('/api/services').then(res => res.json()),
+  });
+
+  const { data: clients = [] } = useQuery({
+    queryKey: ['/api/clients'],
+    queryFn: () => fetch('/api/clients').then(res => res.json()),
   });
 
   const updateBookingMutation = useMutation({
@@ -50,6 +74,34 @@ export function AdminCalendar() {
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/stats'] });
       setSelectedBooking(null);
     },
+  });
+
+  const createBookingMutation = useMutation({
+    mutationFn: async (bookingData: any) => {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData)
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create appointment');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/stats'] });
+      setShowCreateDialog(false);
+      resetNewAppointment();
+      console.log('✅ Appointment created successfully:', data);
+    },
+    onError: (error: any) => {
+      console.error('❌ Failed to create appointment:', error);
+      alert(`Failed to create appointment: ${error.message}`);
+    }
   });
 
   const navigate = (direction: 'prev' | 'next') => {
@@ -120,6 +172,66 @@ export function AdminCalendar() {
       id: bookingId,
       data: { status: newStatus }
     });
+  };
+
+  const resetNewAppointment = () => {
+    setNewAppointment({
+      clientName: '',
+      clientEmail: '',
+      clientPhone: '',
+      serviceId: '',
+      date: '',
+      time: '',
+      location: '',
+      notes: '',
+      totalPrice: '',
+      duration: 120
+    });
+  };
+
+  const handleCreateAppointment = () => {
+    if (!newAppointment.clientName || !newAppointment.clientEmail || !newAppointment.serviceId || 
+        !newAppointment.date || !newAppointment.time) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const selectedService = services.find((s: any) => s.id === parseInt(newAppointment.serviceId));
+    if (!selectedService) {
+      alert('Please select a valid service');
+      return;
+    }
+
+    // Combine date and time
+    const appointmentDateTime = new Date(`${newAppointment.date}T${newAppointment.time}`);
+
+    const bookingData = {
+      clientName: newAppointment.clientName,
+      clientEmail: newAppointment.clientEmail,
+      clientPhone: newAppointment.clientPhone || '',
+      serviceId: parseInt(newAppointment.serviceId),
+      date: appointmentDateTime.toISOString(),
+      location: newAppointment.location || 'TBD',
+      totalPrice: newAppointment.totalPrice || selectedService.price,
+      notes: newAppointment.notes || '',
+      duration: newAppointment.duration,
+      status: 'confirmed'
+    };
+
+    createBookingMutation.mutate(bookingData);
+  };
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    // Pre-fill the date in new appointment form
+    const dateStr = date.toISOString().split('T')[0];
+    setNewAppointment(prev => ({ ...prev, date: dateStr }));
+  };
+
+  const handleQuickCreate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    setNewAppointment(prev => ({ ...prev, date: dateStr, time: '10:00' }));
+    setShowCreateDialog(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -211,7 +323,7 @@ export function AdminCalendar() {
               className={`min-h-[100px] p-1 border border-border cursor-pointer hover:bg-muted/50 transition-colors ${
                 !isCurrentMonth ? 'text-muted-foreground bg-muted/20' : 'bg-background'
               } ${isToday ? 'bg-blue-50 dark:bg-blue-950' : ''}`}
-              onClick={() => setSelectedDate(day)}
+              onClick={() => handleDateClick(day)}
             >
               <div className={`text-sm mb-1 ${isToday ? 'font-bold text-blue-600' : ''}`}>
                 {day.getDate()}
@@ -244,6 +356,19 @@ export function AdminCalendar() {
                     }}
                   >
                     +{dayBookings.length - 2} more
+                  </div>
+                )}
+                {dayBookings.length === 0 && isCurrentMonth && (
+                  <div 
+                    className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer flex items-center mt-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleQuickCreate(day);
+                    }}
+                    title="Add appointment"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add
                   </div>
                 )}
               </div>
@@ -433,6 +558,15 @@ export function AdminCalendar() {
         </div>
 
         <div className="flex items-center space-x-2">
+          {/* Create Appointment Button */}
+          <Button
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Appointment
+          </Button>
+
           {/* View Toggle */}
           <div className="flex border rounded-lg">
             <Button
@@ -520,6 +654,148 @@ export function AdminCalendar() {
         </CardContent>
       </Card>
 
+      {/* Create Appointment Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Appointment</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="clientName">Client Name *</Label>
+                <Input
+                  id="clientName"
+                  value={newAppointment.clientName}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, clientName: e.target.value }))}
+                  placeholder="Enter client name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="clientEmail">Client Email *</Label>
+                <Input
+                  id="clientEmail"
+                  type="email"
+                  value={newAppointment.clientEmail}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, clientEmail: e.target.value }))}
+                  placeholder="client@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="clientPhone">Client Phone</Label>
+                <Input
+                  id="clientPhone"
+                  value={newAppointment.clientPhone}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, clientPhone: e.target.value }))}
+                  placeholder="(808) 555-0123"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="serviceSelect">Service *</Label>
+                <Select
+                  value={newAppointment.serviceId}
+                  onValueChange={(value) => {
+                    const service = services.find((s: any) => s.id === parseInt(value));
+                    setNewAppointment(prev => ({ 
+                      ...prev, 
+                      serviceId: value,
+                      totalPrice: service?.price || '',
+                      duration: service?.duration || 120
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.map((service: any) => (
+                      <SelectItem key={service.id} value={service.id.toString()}>
+                        {service.name} - ${service.price}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="appointmentDate">Date *</Label>
+                <Input
+                  id="appointmentDate"
+                  type="date"
+                  value={newAppointment.date}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, date: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="appointmentTime">Time *</Label>
+                <Input
+                  id="appointmentTime"
+                  type="time"
+                  value={newAppointment.time}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, time: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={newAppointment.location}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Honolulu, Hawaii"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="totalPrice">Total Price</Label>
+                <Input
+                  id="totalPrice"
+                  value={newAppointment.totalPrice}
+                  onChange={(e) => setNewAppointment(prev => ({ ...prev, totalPrice: e.target.value }))}
+                  placeholder="Service price will auto-fill"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                value={newAppointment.notes}
+                onChange={(e) => setNewAppointment(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Any special requests or notes..."
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowCreateDialog(false);
+                  resetNewAppointment();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreateAppointment}
+                disabled={createBookingMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {createBookingMutation.isPending ? 'Creating...' : 'Create Appointment'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Selected Date Dialog */}
       <Dialog open={!!selectedDate} onOpenChange={() => setSelectedDate(null)}>
         <DialogContent className="max-w-lg">
@@ -561,7 +837,18 @@ export function AdminCalendar() {
                 ))
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No bookings scheduled for this date
+                  <p>No bookings scheduled for this date</p>
+                  <Button
+                    onClick={() => {
+                      setSelectedDate(null);
+                      handleQuickCreate(selectedDate);
+                    }}
+                    variant="outline"
+                    className="mt-4"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Appointment
+                  </Button>
                 </div>
               )}
             </div>
