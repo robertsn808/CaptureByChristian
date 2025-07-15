@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { CreditCard } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface ClientDashboardProps {
   clientData: any;
@@ -38,6 +39,7 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
   const [newMessage, setNewMessage] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   // Fetch client-specific data
   const { data: clientBookings } = useQuery({
@@ -146,11 +148,7 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                   variant="ghost" 
                   size="sm"
                   onClick={() => {
-                    // Use proper routing instead of window.location
-                    import('wouter').then(({ useLocation }) => {
-                      window.history.pushState({}, '', '/');
-                      window.dispatchEvent(new PopStateEvent('popstate'));
-                    });
+                    setLocation("/");
                   }}
                   className="text-muted-foreground hover:text-foreground"
                 >
@@ -161,8 +159,7 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                   variant="ghost" 
                   size="sm"
                   onClick={() => {
-                    window.history.pushState({}, '', '/booking');
-                    window.dispatchEvent(new PopStateEvent('popstate'));
+                    setLocation("/booking");
                   }}
                   className="text-muted-foreground hover:text-foreground"
                 >
@@ -176,8 +173,7 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
               {/* Mobile Navigation Menu */}
               <div className="md:hidden">
                 <Button variant="outline" size="sm" onClick={() => {
-                  window.history.pushState({}, '', '/');
-                  window.dispatchEvent(new PopStateEvent('popstate'));
+                  setLocation("/");
                 }}>
                   Homepage
                 </Button>
