@@ -792,6 +792,27 @@ Base your recommendations on current photography industry standards and the spec
                           ${contract.totalAmount}
                         </Badge>
                       )}
+                      {/* E-signature status indicators */}
+                      <div className="flex items-center space-x-1">
+                        {contract.clientSignedAt && (
+                          <div className="flex items-center space-x-1 text-green-600">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-xs">Client Signed</span>
+                          </div>
+                        )}
+                        {contract.photographerSignedAt && (
+                          <div className="flex items-center space-x-1 text-blue-600">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-xs">Photographer Signed</span>
+                          </div>
+                        )}
+                        {contract.isFullySigned && (
+                          <Badge variant="default" className="bg-green-600">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Fully Executed
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button 

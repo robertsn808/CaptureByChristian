@@ -917,17 +917,95 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
         clientId: clientId,
         title: contract.title || `${contract.serviceType || 'Photography'} Contract`,
         status: contract.status,
-        signedAt: contract.signedAt,
+        clientSignedAt: contract.clientSignedAt,
+        photographerSignedAt: contract.photographerSignedAt,
+        isFullySigned: contract.isFullySigned,
         createdAt: contract.createdAt,
         totalAmount: contract.totalAmount,
         downloadUrl: `/api/contracts/${contract.id}/download`,
-        signUrl: contract.status === 'sent' ? `/client-portal/contract/${contract.portalAccessToken}` : null
+        signUrl: contract.status === 'sent' && !contract.clientSignedAt ? `/client-portal/contract/${contract.portalAccessToken}` : null,
+        templateContent: contract.templateContent
       }));
 
       res.json(contracts);
     } catch (error) {
       console.error("Error fetching contracts:", error);
       res.status(500).json({ error: "Failed to fetch contracts" });
+    }
+  });
+
+  // Client portal contract signing endpoint
+  app.post("/api/client-portal/contracts/:id/sign", async (req, res) => {
+    try {
+      const contractId = parseInt(req.params.id);
+      const { signatureData } = req.body;
+
+      if (!signatureData || !signatureData.fullName) {
+        return res.status(400).json({ error: "Signature data is required" });
+      }
+
+      // Update contract with client signature
+      const updates = {
+        clientSignature: signatureData.signature,
+        clientSignedAt: new Date(),
+        clientIpAddress: req.ip,
+        status: 'signed' as const,
+        signatureMetadata: {
+          clientDevice: 'web',
+          clientUserAgent: signatureData.userAgent,
+          signatureMethod: signatureData.signatureMethod || 'electronic'
+        },
+        updatedAt: new Date()
+      };
+
+      const updatedContract = await storage.updateContract(contractId, updates);
+
+      // Check if fully signed (if photographer has already signed)
+      if (updatedContract.photographerSignedAt) {
+        await storage.updateContract(contractId, { 
+          isFullySigned: true,
+          status: 'completed'
+        });
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Contract signed successfully",
+        contract: updatedContract
+      });
+    } catch (error) {
+      console.error("Error signing contract:", error);
+      res.status(500).json({ error: "Failed to sign contract" });
+    }
+  });
+
+  // Get contract for signing by token
+  app.get("/api/client-portal/contracts/sign/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+
+      const allContracts = await storage.getContracts();
+      const contract = allContracts.find(c => c.portalAccessToken === token);
+
+      if (!contract) {
+        return res.status(404).json({ error: "Contract not found or invalid token" });
+      }
+
+      if (contract.clientSignedAt) {
+        return res.status(400).json({ error: "Contract has already been signed" });
+      }
+
+      res.json({
+        id: contract.id,
+        title: contract.title,
+        templateContent: contract.templateContent,
+        totalAmount: contract.totalAmount,
+        createdAt: contract.createdAt,
+        clientId: contract.clientId
+      });
+    } catch (error) {
+      console.error("Error fetching contract for signing:", error);
+      res.status(500).json({ error: "Failed to fetch contract" });
     }
   });
 

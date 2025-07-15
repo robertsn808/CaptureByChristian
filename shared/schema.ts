@@ -83,12 +83,21 @@ export const contracts = pgTable("contracts", {
   usageRights: text("usage_rights"),
   cancellationPolicy: text("cancellation_policy"),
   additionalTerms: text("additional_terms"),
-  signatureData: text("signature_data"), // base64 signature
-  signedAt: timestamp("signed_at"),
+  clientSignature: text("client_signature"), // base64 client signature
+  clientSignedAt: timestamp("client_signed_at"),
+  clientIpAddress: text("client_ip_address"),
   photographerSignature: text("photographer_signature"),
   photographerSignedAt: timestamp("photographer_signed_at"),
   signatureRequestSent: timestamp("signature_request_sent"),
   portalAccessToken: text("portal_access_token"), // For client portal access
+  isFullySigned: boolean("is_fully_signed").default(false),
+  signatureMetadata: json("signature_metadata").$type<{
+    clientDevice?: string;
+    clientUserAgent?: string;
+    signatureMethod?: 'electronic' | 'digital';
+    witnessRequired?: boolean;
+    notarizedRequired?: boolean;
+  }>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
