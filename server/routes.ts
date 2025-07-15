@@ -27,6 +27,15 @@ import { z } from "zod";
 import { generateBookingResponse, analyzeImage } from "./openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for Docker
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      service: "CapturedCCollective"
+    });
+  });
+
   // Client routes
   app.get("/api/clients", async (req, res) => {
     try {
