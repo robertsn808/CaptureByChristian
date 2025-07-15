@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -79,12 +79,12 @@ export function ClientPortal() {
         method: 'POST',
         body: formData,
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Upload failed');
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -102,13 +102,13 @@ export function ClientPortal() {
 
   const handleUploadGallery = () => {
     if (!selectedClient || selectedFiles.length === 0) return;
-    
+
     // Find the client's most recent booking
     const clientBookings = bookings.filter((b: any) => b.clientId === selectedClient.id);
     const mostRecentBooking = clientBookings.sort((a: any, b: any) => 
       new Date(b.date).getTime() - new Date(a.date).getTime()
     )[0];
-    
+
     uploadGalleryMutation.mutate({
       files: selectedFiles,
       clientId: selectedClient.id,
@@ -277,7 +277,7 @@ export function ClientPortal() {
                         ))}
                       </select>
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium">Select Photos</label>
                       <Input
@@ -293,7 +293,7 @@ export function ClientPortal() {
                         </p>
                       )}
                     </div>
-                    
+
                     <div className="flex justify-end space-x-2">
                       <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
                         Cancel
@@ -309,7 +309,7 @@ export function ClientPortal() {
                   </div>
                 </DialogContent>
               </Dialog>
-              
+
               <Button 
                 variant="outline"
                 onClick={() => {
@@ -336,7 +336,7 @@ export function ClientPortal() {
                       <span className="text-sm text-muted-foreground">{session.device}</span>
                       <span className="text-sm text-muted-foreground">{session.location}</span>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-3 gap-4 text-sm text-muted-foreground mb-4">
                       <div>
                         <p><strong>Last Access:</strong> {format(new Date(session.lastAccess), "MMM d, yyyy 'at' h:mm a")}</p>
@@ -369,7 +369,7 @@ export function ClientPortal() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col space-y-2">
                     <Button size="sm" variant="outline" onClick={() => setSelectedSession(session)}>
                       <Eye className="h-3 w-3 mr-1" />
@@ -416,7 +416,7 @@ export function ClientPortal() {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <h4 className="font-medium mb-2">Complete Activity Log</h4>
                 <div className="max-h-64 overflow-y-auto space-y-2">

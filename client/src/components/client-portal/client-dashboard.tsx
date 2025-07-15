@@ -1,6 +1,4 @@
-This code incorporates changes to the client dashboard component to display real data for contracts and invoices, and updates the contract tab to reflect actual contract information.
-```
-```replit_final_file
+
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -446,6 +444,58 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                     No contracts available yet.
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Messages Tab */}
+          <TabsContent value="messages" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Messages</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Communicate with your photographer
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Message Thread */}
+                  <div className="border rounded-lg p-4 max-h-96 overflow-y-auto">
+                    {clientMessages.length ? (
+                      <div className="space-y-3">
+                        {clientMessages.map((message: any) => (
+                          <div key={message.id} className={`flex ${message.senderId === clientData.id ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                              message.senderId === clientData.id 
+                                ? 'bg-bronze text-white' 
+                                : 'bg-muted'
+                            }`}>
+                              <p className="text-sm">{message.content}</p>
+                              <p className="text-xs opacity-70 mt-1">
+                                {format(new Date(message.createdAt), 'MMM dd, h:mm a')}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-muted-foreground">No messages yet</p>
+                    )}
+                  </div>
+
+                  {/* Send Message Form */}
+                  <form onSubmit={handleSendMessage} className="flex space-x-2">
+                    <Textarea
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="Type your message..."
+                      className="flex-1"
+                    />
+                    <Button type="submit" disabled={!newMessage.trim()}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
