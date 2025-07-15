@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,12 +66,7 @@ export function ClientCredentials() {
   // Generate password mutation
   const generatePasswordMutation = useMutation({
     mutationFn: async ({ clientId, password }: { clientId: number; password: string }) => {
-      const response = await fetch('/api/admin/client-credentials/set-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, password }),
-      });
-      if (!response.ok) throw new Error('Failed to set password');
+      const response = await apiRequest('POST', '/api/admin/client-credentials/set-password', { clientId, password });
       return response.json();
     },
     onSuccess: () => {
@@ -95,12 +91,7 @@ export function ClientCredentials() {
   const sendMagicLink = async (clientId: number) => {
     setLoadingStates(prev => ({ ...prev, [clientId]: true }));
     try {
-      const response = await fetch('/api/admin/client-credentials/magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId }),
-      });
-      if (!response.ok) throw new Error('Failed to send magic link');
+      const response = await apiRequest('POST', '/api/admin/client-credentials/magic-link', { clientId });
 
       toast({
         title: "Magic Link Sent",

@@ -12,12 +12,19 @@ export function Hero() {
 
   return (
     <section className="relative h-screen overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image with Fallback */}
       <div className="absolute inset-0">
+        {/* Gradient Fallback Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-900 via-red-900 to-purple-900"></div>
+        
+        {/* Main Background Image */}
         <img 
-          src="https://images.unsplash.com/photo-1539650116574-75c0c6d4d9c2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+          src="https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
           alt="Honolulu sunset serenity - cinematic Hawaii landscape"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
         />
       </div>
 
