@@ -40,16 +40,6 @@ export function ClientPortal() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const queryClient = useQueryClient();
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center py-8">
-          <div className="text-muted-foreground">Loading client portal data...</div>
-        </div>
-      </div>
-    );
-  }
-
   // Fetch real client portal sessions from database
   const { data: portalSessions = [], isLoading } = useQuery({
     queryKey: ['/api/admin/client-portal-sessions'],
