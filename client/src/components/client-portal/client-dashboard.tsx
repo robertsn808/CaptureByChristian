@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -418,23 +417,49 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                             Total Amount: ${parseFloat(contract.totalAmount).toLocaleString()}
                           </p>
                         )}
-                        <div className="flex space-x-2">
-                          {contract.status === 'signed' ? (
-                            <Button size="sm" variant="outline" onClick={() => window.open(contract.downloadUrl)}>
-                              <Download className="h-4 w-4 mr-1" />
-                              Download
-                            </Button>
-                          ) : contract.status === 'sent' && contract.signUrl ? (
-                            <Button size="sm" className="btn-bronze" onClick={() => window.open(contract.signUrl)}>
-                              <Eye className="h-4 w-4 mr-1" />
-                              Review & Sign
-                            </Button>
-                          ) : (
-                            <Button size="sm" variant="outline" disabled>
-                              <Eye className="h-4 w-4 mr-1" />
-                              Pending
-                            </Button>
-                          )}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2 text-sm">
+                            {contract.clientSignedAt && (
+                              <div className="flex items-center space-x-1 text-green-600">
+                                <CheckCircle className="h-4 w-4" />
+                                <span>You signed {new Date(contract.clientSignedAt).toLocaleDateString()}</span>
+                              </div>
+                            )}
+                            {contract.photographerSignedAt && (
+                              <div className="flex items-center space-x-1 text-blue-600">
+                                <CheckCircle className="h-4 w-4" />
+                                <span>Photographer signed</span>
+                              </div>
+                            )}
+                            {contract.isFullySigned && (
+                              <Badge variant="default" className="bg-green-600">
+                                Fully Executed
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex space-x-2">
+                            {contract.isFullySigned ? (
+                              <Button size="sm" variant="outline" onClick={() => window.open(contract.downloadUrl)}>
+                                <Download className="h-4 w-4 mr-1" />
+                                Download
+                              </Button>
+                            ) : contract.status === 'sent' && contract.signUrl && !contract.clientSignedAt ? (
+                              <Button size="sm" className="btn-bronze" onClick={() => window.open(contract.signUrl)}>
+                                <Eye className="h-4 w-4 mr-1" />
+                                Review & Sign
+                              </Button>
+                            ) : contract.clientSignedAt ? (
+                              <Button size="sm" variant="outline" disabled>
+                                <Clock className="h-4 w-4 mr-1" />
+                                Awaiting Photographer
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="outline" disabled>
+                                <Eye className="h-4 w-4 mr-1" />
+                                Pending
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
