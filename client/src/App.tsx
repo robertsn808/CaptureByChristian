@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Portfolio from "@/pages/portfolio";
 import Admin from "@/pages/admin";
+import { AdminLogin } from "@/pages/admin-login";
 import Booking from "@/pages/booking";
 import { ClientPortalPage } from "@/pages/client-portal";
 
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin-login" component={AdminLogin} />
       <Route path="/booking" component={Booking} />
       <Route path="/client-portal" component={ClientPortalPage} />
       <Route component={NotFound} />
