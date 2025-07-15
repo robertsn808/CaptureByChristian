@@ -20,20 +20,30 @@ export function AdminLogin() {
     setError("");
     setIsLoading(true);
 
+    console.log("Login attempt:", { username, password: password.replace(/./g, '*') });
+
     try {
-      // Check credentials
-      if (username === "CapturedbyChristian" && password === "Wordpass3211") {
+      // Check credentials (case-sensitive)
+      if (username.trim() === "CapturedbyChristian" && password.trim() === "Wordpass3211") {
+        console.log("Credentials valid, storing auth data...");
+        
         // Store authentication in localStorage
         localStorage.setItem("admin_authenticated", "true");
-        localStorage.setItem("admin_username", username);
+        localStorage.setItem("admin_username", username.trim());
         localStorage.setItem("admin_login_time", new Date().toISOString());
         
-        // Navigate to admin dashboard
-        setLocation("/admin");
+        console.log("Auth data stored, redirecting to admin...");
+        
+        // Small delay to ensure localStorage is saved
+        setTimeout(() => {
+          setLocation("/admin");
+        }, 100);
       } else {
-        setError("Invalid username or password");
+        console.log("Invalid credentials provided");
+        setError("Invalid username or password. Please check your credentials and try again.");
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);

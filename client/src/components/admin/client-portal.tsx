@@ -78,7 +78,7 @@ export function ClientPortal() {
   });
 
   // Fetch clients for gallery upload
-  const { data: clientsData = [], isLoading: isLoadingClients } = useQuery({
+  const { data: clients = [], isLoading: isLoadingClients } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
       try {
@@ -91,9 +91,6 @@ export function ClientPortal() {
       }
     },
   });
-
-  // Ensure clients is always an array
-  const clients = Array.isArray(clientsData) ? clientsData : [];
 
   // Fetch bookings for client selection
   const { data: bookings = [] } = useQuery({
@@ -160,7 +157,7 @@ export function ClientPortal() {
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || isLoadingClients) {
     return (
       <div className="space-y-6">
         <Card>
@@ -316,11 +313,13 @@ export function ClientPortal() {
                         }}
                       >
                         <option value="">Choose a client...</option>
-                        {Array.isArray(clients) && clients.map((client: any) => (
+                        {clients && clients.length > 0 ? clients.map((client: any) => (
                           <option key={client.id} value={client.id}>
                             {client.name} ({client.email})
                           </option>
-                        ))}
+                        )) : (
+                          <option disabled>No clients available</option>
+                        )}
                       </select>
                     </div>
 
