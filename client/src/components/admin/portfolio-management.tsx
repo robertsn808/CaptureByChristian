@@ -27,6 +27,7 @@ import {
   Share
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export function PortfolioManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,6 +50,7 @@ export function PortfolioManagement() {
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
+      // For file uploads, we need to use fetch directly as apiRequest expects JSON
       const response = await fetch('/api/gallery/upload', {
         method: 'POST',
         body: formData,
@@ -85,10 +87,7 @@ export function PortfolioManagement() {
   // Delete image mutation
   const deleteMutation = useMutation({
     mutationFn: async (imageId: number) => {
-      const response = await fetch(`/api/gallery/${imageId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Delete failed');
+      const response = await apiRequest('DELETE', `/api/gallery/${imageId}`);
       return response.json();
     },
     onSuccess: () => {
@@ -110,12 +109,7 @@ export function PortfolioManagement() {
   // Toggle featured mutation
   const toggleFeaturedMutation = useMutation({
     mutationFn: async ({ imageId, featured }: { imageId: number; featured: boolean }) => {
-      const response = await fetch(`/api/gallery/${imageId}/featured`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ featured }),
-      });
-      if (!response.ok) throw new Error('Update failed');
+      const response = await apiRequest('PATCH', `/api/gallery/${imageId}/featured`, { featured });
       return response.json();
     },
     onSuccess: (data) => {

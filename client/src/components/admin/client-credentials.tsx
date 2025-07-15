@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,7 @@ export function ClientCredentials() {
   const [showPassword, setShowPassword] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
   const [loadingStates, setLoadingStates] = useState<{[key: number]: boolean}>({});
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -65,12 +67,7 @@ export function ClientCredentials() {
   // Generate password mutation
   const generatePasswordMutation = useMutation({
     mutationFn: async ({ clientId, password }: { clientId: number; password: string }) => {
-      const response = await fetch('/api/admin/client-credentials/set-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, password }),
-      });
-      if (!response.ok) throw new Error('Failed to set password');
+      const response = await apiRequest('POST', '/api/admin/client-credentials/set-password', { clientId, password });
       return response.json();
     },
     onSuccess: () => {
@@ -81,6 +78,7 @@ export function ClientCredentials() {
       queryClient.invalidateQueries({ queryKey: ['/api/client-credentials'] });
       setNewPassword("");
       setSelectedClient(null);
+      setPasswordDialogOpen(false);
     },
     onError: () => {
       toast({
@@ -95,12 +93,7 @@ export function ClientCredentials() {
   const sendMagicLink = async (clientId: number) => {
     setLoadingStates(prev => ({ ...prev, [clientId]: true }));
     try {
-      const response = await fetch('/api/admin/client-credentials/magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId }),
-      });
-      if (!response.ok) throw new Error('Failed to send magic link');
+      const response = await apiRequest('POST', '/api/admin/client-credentials/magic-link', { clientId });
 
       toast({
         title: "Magic Link Sent",
@@ -223,12 +216,15 @@ export function ClientCredentials() {
 
                       <div className="flex space-x-2">
                         {/* Set Password */}
-                        <Dialog>
+                        <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
                           <DialogTrigger asChild>
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => setSelectedClient(credential)}
+                              onClick={() => {
+                                setSelectedClient(credential);
+                                setPasswordDialogOpen(true);
+                              }}
                             >
                               <Lock className="h-3 w-3 mr-1" />
                               {credential.hasPassword ? 'Reset' : 'Set'} Password
@@ -287,6 +283,19 @@ export function ClientCredentials() {
                               </div>
 
                               <div className="flex space-x-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setPasswordDialogOpen(false);
+                                    setNewPassword("");
+                                    setSelectedClient(null);
+                                    setShowPassword(false);
+                                  }}
+                                  disabled={generatePasswordMutation.isPending}
+                                >
+                                  Cancel
+                                </Button>
                                 <Button
                                   onClick={() => generatePasswordMutation.mutate({
                                     clientId: credential.clientId,
@@ -384,7 +393,7 @@ export function ClientCredentials() {
                       <CardContent className="space-y-3">
                         <div>
                           <Label>Portal Title</Label>
-                          <Input defaultValue="Captured by Christian - Client Portal" />
+                          <Input defaultValue="CapturedCCollective - Client Portal" />
                         </div>
                         <div>
                           <Label>Welcome Message</Label>

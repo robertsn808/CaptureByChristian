@@ -57,13 +57,7 @@ export function ProfileManagement() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: Partial<ProfileData>) => {
-      return await apiRequest("/api/profile", {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return await apiRequest("PUT", "/api/profile", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });

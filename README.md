@@ -1,7 +1,6 @@
-# Hawaii Photography Business Platform
-## "Captured by Christian"
+# CapturedCCollective Media Platform
 
-A sophisticated AI-powered photography business management platform built for professional photographers specializing in FAA-certified drone photography. This application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and comprehensive business administration platform.
+A sophisticated AI-powered media business management platform built for CapturedCCollective, a Hawai'i-based media team that blends professionalism with creativity to deliver cinematic, high-impact content. The double "C" stands for Content and Cinematic, with a strong emphasis on Creative storytelling. From real estate and events to branded visuals, every project is approached with intentionality, artistry, and precision. This application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and comprehensive business administration platform.
 
 ## 🌺 Features
 
@@ -48,20 +47,53 @@ A sophisticated AI-powered photography business management platform built for pr
 
 ### Infrastructure
 - **Replit** for development and hosting
+- **Docker** for containerized deployment
 - **Connection pooling** with Neon PostgreSQL
 - **Environment-based configuration**
 - **Session-based authentication**
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Option 1: Docker Deployment (Recommended)
+
+**Prerequisites:**
+- Docker and Docker Compose installed
+
+**Quick Start:**
+1. **Clone and setup**
+   ```bash
+   git clone <repository-url>
+   cd hawaii-photography-platform
+   cp .env.docker .env
+   # Edit .env with your API keys
+   ```
+
+2. **Launch with Docker**
+   ```bash
+   ./docker-scripts/start.sh
+   ```
+
+3. **Access application**
+   - Web: http://localhost:5000
+   - Database: localhost:5432
+
+**Docker Services:**
+- **App Container**: CapturedCCollective application
+- **Database**: PostgreSQL 15 with persistent data
+- **Redis**: Session storage and caching
+- **Nginx**: Reverse proxy with security headers
+
+For detailed Docker instructions, see [README.Docker.md](README.Docker.md)
+
+### Option 2: Local Development
+
+**Prerequisites:**
 - Node.js (v18 or higher)
 - PostgreSQL database
 - OpenAI API key (optional, for AI features)
 - Twilio credentials (optional, for SMS)
 
-### Installation
-
+**Installation:**
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
@@ -112,7 +144,16 @@ hawaii-photography-platform/
 │   └── openai.ts          # AI integration
 ├── shared/                 # Shared types and schemas
 │   └── schema.ts          # Database schema and types
-├── migrations/            # Database migration files
+├── docker-scripts/         # Docker management utilities
+│   ├── start.sh           # Launch Docker services
+│   ├── stop.sh            # Stop Docker services
+│   └── logs.sh            # View container logs
+├── db-init/               # Database initialization scripts
+│   └── 01-init.sql        # Initial data and schema
+├── Dockerfile             # Production container configuration
+├── docker-compose.yml     # Production Docker services
+├── docker-compose.dev.yml # Development Docker services
+├── README.Docker.md       # Docker deployment guide
 └── package.json          # Dependencies and scripts
 ```
 
@@ -141,6 +182,7 @@ hawaii-photography-platform/
 
 ## 🔧 Development Commands
 
+### Local Development
 ```bash
 # Start development server
 npm run dev
@@ -150,13 +192,30 @@ npm run build
 
 # Database operations
 npm run db:push        # Push schema changes
-npm run db:studio      # Open Drizzle Studio
 
 # Type checking
-npm run type-check
+npm run check
+```
 
-# Linting
-npm run lint
+### Docker Commands
+```bash
+# Quick start (production)
+./docker-scripts/start.sh
+
+# Stop all services
+./docker-scripts/stop.sh
+
+# View logs
+./docker-scripts/logs.sh app
+./docker-scripts/logs.sh database
+
+# Development with hot reload
+docker-compose -f docker-compose.dev.yml up -d
+
+# Manual Docker operations
+docker-compose build
+docker-compose up -d
+docker-compose down
 ```
 
 ## 🗄 Database Schema
@@ -215,19 +274,88 @@ The application uses PostgreSQL with the following main tables:
 - Temperature tracking (hot, warm, cold leads)
 - Portfolio access analytics and conversion rates
 
-## 🌐 Deployment
+## 🚀 Deployment Options
 
-The application is designed for Replit deployment with:
+### Docker Deployment (Recommended)
+The application is fully containerized for easy deployment:
 
-- Automatic environment variable management
-- PostgreSQL database provisioning
-- SSL certificate handling
-- Custom domain support
-- Automated health checks
+```bash
+# Production deployment
+cp .env.docker .env
+# Edit .env with your API keys
+./docker-scripts/start.sh
+```
+
+**Benefits:**
+- Self-contained with database and all dependencies
+- Production-ready with security features
+- Easy scaling and load balancing
+- Consistent deployment across environments
+
+### Cloud Deployment
+The Docker configuration supports major cloud platforms:
+
+- **AWS ECS/Fargate**: Use provided docker-compose.yml
+- **Google Cloud Run**: Deploy from container registry
+- **Azure Container Instances**: Direct docker-compose support
+- **DigitalOcean App Platform**: Auto-deploy from GitHub
+- **Heroku**: Container registry deployment
+
+### Environment Variables
+Required for production deployment:
+```env
+DATABASE_URL=postgresql://user:password@host:5432/database
+OPENAI_API_KEY=sk-...
+TWILIO_ACCOUNT_SID=AC...
+TWILIO_AUTH_TOKEN=...
+TWILIO_PHONE_NUMBER=+1...
+SESSION_SECRET=your-secret-key
+```
+
+## 🛠️ Configuration
+
+### API Keys Setup
+1. **OpenAI**: Visit [OpenAI Platform](https://platform.openai.com/api-keys)
+2. **Twilio**: Get credentials from [Twilio Console](https://console.twilio.com/)
+3. **Database**: PostgreSQL connection string (Neon, Supabase, etc.)
+
+### Feature Flags
+Optional services that can be enabled:
+- AI Booking Assistant (requires OpenAI API key)
+- SMS Notifications (requires Twilio credentials)
+- Redis Caching (improves performance)
+
+## 📋 Production Checklist
+
+Before deploying to production:
+- [ ] Set strong passwords in environment variables
+- [ ] Configure SSL certificates for HTTPS
+- [ ] Set up database backups
+- [ ] Configure monitoring and logging
+- [ ] Test all API integrations
+- [ ] Verify email/SMS functionality
+- [ ] Set up domain and DNS
+- [ ] Configure firewall rules
+
+## 🔗 Links
+
+- [Docker Deployment Guide](README.Docker.md) - Comprehensive Docker setup instructions
+- [Development Dependencies](dependencies.md) - Complete dependency reference
+- [Database Schema](server/schema.ts) - TypeScript schema definitions
+
+## 📞 Support
+
+For deployment assistance or technical questions:
+- Review the Docker deployment guide for containerization
+- Check environment variable configuration
+- Verify API key setup and permissions
+- Test database connectivity and migrations
+
+The CapturedCCollective platform is production-ready and fully containerized for reliable deployment across any Docker-compatible environment.
 
 ## 📝 License
 
-This project is proprietary software for Christian Falonzo photography business.
+This project is proprietary software for CapturedCCollective photography business.
 
 ## 🤝 Support
 

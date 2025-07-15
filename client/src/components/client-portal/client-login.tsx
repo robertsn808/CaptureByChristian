@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Mail, Camera, Eye, EyeOff } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ClientLoginProps {
   onLoginSuccess: (clientData: any) => void;
@@ -20,16 +21,7 @@ export function ClientLogin({ onLoginSuccess }: ClientLoginProps) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const response = await fetch('/api/client-portal/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
-      }
-      
+      const response = await apiRequest('POST', '/api/client-portal/login', credentials);
       return response.json();
     },
     onSuccess: (data) => {
@@ -73,20 +65,12 @@ export function ClientLogin({ onLoginSuccess }: ClientLoginProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/client-portal/magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
+      const response = await apiRequest('POST', '/api/client-portal/magic-link', { email });
 
-      if (response.ok) {
-        toast({
-          title: "Magic Link Sent",
-          description: "Check your email for a secure login link.",
-        });
-      } else {
-        throw new Error('Failed to send magic link');
-      }
+      toast({
+        title: "Magic Link Sent",
+        description: "Check your email for a secure login link.",
+      });
     } catch (error) {
       toast({
         title: "Error",
@@ -105,7 +89,7 @@ export function ClientLogin({ onLoginSuccess }: ClientLoginProps) {
           <div className="mx-auto w-16 h-16 bg-bronze/10 rounded-full flex items-center justify-center">
             <Camera className="h-8 w-8 text-bronze" />
           </div>
-          <CardTitle className="text-2xl font-playfair">Captured by Christian</CardTitle>
+          <CardTitle className="text-2xl font-playfair">CapturedCCollective</CardTitle>
           <p className="text-muted-foreground">
             Client Portal - Access your photo galleries, contracts, and session details
           </p>

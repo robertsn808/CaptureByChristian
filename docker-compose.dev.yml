@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Development database
+  database:
+    image: postgres:15-alpine
+    container_name: capturedcollective-dev-db
+    environment:
+      POSTGRES_DB: capturedcollective_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - capturedcollective-dev-network
+
+  # Development app with hot reload
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: capturedcollective-dev-app
+    depends_on:
+      - database
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:dev_password@database:5432/capturedcollective_dev
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - capturedcollective-dev-network
+    command: npm run dev
+
+volumes:
+  postgres_dev_data:
+    driver: local
+
+networks:
+  capturedcollective-dev-network:
+    driver: bridge

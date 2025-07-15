@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { AdminDashboard } from "@/components/admin/dashboard";
 import { AdminCalendar } from "@/components/admin/calendar";
 import { ClientManagement } from "@/components/admin/client-management";
@@ -46,6 +48,7 @@ import {
   LogOut,
   Key
 } from "lucide-react";
+import ErrorBoundary from "@/components/error-boundary";
 
 const menuSections = [
   {
@@ -95,7 +98,47 @@ const menuSections = [
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { theme, setTheme } = useTheme();
+  const { isAuthenticated, username, logout } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Small delay to ensure localStorage is read properly
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const authStatus = localStorage.getItem("admin_authenticated") === "true";
+      
+      if (!authStatus) {
+        console.log("Not authenticated, redirecting to login");
+        setLocation("/admin-login");
+        return;
+      }
+      
+      setIsLoading(false);
+    };
+    
+    checkAuth();
+  }, [setLocation]);
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bronze mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading if not authenticated
+  if (!isAuthenticated) {
+    return null; // Don't render anything while redirecting
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,7 +152,7 @@ export default function Admin() {
                   <Camera className="h-6 w-6 text-white" />
                 </div>
                 <span className="font-playfair text-xl font-bold gradient-text">
-                  Captured by Christian
+                  CapturedCollective
                 </span>
               </div>
             </Link>
@@ -144,6 +187,19 @@ export default function Admin() {
                 )}
               </Button>
 
+              <div className="flex items-center space-x-2 text-sm text-foreground/80">
+                <span>Welcome, {username}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-400/30"
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
+
               <Link href="/client-portal">
                 <Button variant="outline" size="sm">
                   Client Portal
@@ -161,107 +217,109 @@ export default function Admin() {
       </nav>
 
       {/* Admin Layout with Sidebar */}
-      <div className="flex pt-16">
-        {/* Sidebar */}
-        <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border transition-all duration-300 flex flex-col min-h-screen`}>
-          {/* Sidebar Header */}
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center justify-between">
-              {!sidebarCollapsed && (
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
-                    <Camera className="h-5 w-5 text-white" />
+      <ErrorBoundary>
+        <div className="flex pt-16">
+          {/* Sidebar */}
+          <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border transition-all duration-300 flex flex-col min-h-screen`}>
+            {/* Sidebar Header */}
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                {!sidebarCollapsed && (
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
+                      <Camera className="h-5 w-5 text-white" />
+                    </div>
+                    <span className="font-playfair text-lg font-bold gradient-text">
+                      Admin Panel
+                    </span>
                   </div>
-                  <span className="font-playfair text-lg font-bold gradient-text">
-                    Admin Panel
-                  </span>
-                </div>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="h-8 w-8 p-0"
-              >
-                {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-
-          {/* Navigation Menu */}
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-6">
-              {menuSections.map((section) => (
-                <div key={section.title}>
-                  {!sidebarCollapsed && (
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                      {section.title}
-                    </h3>
-                  )}
-                  <div className="space-y-1">
-                    {section.items.map((item) => (
-                      <Button
-                        key={item.id}
-                        variant={activeTab === item.id ? "default" : "ghost"}
-                        onClick={() => setActiveTab(item.id)}
-                        className={`w-full justify-start h-10 ${
-                          activeTab === item.id
-                            ? 'bg-bronze text-white hover:bg-bronze/90'
-                            : 'hover:bg-muted'
-                        } ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
-                        title={sidebarCollapsed ? item.label : undefined}
-                      >
-                        <item.icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
-                        {!sidebarCollapsed && (
-                          <span className="truncate">{item.label}</span>
-                        )}
-                      </Button>
-                    ))}
-                  </div>
-                  {!sidebarCollapsed && <Separator className="mt-4" />}
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-
-          {/* Sidebar Footer */}
-          <div className="p-4 border-t border-border">
-            <Badge variant="outline" className="w-full justify-center text-xs">
-              Admin Dashboard
-            </Badge>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Top Header */}
-          <div className="bg-card border-b border-border p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="font-playfair text-2xl font-bold">
-                  {menuSections.flatMap(s => s.items).find(item => item.id === activeTab)?.label || 'Dashboard'}
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                  Manage your photography business with AI-powered tools
-                </p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Badge variant="outline" className="text-sm">
-                  <Activity className="h-3 w-3 mr-1" />
-                  Live Updates
-                </Badge>
-                <Badge variant="secondary" className="text-sm">
-                  <Zap className="h-3 w-3 mr-1" />
-                  AI Enhanced
-                </Badge>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="h-8 w-8 p-0"
+                >
+                  {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                </Button>
               </div>
             </div>
+
+            {/* Navigation Menu */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-6">
+                {menuSections.map((section) => (
+                  <div key={section.title}>
+                    {!sidebarCollapsed && (
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                        {section.title}
+                      </h3>
+                    )}
+                    <div className="space-y-1">
+                      {section.items.map((item) => (
+                        <Button
+                          key={item.id}
+                          variant={activeTab === item.id ? "default" : "ghost"}
+                          onClick={() => setActiveTab(item.id)}
+                          className={`w-full justify-start h-10 ${
+                            activeTab === item.id
+                              ? 'bg-bronze text-white hover:bg-bronze/90'
+                              : 'hover:bg-muted'
+                          } ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
+                          title={sidebarCollapsed ? item.label : undefined}
+                        >
+                          <item.icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+                          {!sidebarCollapsed && (
+                            <span className="truncate">{item.label}</span>
+                          )}
+                        </Button>
+                      ))}
+                    </div>
+                    {!sidebarCollapsed && <Separator className="mt-4" />}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            {/* Sidebar Footer */}
+            <div className="p-4 border-t border-border">
+              <Badge variant="outline" className="w-full justify-center text-xs">
+                Admin Dashboard
+              </Badge>
+            </div>
           </div>
 
-          {/* Content Area */}
-          <div className="flex-1 overflow-auto p-6">{renderContent()}</div>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Top Header */}
+            <div className="bg-card border-b border-border p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="font-playfair text-2xl font-bold">
+                    {menuSections.flatMap(s => s.items).find(item => item.id === activeTab)?.label || 'Dashboard'}
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    Manage your photography business with AI-powered tools
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <Badge variant="outline" className="text-sm">
+                    <Activity className="h-3 w-3 mr-1" />
+                    Live Updates
+                  </Badge>
+                  <Badge variant="secondary" className="text-sm">
+                    <Zap className="h-3 w-3 mr-1" />
+                    AI Enhanced
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 overflow-auto p-6">{renderContent()}</div>
+          </div>
         </div>
-      </div>
+      </ErrorBoundary>
     </div>
   );
 

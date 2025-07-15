@@ -16,7 +16,7 @@ export function AIChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant', 
-      content: "Aloha! I'm the AI booking assistant for Captured by Christian. I can help you find the perfect photography package, check availability, and answer questions about our services. Whether you're planning a wedding, portrait session, or need aerial photography, I'm here to help. What brings you here today?",
+      content: "Aloha! I'm the AI booking assistant for CapturedCCollective, where we blend professionalism with creativity to deliver cinematic, high-impact content. The double 'C' in our name stands for Content and Cinematic, with a strong emphasis on Creative storytelling. Whether you need real estate visuals, event coverage, branded content, or traditional photography, I can help you find the perfect package and check availability. What brings you here today?",
       timestamp: Date.now(),
     }
   ]);

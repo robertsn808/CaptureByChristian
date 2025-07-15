@@ -170,9 +170,9 @@ const INVOICE_HTML_TEMPLATE =
       </div>
       <div>
         <div style="width: 150px; height: 80px; background: #d4a574; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 5px;">
-          <div style="font-size: 16px; font-weight: bold;">Christian</div>
-          <div style="font-size: 16px; font-weight: bold;">Falonzo</div>
-          <div style="font-size: 10px;">Photography</div>
+          <div style="font-size: 14px; font-weight: bold;">CapturedC</div>
+          <div style="font-size: 14px; font-weight: bold;">Collective</div>
+          <div style="font-size: 10px;">Media Team</div>
         </div>
       </div>
     </div>

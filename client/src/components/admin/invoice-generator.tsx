@@ -624,7 +624,7 @@ export function InvoiceGenerator() {
               <div className="flex justify-between items-start border-b-2 border-gray-200 pb-6">
                 <div>
                   <h2 className="text-4xl font-bold text-bronze mb-2">INVOICE</h2>
-                  <p className="text-lg font-semibold text-gray-800">Captured by Christian</p>
+                  <p className="text-lg font-semibold text-gray-800">CapturedCCollective</p>
                   <p className="text-base text-gray-700">Professional Photography Services</p>
                   <p className="text-sm text-gray-600">Honolulu, Hawaii</p>
                 </div>

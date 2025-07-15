@@ -39,12 +39,12 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
 // Default contract templates based on the attached files
-const INDIVIDUAL_CONTRACT_TEMPLATE = `📄 Photography Contract Template – Individual Clients
-Capture By Christian – Photography Services Agreement
+const INDIVIDUAL_CONTRACT_TEMPLATE = `📄 Media Services Contract Template – Individual Clients
+CapturedCCollective – Media Services Agreement
 
 This Agreement is made on [DATE] between:
 
-Photographer: Capture By Christian (Christian Picaso)
+Media Team: CapturedCCollective
 Client: [CLIENT_NAME]
 Email: [CLIENT_EMAIL]
 Phone: [CLIENT_PHONE]
@@ -54,7 +54,7 @@ Date of Session: [SESSION_DATE]
 Location: [LOCATION]
 
 1. Scope of Services
-Photographer agrees to provide professional photography services including capturing, editing, and delivering digital images. Package selected: [PACKAGE_TYPE]
+CapturedCCollective agrees to provide professional media services including capturing, editing, and delivering digital content. Package selected: [PACKAGE_TYPE]
 
 2. Payment Terms
 Total Fee: $[TOTAL_AMOUNT]
@@ -73,12 +73,12 @@ Timeline: [TIMELINE]
 [CANCELLATION_POLICY]
 
 6. Liability
-Photographer is not liable for any damages, loss of files due to technical failure, or unforeseen circumstances beyond control (e.g., weather, emergency).
+CapturedCCollective is not liable for any damages, loss of files due to technical failure, or unforeseen circumstances beyond control (e.g., weather, emergency).
 
 [ADDITIONAL_TERMS]
 
 Client Signature: ___________________________
-Photographer (Christian): ____________________
+CapturedCCollective Representative: ___________
 Date: ______________`;
 
 const BUSINESS_CONTRACT_TEMPLATE = `📄 Commercial Photography Contract – Businesses & Brands
@@ -792,6 +792,27 @@ Base your recommendations on current photography industry standards and the spec
                           ${contract.totalAmount}
                         </Badge>
                       )}
+                      {/* E-signature status indicators */}
+                      <div className="flex items-center space-x-1">
+                        {contract.clientSignedAt && (
+                          <div className="flex items-center space-x-1 text-green-600">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-xs">Client Signed</span>
+                          </div>
+                        )}
+                        {contract.photographerSignedAt && (
+                          <div className="flex items-center space-x-1 text-blue-600">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-xs">Photographer Signed</span>
+                          </div>
+                        )}
+                        {contract.isFullySigned && (
+                          <Badge variant="default" className="bg-green-600">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Fully Executed
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button 

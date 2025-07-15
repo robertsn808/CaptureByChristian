@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -25,27 +26,138 @@ import {
   Image,
   DollarSign,
   Settings,
-  Shield
+  Shield,
+  Upload,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
 
 export function ClientPortal() {
   const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const queryClient = useQueryClient();
 
   // Fetch real client portal sessions from database
   const { data: portalSessions = [], isLoading } = useQuery({
     queryKey: ['/api/admin/client-portal-sessions'],
-    queryFn: () => fetch('/api/admin/client-portal-sessions').then(r => r.json()),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/admin/client-portal-sessions');
+      return response.json();
+    },
   });
 
   // Fetch real portal statistics
-  const { data: portalStats = {} } = useQuery({
+  const { data: portalStats = {
+    activeUsers: 0,
+    totalSessions: 0,
+    avgSessionTime: '0m',
+    downloadCount: 0,
+    accessRate: 0,
+    avgRating: 0
+  } } = useQuery({
     queryKey: ['/api/admin/client-portal-stats'],
-    queryFn: () => fetch('/api/admin/client-portal-stats').then(r => r.json()),
+    queryFn: async () => {
+      try {
+        const response = await apiRequest('GET', '/api/admin/client-portal-stats');
+        return response.json();
+      } catch (error) {
+        console.error('Failed to fetch portal stats:', error);
+        return {
+          activeUsers: 0,
+          totalSessions: 0,
+          avgSessionTime: '0m',
+          downloadCount: 0,
+          accessRate: 0,
+          avgRating: 0
+        };
+      }
+    },
   });
 
+  // Fetch clients for gallery upload
+  const { data: clients = [], isLoading: isLoadingClients } = useQuery({
+    queryKey: ['/api/clients'],
+    queryFn: async () => {
+      try {
+        const response = await apiRequest('GET', '/api/clients');
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Failed to fetch clients:', error);
+        return [];
+      }
+    },
+  });
+
+  // Fetch bookings for client selection
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['/api/bookings'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/bookings');
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
+  });
+
+  // Gallery upload mutation
+  const uploadGalleryMutation = useMutation({
+    mutationFn: async ({ files, clientId, bookingId }: { files: File[], clientId: number, bookingId?: number }) => {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('images', file);
+      });
+      formData.append('category', 'client_gallery');
+      formData.append('clientId', clientId.toString());
+      if (bookingId) {
+        formData.append('bookingId', bookingId.toString());
+      }
+
+      const response = await fetch('/api/gallery/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Upload failed');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      setUploadDialogOpen(false);
+      setSelectedFiles([]);
+      setSelectedClient(null);
+    },
+  });
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files);
+  };
+
+  const handleUploadGallery = () => {
+    if (!selectedClient || selectedFiles.length === 0) return;
+
+    // Find the client's most recent booking
+    const clientBookings = bookings.filter((b: any) => b.clientId === selectedClient.id);
+    const mostRecentBooking = clientBookings.sort((a: any, b: any) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    )[0];
+
+    uploadGalleryMutation.mutate({
+      files: selectedFiles,
+      clientId: selectedClient.id,
+      bookingId: mostRecentBooking?.id
+    });
+  };
+
   // Loading state
-  if (isLoading) {
+  if (isLoading || isLoadingClients) {
     return (
       <div className="space-y-6">
         <Card>
@@ -174,16 +286,85 @@ export function ClientPortal() {
               <Globe className="h-5 w-5 mr-2" />
               Client Portal Activity
             </span>
-            <Button 
-              className="btn-bronze"
-              onClick={() => {
-                // Open portal settings dialog or navigate to settings page
-                console.log("Opening portal settings...");
-              }}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Portal Settings
-            </Button>
+            <div className="flex space-x-2">
+              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="btn-bronze">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Client Gallery
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Upload Gallery for Client</DialogTitle>
+                    <DialogDescription>
+                      Select a client and upload photos to their private gallery.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Select Client</label>
+                      <select 
+                        className="w-full mt-1 p-2 border rounded-md"
+                        value={selectedClient?.id || ''}
+                        onChange={(e) => {
+                          const client = clients.find((c: any) => c.id === parseInt(e.target.value));
+                          setSelectedClient(client);
+                        }}
+                      >
+                        <option value="">Choose a client...</option>
+                        {clients && clients.length > 0 ? clients.map((client: any) => (
+                          <option key={client.id} value={client.id}>
+                            {client.name} ({client.email})
+                          </option>
+                        )) : (
+                          <option disabled>No clients available</option>
+                        )}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium">Select Photos</label>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="mt-1"
+                      />
+                      {selectedFiles.length > 0 && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {selectedFiles.length} file(s) selected
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleUploadGallery}
+                        disabled={!selectedClient || selectedFiles.length === 0 || uploadGalleryMutation.isPending}
+                        className="btn-bronze"
+                      >
+                        {uploadGalleryMutation.isPending ? 'Uploading...' : 'Upload Gallery'}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  console.log("Opening portal settings...");
+                }}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Portal Settings
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -200,7 +381,7 @@ export function ClientPortal() {
                       <span className="text-sm text-muted-foreground">{session.device}</span>
                       <span className="text-sm text-muted-foreground">{session.location}</span>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-3 gap-4 text-sm text-muted-foreground mb-4">
                       <div>
                         <p><strong>Last Access:</strong> {format(new Date(session.lastAccess), "MMM d, yyyy 'at' h:mm a")}</p>
@@ -233,7 +414,7 @@ export function ClientPortal() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col space-y-2">
                     <Button size="sm" variant="outline" onClick={() => setSelectedSession(session)}>
                       <Eye className="h-3 w-3 mr-1" />
@@ -258,6 +439,9 @@ export function ClientPortal() {
             <DialogTitle>
               Portal Session Details - {selectedSession?.clientName}
             </DialogTitle>
+            <DialogDescription>
+              View detailed session information and complete activity log for this client.
+            </DialogDescription>
           </DialogHeader>
           {selectedSession && (
             <div className="space-y-4">
@@ -280,7 +464,7 @@ export function ClientPortal() {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <h4 className="font-medium mb-2">Complete Activity Log</h4>
                 <div className="max-h-64 overflow-y-auto space-y-2">

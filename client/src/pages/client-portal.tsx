@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ClientLogin } from "@/components/client-portal/client-login";
 import { ClientDashboard } from "@/components/client-portal/client-dashboard";
 import { GalleryViewer } from "@/components/client-portal/gallery-viewer";
+import { apiRequest } from "@/lib/queryClient";
 
 export function ClientPortalPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,18 +33,12 @@ export function ClientPortalPage() {
 
   const handleMagicLinkAuth = async (token: string) => {
     try {
-      const response = await fetch('/api/client-portal/verify-magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      });
+      const response = await apiRequest('POST', '/api/client-portal/verify-magic-link', { token });
 
-      if (response.ok) {
-        const data = await response.json();
-        handleLoginSuccess(data);
-        // Clean up URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
+      const data = await response.json();
+      handleLoginSuccess(data);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     } catch (error) {
       console.error('Magic link authentication failed:', error);
     }
