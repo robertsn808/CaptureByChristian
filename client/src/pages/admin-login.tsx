@@ -15,35 +15,64 @@ export function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
 
+  // Clear any existing auth data when login page loads
+  useState(() => {
+    console.log("🧹 Clearing existing auth data on login page load");
+    localStorage.removeItem("admin_authenticated");
+    localStorage.removeItem("admin_username");
+    localStorage.removeItem("admin_login_time");
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    console.log("Login attempt:", { username, password: password.replace(/./g, '*') });
+    console.log("🔐 Login attempt started");
+    console.log("📝 Username:", username);
+    console.log("🔑 Password length:", password.length);
+    console.log("🧹 Username trimmed:", `"${username.trim()}"`);
+    console.log("🧹 Password trimmed:", `"${password.trim()}"`);
 
     try {
       // Check credentials (case-sensitive)
-      if (username.trim() === "CapturedbyChristian" && password.trim() === "Wordpass3211") {
-        console.log("Credentials valid, storing auth data...");
+      const isValidUsername = username.trim() === "CapturedbyChristian";
+      const isValidPassword = password.trim() === "Wordpass3211";
+      
+      console.log("✅ Username valid:", isValidUsername);
+      console.log("✅ Password valid:", isValidPassword);
+      
+      if (isValidUsername && isValidPassword) {
+        console.log("🎉 Credentials valid, storing auth data...");
+        
+        // Clear any existing auth data first
+        localStorage.removeItem("admin_authenticated");
+        localStorage.removeItem("admin_username");
+        localStorage.removeItem("admin_login_time");
+        
+        console.log("🧹 Cleared old auth data");
         
         // Store authentication in localStorage
         localStorage.setItem("admin_authenticated", "true");
         localStorage.setItem("admin_username", username.trim());
         localStorage.setItem("admin_login_time", new Date().toISOString());
         
-        console.log("Auth data stored, redirecting to admin...");
+        console.log("💾 Auth data stored");
+        console.log("📄 localStorage admin_authenticated:", localStorage.getItem("admin_authenticated"));
+        console.log("👤 localStorage admin_username:", localStorage.getItem("admin_username"));
+        console.log("⏰ localStorage admin_login_time:", localStorage.getItem("admin_login_time"));
         
-        // Small delay to ensure localStorage is saved
-        setTimeout(() => {
-          setLocation("/admin");
-        }, 100);
+        // Immediate redirect - no delay
+        console.log("🚀 Redirecting to /admin");
+        setLocation("/admin");
       } else {
-        console.log("Invalid credentials provided");
+        console.log("❌ Invalid credentials provided");
+        console.log("Expected username: 'CapturedbyChristian'");
+        console.log("Expected password: 'Wordpass3211'");
         setError("Invalid username or password. Please check your credentials and try again.");
       }
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("💥 Login error:", err);
       setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);

@@ -98,16 +98,42 @@ const menuSections = [
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { theme, setTheme } = useTheme();
   const { isAuthenticated, username, logout } = useAuth();
   const [, setLocation] = useLocation();
 
   // Check authentication on component mount
   useEffect(() => {
-    if (!isAuthenticated) {
-      setLocation("/admin-login");
-    }
-  }, [isAuthenticated, setLocation]);
+    const checkAuth = async () => {
+      // Small delay to ensure localStorage is read properly
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const authStatus = localStorage.getItem("admin_authenticated") === "true";
+      
+      if (!authStatus) {
+        console.log("Not authenticated, redirecting to login");
+        setLocation("/admin-login");
+        return;
+      }
+      
+      setIsLoading(false);
+    };
+    
+    checkAuth();
+  }, [setLocation]);
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bronze mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show loading if not authenticated
   if (!isAuthenticated) {
