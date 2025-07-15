@@ -58,7 +58,7 @@ export function ClientPortal() {
   });
 
   // Fetch clients for gallery upload
-  const { data: clients = [] } = useQuery({
+  const { data: clientsData, isLoading } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/clients');
@@ -66,6 +66,9 @@ export function ClientPortal() {
       return Array.isArray(data) ? data : [];
     },
   });
+
+  // Ensure clients is always an array
+  const clients = Array.isArray(clientsData) ? clientsData : [];
 
   // Fetch bookings for client selection
   const { data: bookings = [] } = useQuery({
