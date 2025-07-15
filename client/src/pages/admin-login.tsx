@@ -52,7 +52,7 @@ export function AdminLogin() {
               Admin Portal
             </CardTitle>
             <p className="text-slate-300 mt-2">
-              CapturedCCollective Dashboard Access
+              CapturedCollective Dashboard Access
             </p>
           </CardHeader>
           
@@ -118,7 +118,7 @@ export function AdminLogin() {
 
             <div className="mt-8 text-center">
               <p className="text-slate-400 text-sm">
-                Secure access to CapturedCCollective<br />
+                Secure access to CapturedCollective<br />
                 photography business management
               </p>
             </div>
