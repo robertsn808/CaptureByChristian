@@ -12,20 +12,23 @@ export function Hero() {
 
   return (
     <section className="relative h-screen overflow-hidden">
-      {/* Background Image with Fallback */}
+      {/* Video Background */}
       <div className="absolute inset-0">
-        {/* Gradient Fallback Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-900 via-red-900 to-purple-900"></div>
-        
-        {/* Main Background Image */}
-        <img 
-          src="https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
-          alt="Honolulu sunset serenity - cinematic Hawaii landscape"
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           className="w-full h-full object-cover"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
-        />
+        >
+          <source src="/attached_assets/20250619_1046_Honolulu Sunset Vibes_simple_compose_01jy4z2q86e6mbdtxctwr6e8mn_1752351152753.mp4" type="video/mp4" />
+          {/* Fallback image if video fails to load */}
+          <img 
+            src="https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
+            alt="Hawaii landscape photography"
+            className="w-full h-full object-cover"
+          />
+        </video>
       </div>
 
       {/* Enhanced Overlay with Better Contrast */}
