@@ -66,10 +66,7 @@ export function ServiceManagement() {
   // Create service mutation
   const createServiceMutation = useMutation({
     mutationFn: async (serviceData: ServiceFormData) => {
-      return await apiRequest('/api/services', {
-        method: 'POST',
-        body: JSON.stringify(serviceData),
-      });
+      return await apiRequest('POST', '/api/services', serviceData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/services/admin'] });
@@ -92,10 +89,7 @@ export function ServiceManagement() {
   // Update service mutation
   const updateServiceMutation = useMutation({
     mutationFn: async ({ id, serviceData }: { id: number; serviceData: Partial<ServiceFormData> }) => {
-      return await apiRequest(`/api/services/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(serviceData),
-      });
+      return await apiRequest('PATCH', `/api/services/${id}`, serviceData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/services/admin'] });
@@ -118,9 +112,7 @@ export function ServiceManagement() {
   // Delete service mutation
   const deleteServiceMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/services/${id}`, {
-        method: 'DELETE',
-      });
+      return await apiRequest('DELETE', `/api/services/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/services/admin'] });
@@ -142,10 +134,7 @@ export function ServiceManagement() {
   // Toggle service visibility
   const toggleVisibilityMutation = useMutation({
     mutationFn: async ({ id, active }: { id: number; active: boolean }) => {
-      return await apiRequest(`/api/services/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ active }),
-      });
+      return await apiRequest('PATCH', `/api/services/${id}`, { active });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/services/admin'] });

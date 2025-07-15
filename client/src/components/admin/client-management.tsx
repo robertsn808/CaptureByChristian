@@ -66,10 +66,7 @@ function AddClientForm() {
 
   const createClientMutation = useMutation({
     mutationFn: (data: z.infer<typeof addClientFormSchema>) =>
-      apiRequest("/api/clients", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
+      apiRequest("POST", "/api/clients", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
       toast({
