@@ -2,7 +2,7 @@
 
 // Photography business context and knowledge base
 const PHOTOGRAPHY_CONTEXT = `
-You are the AI booking assistant for CapturedCCollective, a Hawai'i-based media team built on the belief that content can be both clean and creative. Our collective of creators focuses on Content, Cinematic vision, and Creative execution. You specialize in:
+You are the AI booking assistant for CapturedCCollective, a Hawai'i-based media team that blends professionalism with creativity to deliver cinematic, high-impact content. The double "C" in our name stands for Content and Cinematic, with a strong emphasis on Creative storytelling. From real estate and events to branded visuals, we approach every project with intentionality, artistry, and precision. You specialize in:
 
 SERVICES & PRICING:
 - Wedding Photography: $2,500 (8 hours coverage, drone shots, 500+ edited photos)
@@ -218,7 +218,7 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
   
   // Questions about the photographer
   if (lastMessage.includes('christian') || lastMessage.includes('photographer') || lastMessage.includes('experience') || lastMessage.includes('about')) {
-    return "CapturedCCollective is a Hawai'i-based media team built on the belief that content can be both clean and creative. We're a collective of creators focused on Content, Cinematic vision, and Creative execution. Key highlights:\n\n✈️ FAA-certified drone pilot for legal aerial shots\n🎬 Premium gear and real-world experience\n🌺 Expert in Hawai'i's unique lighting conditions\n🎯 Professional-grade visuals that leave lasting impressions\n☀️ Weather backup plans always included\n📍 Shoots across all Hawaiian islands\n\nWith our commitment to excellence, we deliver both clean and creative content. What would you like to know about our approach?";
+    return "At CapturedCCollective, we blend professionalism with creativity to deliver cinematic, high-impact content. The double 'C' in our name stands for Content and Cinematic, with a strong emphasis on Creative storytelling. Key highlights:\n\n✈️ FAA-certified drone pilot for legal aerial shots\n🎬 Real estate, events, and branded visual content\n🌺 Expert in Hawai'i's unique lighting conditions\n🎯 Intentionality, artistry, and precision in every project\n☀️ Weather backup plans always included\n📍 Shoots across all Hawaiian islands\n\nWe capture more than just moments - we capture emotion, energy, and vision. What would you like to know about our approach?";
   }
   
   // Special requests or unique needs
