@@ -25,12 +25,18 @@ import {
   Image,
   DollarSign,
   Settings,
-  Shield
+  Shield,
+  Upload,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
 
 export function ClientPortal() {
   const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const queryClient = useQueryClient();
 
   // Fetch real client portal sessions from database
   const { data: portalSessions = [], isLoading } = useQuery({
@@ -43,6 +49,72 @@ export function ClientPortal() {
     queryKey: ['/api/admin/client-portal-stats'],
     queryFn: () => fetch('/api/admin/client-portal-stats').then(r => r.json()),
   });
+
+  // Fetch clients for gallery upload
+  const { data: clients = [] } = useQuery({
+    queryKey: ['/api/clients'],
+    queryFn: () => fetch('/api/clients').then(r => r.json()),
+  });
+
+  // Fetch bookings for client selection
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['/api/bookings'],
+    queryFn: () => fetch('/api/bookings').then(r => r.json()),
+  });
+
+  // Gallery upload mutation
+  const uploadGalleryMutation = useMutation({
+    mutationFn: async ({ files, clientId, bookingId }: { files: File[], clientId: number, bookingId?: number }) => {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('images', file);
+      });
+      formData.append('category', 'client_gallery');
+      formData.append('clientId', clientId.toString());
+      if (bookingId) {
+        formData.append('bookingId', bookingId.toString());
+      }
+
+      const response = await fetch('/api/gallery/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Upload failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      setUploadDialogOpen(false);
+      setSelectedFiles([]);
+      setSelectedClient(null);
+    },
+  });
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files);
+  };
+
+  const handleUploadGallery = () => {
+    if (!selectedClient || selectedFiles.length === 0) return;
+    
+    // Find the client's most recent booking
+    const clientBookings = bookings.filter((b: any) => b.clientId === selectedClient.id);
+    const mostRecentBooking = clientBookings.sort((a: any, b: any) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    )[0];
+    
+    uploadGalleryMutation.mutate({
+      files: selectedFiles,
+      clientId: selectedClient.id,
+      bookingId: mostRecentBooking?.id
+    });
+  };
 
   // Loading state
   if (isLoading) {
@@ -174,16 +246,80 @@ export function ClientPortal() {
               <Globe className="h-5 w-5 mr-2" />
               Client Portal Activity
             </span>
-            <Button 
-              className="btn-bronze"
-              onClick={() => {
-                // Open portal settings dialog or navigate to settings page
-                console.log("Opening portal settings...");
-              }}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Portal Settings
-            </Button>
+            <div className="flex space-x-2">
+              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="btn-bronze">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Client Gallery
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Upload Gallery for Client</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Select Client</label>
+                      <select 
+                        className="w-full mt-1 p-2 border rounded-md"
+                        value={selectedClient?.id || ''}
+                        onChange={(e) => {
+                          const client = clients.find((c: any) => c.id === parseInt(e.target.value));
+                          setSelectedClient(client);
+                        }}
+                      >
+                        <option value="">Choose a client...</option>
+                        {clients.map((client: any) => (
+                          <option key={client.id} value={client.id}>
+                            {client.name} ({client.email})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Select Photos</label>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="mt-1"
+                      />
+                      {selectedFiles.length > 0 && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {selectedFiles.length} file(s) selected
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleUploadGallery}
+                        disabled={!selectedClient || selectedFiles.length === 0 || uploadGalleryMutation.isPending}
+                        className="btn-bronze"
+                      >
+                        {uploadGalleryMutation.isPending ? 'Uploading...' : 'Upload Gallery'}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  console.log("Opening portal settings...");
+                }}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Portal Settings
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>

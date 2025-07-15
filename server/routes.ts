@@ -397,6 +397,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Create database entries for uploaded images
         const uploadedImages = [];
+        const { clientId, bookingId } = req.body;
+        
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const filename = `${Date.now()}_${i}_${file.originalname}`;
@@ -414,7 +416,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               category,
               tags: [category, "uploaded"],
               featured: false,
-              bookingId: null,
+              bookingId: bookingId ? parseInt(bookingId) : null,
             };
 
             // Save to database
@@ -781,12 +783,29 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
           id: booking.id.toString(),
           name: `${booking.service?.name || 'Photography Session'} - ${new Date(booking.date).toLocaleDateString()}`,
           clientId: clientId,
-          status: booking.status === 'completed' ? 'ready_for_download' : 'proofing',
+          status: bookingImages.length > 0 ? 'proofing' : 'pending',
           coverImage: bookingImages.length > 0 ? bookingImages[0].url : "/api/placeholder/400/300",
           photoCount: bookingImages.length,
           createdAt: booking.createdAt
         };
       });
+
+      // Also include galleries that have images but no specific booking
+      const unbookedImages = galleryImages.filter(img => 
+        !img.bookingId && img.tags?.includes('client_gallery')
+      );
+      
+      if (unbookedImages.length > 0) {
+        galleries.push({
+          id: `unbooked_${clientId}`,
+          name: 'Additional Photos',
+          clientId: clientId,
+          status: 'proofing',
+          coverImage: unbookedImages[0].url,
+          photoCount: unbookedImages.length,
+          createdAt: new Date().toISOString()
+        });
+      }
 
       res.json(galleries);
     } catch (error) {
@@ -798,21 +817,39 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
   app.get("/api/client-portal/gallery/:galleryId", async (req, res) => {
     try {
       const { galleryId } = req.params;
-      const bookingId = parseInt(galleryId);
+      
+      let galleryImages = [];
+      let galleryName = "";
+      let galleryStatus = "proofing";
+      let createdAt = new Date().toISOString();
 
-      // Get real gallery data from booking and images
-      const booking = await storage.getBooking(bookingId);
-      const galleryImages = await storage.getImagesByBooking(bookingId);
+      if (galleryId.startsWith('unbooked_')) {
+        // Handle unbooked images
+        const allImages = await storage.getGalleryImages();
+        galleryImages = allImages.filter(img => 
+          !img.bookingId && img.tags?.includes('client_gallery')
+        );
+        galleryName = "Additional Photos";
+      } else {
+        // Handle booking-specific gallery
+        const bookingId = parseInt(galleryId);
+        const booking = await storage.getBooking(bookingId);
+        galleryImages = await storage.getImagesByBooking(bookingId);
 
-      if (!booking) {
-        return res.status(404).json({ error: "Gallery not found" });
+        if (!booking) {
+          return res.status(404).json({ error: "Gallery not found" });
+        }
+
+        galleryName = `${booking.service?.name || 'Photography Session'} - ${new Date(booking.date).toLocaleDateString()}`;
+        galleryStatus = galleryImages.length > 0 ? 'proofing' : 'pending';
+        createdAt = booking.createdAt;
       }
 
       const gallery = {
         id: galleryId,
-        name: `${booking.service?.name || 'Photography Session'} - ${new Date(booking.date).toLocaleDateString()}`,
-        status: booking.status === 'completed' ? 'ready_for_download' : 'proofing',
-        createdAt: booking.createdAt,
+        name: galleryName,
+        status: galleryStatus,
+        createdAt: createdAt,
         images: galleryImages.map(img => ({
           id: img.id.toString(),
           url: img.url,
@@ -871,23 +908,21 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
     try {
       const clientId = parseInt(req.query.clientId as string);
 
-      // Get real contracts from bookings
-      const bookings = await storage.getBookings();
-      const clientBookings = bookings.filter(b => b.clientId === clientId);
+      // Get contracts directly by client ID
+      const allContracts = await storage.getContracts();
+      const clientContracts = allContracts.filter(contract => contract.clientId === clientId);
 
-      const contracts = [];
-      for (const booking of clientBookings) {
-        const contract = await storage.getContract(booking.id);
-        if (contract) {
-          contracts.push({
-            id: contract.id,
-            clientId: clientId,
-            title: `${booking.service?.name || 'Photography'} Contract`,
-            signedAt: contract.signedAt,
-            downloadUrl: `/api/contracts/${contract.id}/download`
-          });
-        }
-      }
+      const contracts = clientContracts.map(contract => ({
+        id: contract.id,
+        clientId: clientId,
+        title: contract.title || `${contract.serviceType || 'Photography'} Contract`,
+        status: contract.status,
+        signedAt: contract.signedAt,
+        createdAt: contract.createdAt,
+        totalAmount: contract.totalAmount,
+        downloadUrl: `/api/contracts/${contract.id}/download`,
+        signUrl: contract.status === 'sent' ? `/client-portal/contract/${contract.portalAccessToken}` : null
+      }));
 
       res.json(contracts);
     } catch (error) {
@@ -952,6 +987,34 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
     } catch (error) {
       console.error("Error fetching client portal stats:", error);
       res.status(500).json({ error: "Failed to fetch client portal stats" });
+    }
+  });
+
+  // Client Portal Invoices
+  app.get("/api/client-portal/invoices", async (req, res) => {
+    try {
+      const clientId = parseInt(req.query.clientId as string);
+
+      // Get client bookings and generate invoice data
+      const bookings = await storage.getBookings();
+      const clientBookings = bookings.filter(b => b.clientId === clientId);
+
+      const invoices = clientBookings.map(booking => ({
+        id: `INV-${booking.id}`,
+        bookingId: booking.id,
+        invoiceNumber: `INV-${booking.id}-${new Date(booking.date).getFullYear()}`,
+        amount: booking.totalPrice,
+        status: booking.status === 'confirmed' ? 'paid' : 'pending',
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        createdDate: booking.createdAt || new Date().toISOString(),
+        description: `${booking.service?.name || 'Photography Service'} - ${new Date(booking.date).toLocaleDateString()}`,
+        downloadUrl: `/api/invoices/pdf/INV-${booking.id}`
+      }));
+
+      res.json(invoices);
+    } catch (error) {
+      console.error("Error fetching client invoices:", error);
+      res.status(500).json({ error: "Failed to fetch invoices" });
     }
   });
 
