@@ -425,7 +425,7 @@ export default function Home() {
           
           <div className="border-t border-[#f5f5f5]/20 mt-8 pt-8 text-center text-[#f5f5f5]/80 relative">
             <p className="mb-2 text-[#f5f5f5]/80">
-              &copy; 2024 {profile?.name || "Captured by Christian"}. All rights reserved. | Licensed Drone Operator | AI-Enhanced Photography
+              &copy; 2024 {profile?.name || "CapturedCCollective"}. All rights reserved. | Licensed Drone Operator | AI-Enhanced Media
             </p>
             
 

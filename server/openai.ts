@@ -2,7 +2,7 @@
 
 // Photography business context and knowledge base
 const PHOTOGRAPHY_CONTEXT = `
-You are the AI booking assistant for Captured by Christian, a Hawaii-based photography business. You specialize in:
+You are the AI booking assistant for CapturedCCollective, a Hawaii-based media team. You specialize in:
 
 SERVICES & PRICING:
 - Wedding Photography: $2,500 (8 hours coverage, drone shots, 500+ edited photos)
@@ -101,7 +101,7 @@ export async function generateBookingResponse(
   } catch (error) {
     console.error("AI response error:", error);
     return {
-      message: "I'm having trouble processing your request right now. Please try again or contact us directly at christian@picaso.photography.",
+      message: "I'm having trouble processing your request right now. Please try again or contact us directly.",
       bookingData: {},
     };
   }
@@ -124,7 +124,7 @@ Current booking data: ${JSON.stringify(bookingData)}
 
 User's latest message: ${userMessage}
 
-Please provide a helpful, personalized response as the AI booking assistant for Captured by Christian photography. Include specific recommendations, pricing information when relevant, and always end with a call to action.`;
+Please provide a helpful, personalized response as the AI booking assistant for CapturedCCollective media team. Include specific recommendations, pricing information when relevant, and always end with a call to action.`;
 
     // Use Replit's AI through a simple fetch to their API
     const response = await fetch('https://api.replit.com/v1/ai/chat', {
@@ -213,12 +213,12 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
   
   // General greetings and introductions
   if (lastMessage.includes('hello') || lastMessage.includes('hi') || lastMessage.includes('hey') || lastMessage.includes('aloha')) {
-    return "Aloha! I'm the AI booking assistant for Captured by Christian. I specialize in helping you find the perfect photography package for your Hawaii experience. Whether you're planning a wedding, portrait session, or need aerial photography, I can provide detailed information about our services, pricing, and availability. What brings you here today?";
+    return "Aloha! I'm the AI booking assistant for CapturedCCollective. I specialize in helping you find the perfect media services for your Hawaii experience. Whether you're planning a wedding, portrait session, or need aerial photography, I can provide detailed information about our services, pricing, and availability. What brings you here today?";
   }
   
   // Questions about the photographer
   if (lastMessage.includes('christian') || lastMessage.includes('photographer') || lastMessage.includes('experience') || lastMessage.includes('about')) {
-    return "Christian Picaso is Hawaii's premier photographer specializing in weddings, portraits, and aerial photography. Key highlights:\n\n✈️ FAA-certified drone pilot for legal aerial shots\n🤖 AI-enhanced photo editing and selection\n🌺 Expert in Hawaii's unique lighting conditions\n🗣️ Bilingual service (English/Spanish)\n☀️ Weather backup plans always included\n📍 Shoots across all Hawaiian islands\n\nWith years of experience capturing Hawaii's beauty, Christian combines technical expertise with artistic vision. What would you like to know about his photography style?";
+    return "CapturedCCollective is Hawaii's premier media team specializing in weddings, portraits, and aerial photography. Key highlights:\n\n✈️ FAA-certified drone pilot for legal aerial shots\n🤖 AI-enhanced photo editing and selection\n🌺 Expert in Hawaii's unique lighting conditions\n🗣️ Professional bilingual service\n☀️ Weather backup plans always included\n📍 Shoots across all Hawaiian islands\n\nWith years of experience capturing Hawaii's beauty, our team combines technical expertise with artistic vision. What would you like to know about our photography style?";
   }
   
   // Special requests or unique needs

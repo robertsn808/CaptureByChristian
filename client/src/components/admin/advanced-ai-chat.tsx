@@ -38,7 +38,7 @@ export function AdvancedAIChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "👋 I'm your advanced AI business consultant for Captured by Christian. I can analyze your business performance, suggest marketing strategies, predict booking trends, optimize pricing, provide strategic insights, and discuss social media content ideas and industry trends. I have access to all your business data including clients, bookings, revenue, and market analytics. What would you like to explore?",
+      content: "👋 I'm your advanced AI business consultant for CapturedCCollective. I can analyze your business performance, suggest marketing strategies, predict booking trends, optimize pricing, provide strategic insights, and discuss social media content ideas and industry trends. I have access to all your business data including clients, bookings, revenue, and market analytics. What would you like to explore?",
       timestamp: Date.now(),
       type: 'normal'
     }
@@ -246,7 +246,7 @@ Current booking performance:
     } else if (lowerMessage.includes('social') || lowerMessage.includes('instagram') || lowerMessage.includes('content') || lowerMessage.includes('trend')) {
       response = {
         role: 'assistant',
-        content: `📱 **Social Media Content Strategy for Captured by Christian**
+        content: `📱 **Social Media Content Strategy for CapturedCCollective**
 
 **🔥 Trending Content Ideas:**
 • Golden hour drone shots with dramatic Hawaii sunsets

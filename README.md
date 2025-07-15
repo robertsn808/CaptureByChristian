@@ -1,7 +1,6 @@
-# Hawaii Photography Business Platform
-## "Captured by Christian"
+# CapturedCCollective Media Platform
 
-A sophisticated AI-powered photography business management platform built for professional photographers specializing in FAA-certified drone photography. This application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and comprehensive business administration platform.
+A sophisticated AI-powered media business management platform built for professional media teams specializing in cinematic, high-impact content creation and FAA-certified drone photography. This application combines modern web technologies with artificial intelligence to create an immersive booking experience, portfolio management system, and comprehensive business administration platform.
 
 ## 🌺 Features
 

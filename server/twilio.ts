@@ -41,7 +41,7 @@ export async function sendSMS(message: SMSMessage): Promise<boolean> {
 export async function sendMagicLinkSMS(clientName: string, clientPhone: string, magicLink: string): Promise<boolean> {
   const message: SMSMessage = {
     to: clientPhone,
-    body: `Hi ${clientName}! Here's your secure login link for Captured by Christian client portal: ${magicLink}\n\nThis link expires in 24 hours. If you have any questions, please reply to this message.`
+    body: `Hi ${clientName}! Here's your secure login link for CapturedCCollective client portal: ${magicLink}\n\nThis link expires in 24 hours. If you have any questions, please reply to this message.`
   };
 
   return await sendSMS(message);

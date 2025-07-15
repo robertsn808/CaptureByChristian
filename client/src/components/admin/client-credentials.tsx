@@ -384,7 +384,7 @@ export function ClientCredentials() {
                       <CardContent className="space-y-3">
                         <div>
                           <Label>Portal Title</Label>
-                          <Input defaultValue="Captured by Christian - Client Portal" />
+                          <Input defaultValue="CapturedCCollective - Client Portal" />
                         </div>
                         <div>
                           <Label>Welcome Message</Label>

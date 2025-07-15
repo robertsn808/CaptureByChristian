@@ -130,7 +130,7 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
                 <Camera className="h-8 w-8 text-bronze" />
                 <div>
                   <h1 className="font-playfair text-xl font-bold">Welcome back, {clientData.name}</h1>
-                  <p className="text-sm text-muted-foreground">Captured by Christian</p>
+                  <p className="text-sm text-muted-foreground">CapturedCCollective</p>
                 </div>
               </div>
               

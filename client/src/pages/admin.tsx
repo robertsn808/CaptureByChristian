@@ -109,7 +109,7 @@ export default function Admin() {
                   <Camera className="h-6 w-6 text-white" />
                 </div>
                 <span className="font-playfair text-xl font-bold gradient-text">
-                  Captured by Christian
+                  CapturedCCollective
                 </span>
               </div>
             </Link>
