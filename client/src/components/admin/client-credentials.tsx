@@ -50,6 +50,7 @@ export function ClientCredentials() {
   const [showPassword, setShowPassword] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
   const [loadingStates, setLoadingStates] = useState<{[key: number]: boolean}>({});
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -77,6 +78,7 @@ export function ClientCredentials() {
       queryClient.invalidateQueries({ queryKey: ['/api/client-credentials'] });
       setNewPassword("");
       setSelectedClient(null);
+      setPasswordDialogOpen(false);
     },
     onError: () => {
       toast({
@@ -214,12 +216,15 @@ export function ClientCredentials() {
 
                       <div className="flex space-x-2">
                         {/* Set Password */}
-                        <Dialog>
+                        <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
                           <DialogTrigger asChild>
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => setSelectedClient(credential)}
+                              onClick={() => {
+                                setSelectedClient(credential);
+                                setPasswordDialogOpen(true);
+                              }}
                             >
                               <Lock className="h-3 w-3 mr-1" />
                               {credential.hasPassword ? 'Reset' : 'Set'} Password
@@ -278,6 +283,19 @@ export function ClientCredentials() {
                               </div>
 
                               <div className="flex space-x-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setPasswordDialogOpen(false);
+                                    setNewPassword("");
+                                    setSelectedClient(null);
+                                    setShowPassword(false);
+                                  }}
+                                  disabled={generatePasswordMutation.isPending}
+                                >
+                                  Cancel
+                                </Button>
                                 <Button
                                   onClick={() => generatePasswordMutation.mutate({
                                     clientId: credential.clientId,

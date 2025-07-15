@@ -45,7 +45,7 @@ const addClientFormSchema = insertClientSchema.extend({
   email: z.string().email("Valid email is required"),
 });
 
-function AddClientForm() {
+function AddClientForm({ onSuccess }: { onSuccess?: () => void }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -74,6 +74,7 @@ function AddClientForm() {
         description: "Client added successfully",
       });
       form.reset();
+      onSuccess?.();
     },
     onError: (error: any) => {
       toast({
@@ -179,7 +180,10 @@ function AddClientForm() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => form.reset()}
+            onClick={() => {
+              form.reset();
+              onSuccess?.();
+            }}
           >
             Cancel
           </Button>
@@ -199,6 +203,7 @@ function AddClientForm() {
 export function ClientManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [addClientDialogOpen, setAddClientDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: clients, isLoading: clientsLoading } = useQuery({
@@ -263,7 +268,7 @@ export function ClientManagement() {
             <Users className="h-5 w-5 mr-2" />
             Client Management
           </CardTitle>
-          <Dialog>
+          <Dialog open={addClientDialogOpen} onOpenChange={setAddClientDialogOpen}>
             <DialogTrigger asChild>
               <Button className="btn-bronze">
                 <Plus className="h-4 w-4 mr-1" />
@@ -274,7 +279,7 @@ export function ClientManagement() {
               <DialogHeader>
                 <DialogTitle>Add New Client</DialogTitle>
               </DialogHeader>
-              <AddClientForm />
+              <AddClientForm onSuccess={() => setAddClientDialogOpen(false)} />
             </DialogContent>
           </Dialog>
         </div>
