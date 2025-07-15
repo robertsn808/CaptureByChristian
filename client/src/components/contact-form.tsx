@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Mail, Send, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -65,44 +66,26 @@ export function ContactForm({ trigger }: ContactFormProps) {
       let suggestedResponse = "";
       
       try {
-        const aiResponse = await fetch("/api/ai/categorize-contact", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            subject: data.subject,
-            message: data.message,
-          }),
+        const aiResponse = await apiRequest("POST", "/api/ai/categorize-contact", {
+          subject: data.subject,
+          message: data.message,
         });
         
-        if (aiResponse.ok) {
-          const aiData = await aiResponse.json();
-          aiCategory = aiData.category || "general_inquiry";
-          suggestedResponse = aiData.suggestedResponse || "";
-        }
+        const aiData = await aiResponse.json();
+        aiCategory = aiData.category || "general_inquiry";
+        suggestedResponse = aiData.suggestedResponse || "";
       } catch (error) {
         console.log("AI categorization failed, using default");
       }
 
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          source: "website",
-          ipAddress: "127.0.0.1", // Will be set by server
-          userAgent: navigator.userAgent,
-          aiCategory,
-          suggestedResponse,
-        }),
+      const response = await apiRequest("POST", "/api/contact", {
+        ...data,
+        source: "website",
+        ipAddress: "127.0.0.1", // Will be set by server
+        userAgent: navigator.userAgent,
+        aiCategory,
+        suggestedResponse,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
 
       return response.json();
     },

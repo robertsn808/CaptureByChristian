@@ -36,6 +36,7 @@ import {
   Download
 } from "lucide-react";
 import { format, subDays, subMonths } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
 
 export function AdvancedAnalytics() {
   const [timeRange, setTimeRange] = useState("12months");
@@ -45,8 +46,7 @@ export function AdvancedAnalytics() {
   const { data: bookings = [] } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: async () => {
-      const response = await fetch('/api/bookings');
-      if (!response.ok) throw new Error('Failed to fetch bookings');
+      const response = await apiRequest('GET', '/api/bookings');
       return response.json();
     }
   });
@@ -54,8 +54,7 @@ export function AdvancedAnalytics() {
   const { data: clients = [] } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
-      const response = await fetch('/api/clients');
-      if (!response.ok) throw new Error('Failed to fetch clients');
+      const response = await apiRequest('GET', '/api/clients');
       return response.json();
     }
   });
@@ -63,8 +62,7 @@ export function AdvancedAnalytics() {
   const { data: services = [] } = useQuery({
     queryKey: ['/api/services'],
     queryFn: async () => {
-      const response = await fetch('/api/services');
-      if (!response.ok) throw new Error('Failed to fetch services');
+      const response = await apiRequest('GET', '/api/services');
       return response.json();
     }
   });
@@ -72,8 +70,7 @@ export function AdvancedAnalytics() {
   const { data: businessKPIs = {} } = useQuery({
     queryKey: ['/api/analytics/business-kpis'],
     queryFn: async () => {
-      const response = await fetch('/api/analytics/business-kpis');
-      if (!response.ok) throw new Error('Failed to fetch business KPIs');
+      const response = await apiRequest('GET', '/api/analytics/business-kpis');
       return response.json();
     }
   });
@@ -81,8 +78,7 @@ export function AdvancedAnalytics() {
   const { data: clientMetrics = {} } = useQuery({
     queryKey: ['/api/analytics/clients'],
     queryFn: async () => {
-      const response = await fetch('/api/analytics/clients');
-      if (!response.ok) throw new Error('Failed to fetch client metrics');
+      const response = await apiRequest('GET', '/api/analytics/clients');
       return response.json();
     }
   });

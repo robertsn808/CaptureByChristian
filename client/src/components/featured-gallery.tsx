@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Expand, Award, Star } from "lucide-react";
 import { Lightbox } from "@/components/lightbox";
 import { Link } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
 
 export function FeaturedGallery() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -12,7 +13,10 @@ export function FeaturedGallery() {
 
   const { data: featuredImages, isLoading } = useQuery({
     queryKey: ['/api/gallery', { featured: true }],
-    queryFn: () => fetch('/api/gallery?featured=true').then(res => res.json()),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/gallery?featured=true');
+      return response.json();
+    },
   });
 
   const openLightbox = (image: any) => {

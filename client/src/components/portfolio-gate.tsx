@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Star, Award } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 const leadSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -37,24 +38,14 @@ export function PortfolioGate({ onAccessGranted }: PortfolioGateProps) {
 
   const submitLead = useMutation({
     mutationFn: async (data: LeadFormData) => {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          subject: "Portfolio Access Request",
-          message: data.message || "Requested access to portfolio gallery",
-          source: "portfolio_access",
-          priority: "normal",
-        }),
+      const response = await apiRequest('POST', '/api/contact', {
+        name: data.name,
+        email: data.email,
+        subject: "Portfolio Access Request",
+        message: data.message || "Requested access to portfolio gallery",
+        source: "portfolio_access",
+        priority: "normal",
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit lead');
-      }
 
       return response.json();
     },

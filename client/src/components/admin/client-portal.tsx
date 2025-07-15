@@ -30,6 +30,7 @@ import {
   Plus
 } from "lucide-react";
 import { format } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
 
 export function ClientPortal() {
   const [selectedSession, setSelectedSession] = useState<any>(null);
@@ -41,23 +42,26 @@ export function ClientPortal() {
   // Fetch real client portal sessions from database
   const { data: portalSessions = [], isLoading } = useQuery({
     queryKey: ['/api/admin/client-portal-sessions'],
-    queryFn: () => fetch('/api/admin/client-portal-sessions').then(r => r.json()),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/admin/client-portal-sessions');
+      return response.json();
+    },
   });
 
   // Fetch real portal statistics
   const { data: portalStats = {} } = useQuery({
     queryKey: ['/api/admin/client-portal-stats'],
-    queryFn: () => fetch('/api/admin/client-portal-stats').then(r => r.json()),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/admin/client-portal-stats');
+      return response.json();
+    },
   });
 
   // Fetch clients for gallery upload
   const { data: clients = [] } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
-      const response = await fetch('/api/clients');
-      if (!response.ok) {
-        throw new Error('Failed to fetch clients');
-      }
+      const response = await apiRequest('GET', '/api/clients');
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },
@@ -67,10 +71,7 @@ export function ClientPortal() {
   const { data: bookings = [] } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: async () => {
-      const response = await fetch('/api/bookings');
-      if (!response.ok) {
-        throw new Error('Failed to fetch bookings');
-      }
+      const response = await apiRequest('GET', '/api/bookings');
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },

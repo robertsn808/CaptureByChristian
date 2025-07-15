@@ -20,6 +20,7 @@ import {
   BarChart3,
   PieChart
 } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface PredictionModel {
   type: string;
@@ -41,8 +42,7 @@ export function PredictiveIntelligence() {
   const { data: bookingsData = [] } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: async () => {
-      const response = await fetch('/api/bookings');
-      if (!response.ok) throw new Error('Failed to fetch bookings');
+      const response = await apiRequest('GET', '/api/bookings');
       return response.json();
     }
   });
@@ -50,8 +50,7 @@ export function PredictiveIntelligence() {
   const { data: clientsData = [] } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
-      const response = await fetch('/api/clients');
-      if (!response.ok) throw new Error('Failed to fetch clients');
+      const response = await apiRequest('GET', '/api/clients');
       return response.json();
     }
   });

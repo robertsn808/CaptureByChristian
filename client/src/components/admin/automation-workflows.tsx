@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export function AutomationWorkflows() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<any>(null);
@@ -44,8 +45,7 @@ export function AutomationWorkflows() {
   const { data: workflows = [], isLoading } = useQuery({
     queryKey: ['/api/automation-sequences'],
     queryFn: async () => {
-      const response = await fetch('/api/automation-sequences');
-      if (!response.ok) throw new Error('Failed to fetch workflows');
+      const response = await apiRequest('GET', '/api/automation-sequences');
       return response.json();
     }
   });
@@ -54,8 +54,7 @@ export function AutomationWorkflows() {
   const { data: bookings = [] } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: async () => {
-      const response = await fetch('/api/bookings');
-      if (!response.ok) throw new Error('Failed to fetch bookings');
+      const response = await apiRequest('GET', '/api/bookings');
       return response.json();
     }
   });
