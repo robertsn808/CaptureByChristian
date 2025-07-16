@@ -47,3 +47,8 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Start the application
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "start"]
+
+# Runs drizzle-kit push
+COPY start.sh ./start.sh
+RUN chmod +x start.sh
+CMD ["./start.sh"]
