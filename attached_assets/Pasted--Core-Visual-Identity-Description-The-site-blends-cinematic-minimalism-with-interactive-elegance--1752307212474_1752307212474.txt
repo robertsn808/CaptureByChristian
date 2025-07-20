@@ -1,0 +1,65 @@
+🎨 Core Visual Identity Description
+“The site blends cinematic minimalism with interactive elegance — a clean, immersive layout where the imagery is the hero, the design fades into the background, and every detail whispers luxury, not screams it.”
+
+🧾 Full Look Description (Copy & Customize)
+The site is full-bleed and gallery-forward, using a dark-on-light minimalist palette with deep contrast and elegant whitespace. Typography is high-end editorial — serif headers with clean sans-serif body text — creating a timeless, magazine-style feel.
+
+Animations are fluid and subtle, powered by Framer Motion — think smooth crossfades, parallax scrolling, and hover reveals. Navigation is discreet and intuitive: a sticky, semi-transparent nav bar that fades as users scroll through immersive content.
+
+The layout is modular and cinematic. Each section is designed to feel like a standalone moment — full-width hero images, stackable vertical portfolios, or immersive lightbox experiences.
+
+Galleries dynamically reflow to screen size, with intelligent visual rhythm — no rigid grids, but an organic photo stream that adapts to portrait vs landscape shots.
+
+The site supports light and dark mode, where dark mode feels like a velvet studio backdrop, and light mode evokes the clarity of a clean gallery wall.
+
+Key UI elements include:
+
+AI-enhanced search bar with animated suggestions
+
+Animated scroll progress bar
+
+Floating action buttons for “Book Now” or “Build Your Package”
+
+Sticky mini-gallery preview that follows users during long-form blog posts or stories
+
+Overall, the vibe is modern, quiet luxury meets creative tech — like if Apple, Behance, and a Leica camera had a lovechild on the beach in Hawaii.
+
+🖼️ Design Keywords (Use these with designers/devs)
+Cinematic
+
+Immersive
+
+Minimalist
+
+Luxury-inspired
+
+Responsive fluid grids
+
+Dark mode friendly
+
+Editorial typography
+
+Parallax motion
+
+Emotionally resonant
+
+🔧 Designer/Dev Notes
+Typography:
+
+Headings: Playfair Display, Cormorant Garamond, or Canela
+
+Body: Inter, Roboto, Satoshi, or Neue Haas Grotesk
+
+Colors:
+
+Primary: Cream white / Ultra black / Charcoal / Sandstone
+
+Accent: Bronze / Teal / Champagne gold (very subtle)
+
+Layout:
+
+Max-width containers (no full bleed text)
+
+Edge-to-edge photo content
+
+Animations only where they enhance clarity or emotion

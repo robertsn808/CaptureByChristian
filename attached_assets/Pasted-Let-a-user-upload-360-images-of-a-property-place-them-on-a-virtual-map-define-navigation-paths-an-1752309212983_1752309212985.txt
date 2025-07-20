@@ -1,0 +1,169 @@
+Let a user upload 360° images of a property, place them on a virtual map, define navigation paths and hotspots, and render a virtual tour using WebGL or a custom viewer.
+
+🧩 Part 1: Architecture Overview
+Component	Purpose
+Uploader	Accept and store 360° images
+Config Editor	Interface to assign position, links, metadata
+Database/Storage	Save image assets + config JSON
+Viewer	Display the tour based on config
+
+🧰 Part 2: Tech Stack Suggestions (Fully In-App)
+Layer	Tech
+Frontend	React + Tailwind + Zustand
+Backend	Node.js + Express
+Storage	Supabase (PostgreSQL + storage) or local disk
+Viewer	Panolens.js or Three.js
+Config UI	Custom React-based editor
+Auth	Simple session-based or JWT
+Optional AI	Auto-tag room types using OpenAI Vision (later add-on)
+
+🧾 STEP-BY-STEP BREAKDOWN
+🟢 STEP 1: Image Uploader UI
+🧠 Goals:
+Upload multiple 360° JPEGs or PNGs
+
+Tag each image with a room name and initial position (optional)
+
+Store files to disk or object storage
+
+🧱 Frontend:
+File input (<input type="file" multiple />)
+
+Dropzone drag-and-drop (use react-dropzone)
+
+Form for metadata:
+
+Name (e.g., “Living Room”)
+
+Thumbnail picker (optional)
+
+Preview 360° image using Panolens.js for validation
+
+🛠 Backend API:
+/upload-room-photo:
+
+Accepts multipart form
+
+Saves image file
+
+Writes metadata to DB (rooms table)
+
+🟡 STEP 2: Tour Config Editor
+🧠 Goals:
+Place each room node in a 2D layout
+
+Connect rooms (i.e., link panorama A → B)
+
+Add info hotspots
+
+Adjust initial camera view per room
+
+🧱 Frontend:
+2D canvas editor:
+
+Use HTML canvas or a library like react-flow or SVG-based custom map
+
+Each room is a draggable node
+
+Draw lines between rooms (connections)
+
+Form for each node:
+
+Room label
+
+Connected rooms (dropdown or drag-connect)
+
+Info hotspot: + Add Text + Coordinates
+
+Save all config as JSON:
+
+json
+Copy
+Edit
+{
+  "rooms": [
+    {
+      "id": "living_room",
+      "name": "Living Room",
+      "imageUrl": "/images/living.jpg",
+      "connections": ["kitchen"],
+      "hotspots": [
+        { "x": 45, "y": 10, "text": "Fireplace from 1920s" }
+      ]
+    }
+  ]
+}
+🟠 STEP 3: Save Tour Config
+Backend:
+/save-tour-config:
+
+POSTs full JSON config
+
+Saves to tours table:
+
+id, title, createdBy, jsonConfig, thumbnail, createdAt
+
+Optionally store revisions or snapshots
+
+🔵 STEP 4: Virtual Tour Viewer
+Goals:
+Read tour JSON and render it
+
+Allow user to:
+
+Pan/zoom each 360 room
+
+Click to move to next room
+
+Click hotspots to view info/tooltips
+
+Frontend (Viewer):
+Use Panolens.js or Three.js for 360 rendering
+
+Load room images dynamically
+
+Display navigation arrows/hotspots based on config
+
+Key Code Concepts:
+js
+Copy
+Edit
+const viewer = new PANOLENS.Viewer();
+const panorama = new PANOLENS.ImagePanorama("/images/living.jpg");
+viewer.add(panorama);
+
+// Add hotspot
+const infospot = new PANOLENS.Infospot(300, "info.png");
+infospot.position.set(10, 0, -500);
+infospot.addHoverText("Fireplace from 1920s");
+panorama.add(infospot);
+🟣 STEP 5: Tour Management Dashboard
+List existing tours
+
+View stats (views, edits)
+
+Clone / duplicate config
+
+Export as embeddable iframe
+
+Preview before publishing
+
+🔐 Optional Advanced Features (Fully Built-In)
+Feature	How to Build
+AI Room Tagging	Use GPT-4 Vision on image to auto-label
+Offline Editing	Save draft config in localStorage
+Version History	Save snapshots of config with timestamps
+Watermark Generator	Add overlays on render step in viewer
+Lead Capture in Viewer	Popup modal when user finishes tour
+
+🧩 Database Table Sketch
+rooms
+| id | tour_id | name | image_url | created_at |
+
+tours
+| id | title | user_id | config_json | created_at |
+
+hotspots
+(optional if storing separate)
+| id | room_id | x | y | text |
+

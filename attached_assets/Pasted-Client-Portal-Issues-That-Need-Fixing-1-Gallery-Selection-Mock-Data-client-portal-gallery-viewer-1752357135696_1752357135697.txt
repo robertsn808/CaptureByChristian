@@ -1,0 +1,70 @@
+Client Portal Issues That Need Fixing:
+1. Gallery Selection Mock Data (client-portal/gallery-viewer.tsx)
+Mock selections in existingSelections query:
+favorites: ["img_1_3", "img_1_7", "img_1_12"]
+comments: {
+  "img_1_3": "Love this shot of the ceremony!",
+  "img_1_7": "Perfect lighting here"
+}
+Fix needed: Replace with empty state or real user selections from database
+2. Client Dashboard Progress Calculation (client-portal/client-dashboard.tsx)
+Hardcoded progress percentages:
+const getProgressValue = (status: string) => {
+  switch (status) {
+    case 'pending': return 25;
+    case 'confirmed': return 50;
+    case 'in_progress': return 75;
+    case 'completed': return 100;
+    default: return 0;
+  }
+};
+Fix needed: Calculate progress based on actual workflow stages
+3. Missing API Endpoints
+/api/client-portal/login - Client authentication
+/api/client-portal/magic-link - Magic link generation
+/api/client-portal/bookings - Client-specific bookings
+/api/client-portal/galleries - Client-specific galleries
+/api/client-portal/contracts - Client contracts and invoices
+/api/client-portal/selections - Gallery photo selections
+/api/client-portal/gallery/{id} - Individual gallery data
+4. Placeholder Features
+Messages Tab: Shows "Messaging feature coming soon" placeholder
+Downloads Tab: Shows "No downloads available yet" placeholder
+Magic Link: May not have complete backend verification
+Contract Management: Limited contract viewing functionality
+5. Mock Client Portal Sessions (admin/client-portal.tsx)
+Extensive mock session data with hardcoded:
+Client sessions with fake tokens, IP addresses
+Mock activity logs and device information
+Fake location data and user agents
+Fix needed: Replace with real session tracking from database
+6. Gallery Image Management
+Placeholder images: Uses /api/placeholder/ URLs
+Mock watermarks: Hardcoded proof overlays
+No real image storage: Missing integration with actual file storage
+7. Authentication System
+Session management: No real session token validation
+User permissions: Missing role-based access control
+Security: No proper authentication middleware
+8. Real-time Features Missing
+Live notifications: No real-time updates for clients
+Progress tracking: No live booking status updates
+Message threading: No real messaging system
+Priority Fixes Needed:
+High Priority:
+
+Implement real API endpoints for client portal functions
+Replace mock gallery selections with database integration
+Add proper authentication and session management
+Medium Priority:
+
+Complete messaging system functionality
+Implement real download management
+Add proper contract viewing/signing
+Low Priority:
+
+Replace placeholder images with real gallery management
+Add real-time notifications
+Enhance security and permissions
+The client portal has a solid foundation but needs significant backend integration to become fully functional rather than a demo system.
+

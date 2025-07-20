@@ -1,0 +1,55 @@
+Mock Data & Features Without Real APIs:
+1. Automation Workflows (automation-workflows.tsx)
+Mock automation sequences data
+Static workflow steps and statistics
+No actual email/SMS sending functionality
+2. AI Business Insights (ai-business-insights.tsx)
+Simulated AI analysis with hardcoded insights
+Mock predictive metrics
+Fake business recommendations
+3. Advanced AI Chat (advanced-ai-chat.tsx)
+Simulated AI responses with predefined patterns
+Mock business intelligence responses
+No real OpenAI integration for admin chat
+4. Advanced Analytics (advanced-analytics.tsx)
+Mock revenue data and service breakdowns
+Fake lead source performance data
+Hardcoded client metrics and KPIs
+5. Predictive Intelligence (predictive-intelligence.tsx)
+Simulated prediction models
+Mock market indicators
+Fake risk assessments
+6. Real-Time Analytics (real-time-analytics.tsx)
+Mock real-time data structure
+No actual live data streaming
+Fake visitor tracking and activity logs
+7. Client Portal Sessions (client-portal.tsx)
+Mock portal session data
+Fake user activities and device tracking
+No real session management
+8. Product Sales (product-sales.tsx)
+Mock products catalog
+Fake sales data and revenue tracking
+No e-commerce integration
+9. Invoice Generator (invoice-generator.tsx)
+Mock invoice data
+Hardcoded payment statistics
+Basic PDF generation without full integration
+10. Client Galleries API (routes.ts)
+Mock gallery data in API endpoints
+Fake photo counts and statuses
+11. Revenue Chart (revenue-chart.tsx)
+Uses real booking data but with limited revenue calculations
+Basic service breakdown without advanced analytics
+12. Services Features (services.tsx)
+Static feature lists for each service type
+No dynamic service configuration
+All of these components use hardcoded mock data and simulate functionality that would require real integrations with:
+
+Email/SMS providers (for automation)
+Payment processors (for invoicing)
+Analytics platforms (for real-time data)
+AI services (for advanced insights)
+Session management systems
+E-commerce platforms
+Advanced database queries for complex analytics

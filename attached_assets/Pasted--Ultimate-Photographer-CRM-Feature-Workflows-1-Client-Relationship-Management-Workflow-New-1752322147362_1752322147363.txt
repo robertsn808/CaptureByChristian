@@ -1,0 +1,230 @@
+📸 Ultimate Photographer CRM – Feature Workflows
+🧠 1. Client Relationship Management
+Workflow:
+
+New client enters via booking form or manual entry
+
+CRM auto-generates profile with status: Lead
+
+Client interactions (email, bookings, galleries) auto-log in timeline
+
+Tags are added: Wedding, VIP, Repeat, etc.
+
+Client moves through statuses: Lead → Booked → Delivered → Follow-up
+
+📆 2. Integrated Calendar & Scheduling
+Workflow:
+
+Photographer sets available time blocks by day or shoot type
+
+Client selects time via booking form
+
+CRM validates availability (based on time, location buffer, blocked dates)
+
+Confirmed bookings populate calendar and session list
+
+Optional: CRM blocks time before/after for prep/travel
+
+📥 3. Lead Capture & Funnel Automation
+Workflow:
+
+Site visitor fills inquiry form (name, shoot type, preferred date)
+
+CRM creates a lead profile and tags source (Instagram, website, referral)
+
+Auto-email reply with brochure or package guide is sent
+
+Unbooked leads are followed up automatically (email/sms sequence)
+
+Converted leads are moved to Booked, others expire or archive
+
+💼 4. Project & Shoot Management
+Workflow:
+
+Booking triggers session dashboard creation
+
+Photographer adds shoot plan: locations, notes, goals
+
+Team assigns roles or adds checklist (charge batteries, scout location)
+
+Client questionnaire and timeline attach to shoot
+
+Post-shoot, notes and editing status are tracked until delivery
+
+💰 5. Quotes, Contracts & Invoicing
+Workflow:
+
+Client requests custom quote or selects package
+
+CRM auto-generates quote based on service + add-ons
+
+Quote converts to invoice + contract upon approval
+
+Client e-signs contract and pays deposit
+
+Payment status updates in shoot dashboard
+
+Remaining balance due reminder sent X days before session
+
+💳 6. Payments & Accounting
+Workflow:
+
+Photographer enters payment terms per shoot or globally
+
+Invoice triggers when booking is confirmed or contract is signed
+
+Manual or digital payment is logged with method + status
+
+Income is recorded with category (service, add-on, print sale)
+
+End of month/year: report auto-generates profit/loss + taxes due
+
+🖼️ 7. Image Delivery & Client Galleries
+Workflow:
+
+Photographer uploads final selects to client gallery
+
+Gallery is shared with client (password-protected or open)
+
+Client marks favorites (for prints/albums)
+
+Downloads tracked, watermarks auto-applied if enabled
+
+Expiration triggers reminder + optional upsell
+
+🛒 8. Print & Album Sales Integration
+Workflow:
+
+Product catalog set by photographer (print sizes, albums, canvas)
+
+After gallery delivery, client receives email prompt to order
+
+CRM captures order selections, auto-generates invoice
+
+Photographer fulfills or sends to lab manually
+
+Status tracked in client profile (ordered, shipped, delivered)
+
+📝 9. Questionnaires & Forms
+Workflow:
+
+Session type (e.g., Wedding) auto-attaches a form template
+
+Client fills out form pre-shoot (pose ideas, timeline, vendor list)
+
+Answers stored in session dashboard
+
+CRM highlights key answers on shoot day (e.g., “Must capture grandma”)
+
+📣 10. Automated Communication Sequences
+Workflow:
+
+Booking confirmed → send "Prep Guide" email
+
+2 days before shoot → send reminder + checklist
+
+1 week after → deliver gallery + review request
+
+6 months later → send “Need updated shots?” email
+
+Photographer can customize templates and timing for each flow
+
+💬 11. Client Portal (Self-Service)
+Workflow:
+
+Client logs in to their dashboard (email/password or magic link)
+
+Can view past and upcoming sessions
+
+Download galleries, pay invoices, rebook, update contact info
+
+Upload inspiration/moodboard files
+
+CRM logs activity (downloads, payments, form completions)
+
+🧠 12. AI-Enhanced Tools
+Workflow Examples:
+
+AI Suggests shoot package based on lead answers
+
+AI summarizes client tone from emails
+
+AI writes blog post from gallery images and metadata
+
+AI flags repeat clients likely to rebook
+
+Photographer hits “AI Assist” button for content or insights
+
+📊 13. Analytics & Business Insights
+Workflow:
+
+Data collected from bookings, payments, client behavior
+
+Dashboard visualizes:
+
+Income by month/service
+
+Inquiry → conversion rate
+
+Booking source breakdown
+
+Profitability by session type
+
+CRM suggests: “Offer branding minis in August — high demand trend”
+
+🔐 14. User Roles & Team Access
+Workflow:
+
+Admin sets user roles: assistant, editor, shooter
+
+Permissions defined (e.g., editor can see galleries, not invoices)
+
+Team dashboard filters jobs assigned to that user
+
+Audit log shows who did what (contract sent, email opened, files deleted)
+
+🌍 15. Offline & Mobile Access
+Workflow:
+
+User logs in via mobile or tablet
+
+Can view calendar, update client info, mark invoices paid offline
+
+App stores changes locally
+
+Once back online, app syncs changes with server
+
+Push notifications sent for inquiries or bookings
+
+🧩 16. Modular System Builder
+Workflow:
+
+Photographer selects modules they want (CRM, Gallery, Sales, AI, etc.)
+
+Dashboard only shows enabled modules
+
+Can upgrade/downgrade plan or features from settings
+
+CRM adjusts workflows accordingly (e.g., no gallery tab = skip delivery steps)
+
+⚙️ 17. Admin Settings & Utilities
+Workflow:
+
+Photographer customizes system:
+
+Logo/brand
+
+Email templates
+
+Time zone/currency
+
+Session types/packages
+
+Can export/import data
+
+System tracks changes (user actions, setting edits)
+
+Backup/restore tools available
+
+GDPR or legal exports per client available on request
+

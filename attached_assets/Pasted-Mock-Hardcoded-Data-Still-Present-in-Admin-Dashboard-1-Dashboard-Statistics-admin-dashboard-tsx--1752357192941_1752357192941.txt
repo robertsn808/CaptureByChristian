@@ -1,0 +1,44 @@
+Mock/Hardcoded Data Still Present in Admin Dashboard:
+1. Dashboard Statistics (admin/dashboard.tsx)
+Hardcoded percentage changes:
+change: "+12%", "+3%", "+18%", "+7%"
+Mock satisfaction rate: 98% hardcoded
+Static trend indicators: All showing positive trends regardless of actual data
+2. Lead Management System (admin/lead-management.tsx)
+Complete mock lead database with hardcoded:
+5 fake leads with detailed form data
+Mock lead scoring (60-90 points)
+Fake source attribution (Instagram, website, Google, TikTok, referral)
+Hardcoded temperature ratings (hot/warm/cold)
+Mock qualification status
+No real API integration - all data is static
+3. Admin Inbox (admin/inbox.tsx)
+Mock contact message handling
+Hardcoded message priorities and statuses
+No real contact form integration
+4. Advanced Analytics Fallback Data (admin/advanced-analytics.tsx)
+12 months of mock revenue data when no real data exists:
+{ month: "Jan 2024", revenue: 3250, bookings: 8, leads: 23, conversion: 35 }
+// ... 11 more months of fake data
+Mock business KPIs with hardcoded values
+Fake growth insights and recommendations
+5. Real-Time Analytics Mock Data (admin/real-time-analytics.tsx)
+Hardcoded session durations, bounce rates
+Mock visitor tracking data
+Fake real-time metrics
+What You Should Fix:
+High Priority:
+Replace Lead Management mock data with real lead capture from contact forms
+Remove hardcoded percentage changes in dashboard stats - calculate from actual data
+Implement real contact message handling in Admin Inbox
+Remove fallback mock data from Advanced Analytics
+Medium Priority:
+Add real lead scoring algorithm based on actual form submissions
+Implement actual growth trend calculations instead of static "+X%" values
+Connect real-time analytics to actual visitor data
+API Endpoints Still Needed:
+/api/leads - Real lead management
+/api/contact-messages - Actual contact form submissions
+/api/analytics/growth-trends - Real trend calculations
+/api/analytics/real-time - Actual visitor tracking
+The good news is that most of your core business data (bookings, clients, services) is now using real database integration. The remaining mock data is primarily in the lead management and advanced analytics systems that don't have corresponding database tables yet.

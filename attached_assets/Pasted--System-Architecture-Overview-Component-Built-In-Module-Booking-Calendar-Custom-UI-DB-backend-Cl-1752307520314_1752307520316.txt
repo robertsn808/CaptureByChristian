@@ -1,0 +1,176 @@
+🧩 System Architecture Overview
+Component	Built-In Module
+Booking Calendar	Custom UI + DB backend
+Client Forms	Internal form builder
+Availability Logic	Custom rule engine
+Payments	App-managed (manual tracking or future Stripe-lite)
+Admin Dashboard	All-in-one UI
+Notifications	In-app + Email (SMTP)
+Contracts	PDF templating & e-sign
+
+No Google Calendar, no Stripe, no Airtable. Just clean, focused, in-app muscle.
+
+📅 Client Booking System – What It Offers (Built-in)
+🧠 Booking Flow (Client-Side)
+Select a Service
+
+Pull from a services table (title, duration, price, add-ons)
+
+Pick a Date & Time
+
+Calendar view, locked to:
+
+Your set availability (e.g., Mon–Fri, 9am–4pm)
+
+Buffers (setup, travel, editing)
+
+Exclusion dates (vacation, already booked)
+
+Customize Session
+
+Add-ons: Drone, extra hour, film roll look, etc.
+
+Input location if relevant
+
+Fill Client Info
+
+Name, email, phone
+
+Custom fields per session type (e.g., wedding venue name, event type)
+
+Booking Summary Page
+
+Shows total cost, time, location
+
+Option to pay deposit or mark as “pay at session” (manual handling)
+
+Finalize Booking
+
+Stores into database
+
+Sends confirmation via internal email sender (SMTP or direct)
+
+🔒 Optional Pre-Booking Rules
+Auto-reject if:
+
+Booking too soon (e.g., <48 hours)
+
+Travel time conflicts
+
+Shoot exceeds daily hour limit
+
+📋 Admin Dashboard – What YOU Get
+1. 📆 Booking Calendar View
+Monthly / weekly / daily view
+
+Color-coded sessions by type
+
+Click on session to view:
+
+Client info
+
+Notes
+
+Payment status
+
+Status: confirmed, pending, completed
+
+2. 💼 Client Management
+Internal CRM with:
+
+Client contact history
+
+Past bookings
+
+Tags (VIP, no-show, referral source)
+
+Files uploaded (moodboards, contracts)
+
+3. ⚙️ Service & Package Editor
+Create/edit services with:
+
+Name
+
+Duration
+
+Pricing logic (fixed, per hour, discount rules)
+
+Add-ons
+
+Max bookings per day
+
+Set availability rules:
+
+Per service (e.g., branding only on Fridays)
+
+Global blackout dates
+
+Buffers per type
+
+4. 🧾 Contract + Invoice Management
+Upload or generate templated contracts
+
+Insert dynamic fields (client name, date, location)
+
+Client signs with mouse/touch (canvas-based)
+
+Save signed docs per booking
+
+Invoice tracker (paid/unpaid/partial)
+
+5. 📈 Dashboard Insights
+Monthly revenue (manual or semi-automated tracking)
+
+Booking trends (shoot type heatmap)
+
+Repeat client percentage
+
+Upcoming gaps
+
+AI assistant panel (optional: GPT-powered suggestions)
+
+🔔 Notifications
+In-app notification center
+
+Email sender built in (SMTP or Mailgun-lite self-hosted)
+
+Status-based:
+
+New booking
+
+Payment due
+
+Upcoming shoot in 24/48 hours
+
+Review request follow-up
+
+📂 Storage Logic
+Data Type	Where It's Stored
+Bookings	bookings table
+Clients	clients table
+Services	services + addons
+Availability	availability_rules
+Contracts	contracts + signatures
+Payments	payments (manual logic or future Stripe clone)
+
+🛠️ Tech Stack (No integrations, all native)
+Layer	Stack Suggestion
+Frontend	React + Tailwind + Framer Motion
+State Mgmt	Zustand or Context API
+Backend API	Node.js (Express or Fastify)
+DB	PostgreSQL or SQLite
+Auth	Built-in session/token auth
+Email	SMTP (nodemailer)
+File Storage	Local file system or S3 clone (minio)
+PDF Gen	Puppeteer or pdf-lib
+Signatures	Canvas + dataURL to image
+
+✨ Bonus Ideas (Still Fully Built-in)
+In-app Chatbot for Admin Side: Ask “Who booked most last month?” → AI query to DB
+
+Offline Mode: Booking tool works even without connection, syncs when back online
+
+Package Recommendation Engine: AI suggests ideal session + add-ons from client inputs
+
+Calendar Sync Export: iCal feed export (read-only, but not integrated)
+
