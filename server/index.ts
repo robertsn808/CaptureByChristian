@@ -1,15 +1,36 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import 'dotenv/config';
-// Example: server/index.ts
 
-import { schema } from './schema'; // or wherever your schema is
+// Extend session types
+declare module 'express-session' {
+  interface SessionData {
+    isAuthenticated?: boolean;
+    username?: string;
+    loginTime?: string;
+  }
+}
 
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'change-this-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    httpOnly: true, // Prevent XSS
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax' // CSRF protection
+  },
+  name: 'sessionId' // Don't use default session name
+}));
 
 // Serve attached assets (videos, images, documents)
 app.use('/attached_assets', express.static('attached_assets'));

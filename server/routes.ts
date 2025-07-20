@@ -38,8 +38,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Client routes
-  app.get("/api/clients", async (req, res) => {
+  // Authentication routes
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+
+      // TODO: Replace with database user lookup and bcrypt comparison
+      // For now, use environment variables for credentials
+      const adminUsername = process.env.ADMIN_USERNAME || "admin";
+      const adminPassword = process.env.ADMIN_PASSWORD || "change_this_password";
+      
+      if (username.trim() === adminUsername && password.trim() === adminPassword) {
+        // Set session data (requires express-session middleware)
+        if (req.session) {
+          req.session.isAuthenticated = true;
+          req.session.username = username.trim();
+          req.session.loginTime = new Date().toISOString();
+        }
+        
+        res.json({ 
+          success: true, 
+          username: username.trim(),
+          message: "Authentication successful" 
+        });
+      } else {
+        // Add delay to prevent brute force attacks
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        res.status(401).json({ error: "Invalid username or password" });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Authentication failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Session destruction error:", err);
+          return res.status(500).json({ error: "Logout failed" });
+        }
+        res.clearCookie('connect.sid'); // Clear session cookie
+        res.json({ success: true, message: "Logged out successfully" });
+      });
+    } else {
+      res.json({ success: true, message: "No active session" });
+    }
+  });
+
+  app.get("/api/auth/status", (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+      res.json({ 
+        authenticated: true, 
+        username: req.session.username,
+        loginTime: req.session.loginTime 
+      });
+    } else {
+      res.json({ authenticated: false });
+    }
+  });
+
+  // Authentication middleware
+  const requireAuth = (req: any, res: any, next: any) => {
+    if (req.session && req.session.isAuthenticated) {
+      next();
+    } else {
+      res.status(401).json({ error: "Authentication required" });
+    }
+  };
+
+  // Client routes (protected)
+  app.get("/api/clients", requireAuth, async (req, res) => {
     try {
       const clients = await storage.getClients();
       res.json(clients);
@@ -49,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/clients", async (req, res) => {
+  app.post("/api/clients", requireAuth, async (req, res) => {
     try {
       const clientData = insertClientSchema.parse(req.body);
       const client = await storage.createClient(clientData);
@@ -63,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/clients/:id", async (req, res) => {
+  app.get("/api/clients/:id", requireAuth, async (req, res) => {
     try {
       const client = await storage.getClient(parseInt(req.params.id));
       if (!client) {

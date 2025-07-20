@@ -35,45 +35,43 @@ export function AdminLogin() {
     console.log("🧹 Password trimmed:", `"${password.trim()}"`);
 
     try {
-      // Check credentials (case-sensitive)
-      const isValidUsername = username.trim() === "CapturedbyChristian";
-      const isValidPassword = password.trim() === "Wordpass3211";
-      
-      console.log("✅ Username valid:", isValidUsername);
-      console.log("✅ Password valid:", isValidPassword);
-      
-      if (isValidUsername && isValidPassword) {
-        console.log("🎉 Credentials valid, storing auth data...");
+      // Send credentials to server for validation
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim(),
+        }),
+        credentials: 'include', // Important for session cookies
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("🎉 Authentication successful");
         
-        // Clear any existing auth data first
+        // Clear any existing client-side auth data
         localStorage.removeItem("admin_authenticated");
         localStorage.removeItem("admin_username");
         localStorage.removeItem("admin_login_time");
         
-        console.log("🧹 Cleared old auth data");
-        
-        // Store authentication in localStorage
+        // Store minimal client-side data (server session handles security)
         localStorage.setItem("admin_authenticated", "true");
-        localStorage.setItem("admin_username", username.trim());
+        localStorage.setItem("admin_username", data.username);
         localStorage.setItem("admin_login_time", new Date().toISOString());
         
-        console.log("💾 Auth data stored");
-        console.log("📄 localStorage admin_authenticated:", localStorage.getItem("admin_authenticated"));
-        console.log("👤 localStorage admin_username:", localStorage.getItem("admin_username"));
-        console.log("⏰ localStorage admin_login_time:", localStorage.getItem("admin_login_time"));
-        
-        // Immediate redirect - no delay
         console.log("🚀 Redirecting to /admin");
         setLocation("/admin");
       } else {
-        console.log("❌ Invalid credentials provided");
-        console.log("Expected username: 'CapturedbyChristian'");
-        console.log("Expected password: 'Wordpass3211'");
-        setError("Invalid username or password. Please check your credentials and try again.");
+        const errorData = await response.json().catch(() => ({ error: 'Authentication failed' }));
+        console.log("❌ Authentication failed:", errorData.error);
+        setError(errorData.error || "Invalid username or password. Please check your credentials and try again.");
       }
     } catch (err) {
       console.error("💥 Login error:", err);
-      setError("Login failed. Please try again.");
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }
