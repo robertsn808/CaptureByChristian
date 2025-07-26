@@ -258,7 +258,7 @@ export function GamifiedProgress() {
   ];
 
   // Calculate total points and current level
-  const totalPoints = achievements.filter(a => a.unlocked).reduce((sum, a) => sum + a.points, 0);
+  const totalPoints = achievements.filter(a => a.unlocked).reduce((sum: any, a: any) => sum + a.points, 0);
   const currentLevel = progressLevels.find(level => 
     totalPoints >= level.minPoints && totalPoints < level.maxPoints
   ) || progressLevels[progressLevels.length - 1];
@@ -319,7 +319,7 @@ export function GamifiedProgress() {
                 Current Benefits
               </h4>
               <ul className="space-y-1">
-                {currentLevel.benefits.map((benefit, index) => (
+                {currentLevel.benefits.map((benefit: any, index: number) => (
                   <li key={index} className="text-sm flex items-center">
                     <Zap className="h-3 w-3 mr-2 text-green-500" />
                     {benefit}
@@ -334,7 +334,7 @@ export function GamifiedProgress() {
                   Next Level Rewards
                 </h4>
                 <ul className="space-y-1">
-                  {nextLevel.benefits.map((benefit, index) => (
+                  {nextLevel.benefits.map((benefit: any, index: number) => (
                     <li key={index} className="text-sm flex items-center text-muted-foreground">
                       <Star className="h-3 w-3 mr-2 text-yellow-500" />
                       {benefit}
@@ -368,7 +368,7 @@ export function GamifiedProgress() {
 
       {/* Achievements Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredAchievements.map((achievement) => {
+        {filteredAchievements.map((achievement: any) => {
           const IconComponent = achievement.icon;
           const progressPercentage = (achievement.progress / achievement.maxProgress) * 100;
           

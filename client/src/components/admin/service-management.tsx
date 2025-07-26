@@ -280,7 +280,7 @@ export function ServiceManagement() {
           {/* Image Previews */}
           {imagePreviewUrls.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mt-4">
-              {imagePreviewUrls.map((url, index) => (
+              {imagePreviewUrls.map((url: any, index: number) => (
                 <div key={index} className="relative">
                   <img
                     src={url}
@@ -414,7 +414,7 @@ export function ServiceManagement() {
               {/* Service Images Preview */}
               {service.images && service.images.length > 0 && (
                 <div className="grid grid-cols-2 gap-1">
-                  {service.images.slice(0, 4).map((image, index) => (
+                  {service.images.slice(0, 4).map((image: any, index: number) => (
                     <img
                       key={index}
                       src={image}

@@ -97,7 +97,7 @@ export function AIChat() {
         {/* Chat Messages */}
         <ScrollArea className="flex-1 border rounded-lg p-4 mb-4 bg-muted/30">
           <div className="space-y-4">
-            {messages.map((message, index) => (
+            {messages.map((message: any, index: number) => (
               <div
                 key={index}
                 className={`flex items-start ${
@@ -170,7 +170,7 @@ export function AIChat() {
             AI Features Available:
           </h4>
           <div className="grid grid-cols-2 gap-2">
-            {aiFeatures.map((feature, index) => (
+            {aiFeatures.map((feature: any, index: number) => (
               <Badge key={index} variant="outline" className="text-xs justify-start">
                 <CheckCircle className="h-3 w-3 mr-1 text-bronze" />
                 {feature}

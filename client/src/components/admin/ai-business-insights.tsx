@@ -86,7 +86,7 @@ export function AIBusinessInsights() {
         revenue: serviceRevenue,
         avgValue: serviceBookings.length > 0 ? serviceRevenue / serviceBookings.length : 0
       };
-    }).sort((a, b) => b.revenue - a.revenue);
+    }).sort((a: any, b: any) => b.revenue - a.revenue);
 
     const topService = servicePerformance[0];
     const businessInsights = [
@@ -242,7 +242,7 @@ export function AIBusinessInsights() {
 
       {/* Predictive Analytics Dashboard */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {predictiveMetrics.map((metric, index) => (
+        {predictiveMetrics.map((metric: any, index: number) => (
           <Card key={index}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -277,7 +277,7 @@ export function AIBusinessInsights() {
           
           <ScrollArea className="h-96">
             <div className="space-y-4 pr-4">
-              {insights.map((insight, index) => {
+              {insights.map((insight: any, index: number) => {
                 const IconComponent = insight.icon;
                 return (
                   <Card key={index} className="border-l-4 border-l-purple-500">

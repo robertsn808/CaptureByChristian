@@ -136,7 +136,7 @@ export function GalleryViewer({ galleryId, clientId }: GalleryViewerProps) {
         <div className="animate-pulse">
           <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(12)].map((_, i) => (
+            {[...Array(12)].map((_: any, i: number) => (
               <div key={i} className="aspect-square bg-muted rounded"></div>
             ))}
           </div>

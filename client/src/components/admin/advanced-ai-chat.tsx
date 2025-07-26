@@ -101,8 +101,9 @@ export function AdvancedAIChat() {
 
     // Calculate comprehensive business metrics from real data
     const totalRevenue = bookingsData.reduce((sum: number, booking: any) => sum + (booking.totalPrice || 0), 0);
-    const avgBookingValue = bookingsData.length > 0 ? totalRevenue / bookingsData.length : 0;
+    const totalBookings = bookingsData.length;
     const confirmedBookings = bookingsData.filter((b: any) => b.status === 'confirmed').length;
+    const avgBookingValue = confirmedBookings > 0 ? totalRevenue / confirmedBookings : 0;
     const pendingBookings = bookingsData.filter((b: any) => b.status === 'pending').length;
     const unreadMessages = contactMessages.filter((m: any) => m.status === 'unread').length;
     const urgentMessages = contactMessages.filter((m: any) => m.priority === 'urgent').length;
@@ -117,7 +118,7 @@ export function AdvancedAIChat() {
         revenue: serviceRevenue,
         avgValue: serviceBookings.length > 0 ? serviceRevenue / serviceBookings.length : 0
       };
-    }).sort((a, b) => b.revenue - a.revenue);
+    }).sort((a: any, b: any) => b.revenue - a.revenue);
 
     const topService = servicePerformance[0];
     const conversionRate = clientsData.length > 0 ? (confirmedBookings / clientsData.length) * 100 : 0;
@@ -393,7 +394,7 @@ What specific aspect of your business would you like me to analyze? I can discus
         <CardContent>
           {/* Quick Actions */}
           <div className="grid md:grid-cols-4 gap-2 mb-6">
-            {quickActions.map((action, index) => {
+            {quickActions.map((action: any, index: number) => {
               const IconComponent = action.icon;
               return (
                 <Button
@@ -413,7 +414,7 @@ What specific aspect of your business would you like me to analyze? I can discus
           {/* Chat Messages */}
           <ScrollArea className="h-96 border rounded-lg p-4">
             <div className="space-y-4">
-              {messages.map((message, index) => {
+              {messages.map((message: any, index: number) => {
                 const IconComponent = getMessageIcon(message);
                 const iconColor = getMessageColor(message);
                 

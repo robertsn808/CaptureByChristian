@@ -232,7 +232,7 @@ export function PredictiveIntelligence() {
 
       {/* Market Indicators */}
       <div className="grid md:grid-cols-4 gap-4">
-        {marketIndicators.map((indicator, index) => (
+        {marketIndicators.map((indicator: any, index: number) => (
           <Card key={index}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -264,7 +264,7 @@ export function PredictiveIntelligence() {
         </Card>
       ) : (
         <div className="grid lg:grid-cols-2 gap-6">
-          {predictions.map((prediction, index) => (
+          {predictions.map((prediction: any, index: number) => (
             <Card key={index} className="border-l-4 border-l-purple-500">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -302,7 +302,7 @@ export function PredictiveIntelligence() {
                     Key Factors
                   </h4>
                   <ul className="space-y-1">
-                    {prediction.factors.map((factor, factorIndex) => (
+                    {prediction.factors.map((factor: any, factorIndex: number) => (
                       <li key={factorIndex} className="text-sm text-muted-foreground flex items-start">
                         <span className="w-1 h-1 bg-purple-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                         {factor}
@@ -336,7 +336,7 @@ export function PredictiveIntelligence() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {riskFactors.map((risk, index) => (
+            {riskFactors.map((risk: any, index: number) => (
               <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-semibold">{risk.risk}</h4>

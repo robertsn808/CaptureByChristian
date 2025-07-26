@@ -41,7 +41,7 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
+            {navLinks.map((link: any) => (
               link.href.startsWith("/") ? (
                 <Link key={link.href} href={link.href}>
                   <span className="text-foreground hover:text-bronze transition-colors duration-200 cursor-pointer">
@@ -112,7 +112,7 @@ export function Navigation() {
         {isOpen && (
           <div className="md:hidden bg-background/95 dark:bg-background/95 backdrop-blur-md">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navLinks.map((link) => (
+              {navLinks.map((link: any) => (
                 link.href.startsWith("/") ? (
                   <Link key={link.href} href={link.href}>
                     <span 

@@ -369,7 +369,7 @@ export function ClientPortal() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {portalSessions.map((session) => (
+            {portalSessions.map((session: any) => (
               <div key={session.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -400,7 +400,7 @@ export function ClientPortal() {
                     <div>
                       <h4 className="font-medium mb-2">Recent Activities</h4>
                       <div className="space-y-2">
-                        {session.activities.slice(-3).map((activity, index) => (
+                        {session.activities.slice(-3).map((activity: any, index: number) => (
                           <div key={index} className="flex items-center space-x-3 text-sm">
                             <div className={`${getActivityColor(activity.type)}`}>
                               {getActivityIcon(activity.type)}

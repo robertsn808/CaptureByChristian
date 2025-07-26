@@ -199,8 +199,8 @@ export function ProductSales() {
   const productStats = {
     totalProducts: products.length,
     activeProducts: products.filter(p => p.active).length,
-    totalRevenue: products.reduce((sum, p) => sum + p.revenue, 0),
-    totalSales: products.reduce((sum, p) => sum + p.sales, 0),
+    totalRevenue: products.reduce((sum: any, p: any) => sum + p.revenue, 0),
+    totalSales: products.reduce((sum: any, p: any) => sum + p.sales, 0),
     avgOrderValue: 305.00,
     topCategory: "Digital"
   };
@@ -324,7 +324,7 @@ export function ProductSales() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {products.map((product) => (
+            {products.map((product: any) => (
               <div key={product.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -366,7 +366,7 @@ export function ProductSales() {
                     <div className="mt-3">
                       <p className="text-sm font-medium mb-2">Variants:</p>
                       <div className="flex flex-wrap gap-2">
-                        {product.variants.map((variant, index) => (
+                        {product.variants.map((variant: any, index: number) => (
                           <Badge key={index} variant="outline">
                             {variant.name} - ${variant.price.toFixed(2)}
                           </Badge>
@@ -410,7 +410,7 @@ export function ProductSales() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {orders.map((order) => (
+            {orders.map((order: any) => (
               <div key={order.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -430,7 +430,7 @@ export function ProductSales() {
                     </div>
                     
                     <div className="space-y-1 text-sm mb-3">
-                      {order.items.map((item, index) => (
+                      {order.items.map((item: any, index: number) => (
                         <div key={index} className="flex justify-between">
                           <span>{products.find(p => p.id === item.productId)?.name} ({item.variant})</span>
                           <span>{item.quantity}x ${item.price.toFixed(2)}</span>

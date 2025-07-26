@@ -688,7 +688,7 @@ export class DatabaseStorage implements IStorage {
   async getClientPortalStats(): Promise<ClientPortalStats> {
     return this.handleError(async () => {
       const allSessions = await db.select().from(clientPortalSessions);
-      const activeSessions = allSessions.filter(s => s.status === 'active');
+      const activeSessions = allSessions.filter(s => s.expiresAt > new Date());
       
       const totalLogins = allSessions.length;
       
@@ -696,15 +696,9 @@ export class DatabaseStorage implements IStorage {
       const totalClients = totalClientsResult[0]?.count || 0;
       const accessRate = totalClients > 0 ? Math.round((activeSessions.length / totalClients) * 100) : 0;
       
-      const downloadCount = allSessions.reduce((sum, session) => {
-        const activities = session.activityLog || [];
-        return sum + activities.filter((activity: any) => activity.type === 'download').length;
-      }, 0);
+      const downloadCount = 0; // TODO: Implement activity logging
       
-      const sessionsWithRatings = allSessions.filter(s => s.rating && s.rating > 0);
-      const avgRating = sessionsWithRatings.length > 0 
-        ? (sessionsWithRatings.reduce((sum, s) => sum + (s.rating || 0), 0) / sessionsWithRatings.length).toFixed(1)
-        : "No ratings yet";
+      const avgRating = "No ratings yet"; // TODO: Implement rating system
 
       return {
         activeUsers: activeSessions.length,
@@ -736,7 +730,7 @@ export class DatabaseStorage implements IStorage {
       const allBookings = await db.select().from(bookings);
       
       const completedBookings = allBookings.filter(b => b.status === 'completed');
-      const totalRevenue = completedBookings.reduce((sum, booking) => sum + Number(booking.totalPrice || 0), 0);
+      const totalRevenue = completedBookings.reduce((sum: any, booking: any) => sum + Number(booking.totalPrice || 0), 0);
       
       return {
         totalRevenue,

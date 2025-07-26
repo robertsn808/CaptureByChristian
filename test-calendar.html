@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Calendar Access</title>
+    <script>
+        // Test script to check calendar functionality
+        function testCalendar() {
+            // Test 1: Check if server is accessible
+            fetch('http://localhost:7000/api/bookings')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Bookings API working:', data.length, 'bookings');
+                    document.getElementById('bookings-status').innerHTML = '✅ Bookings API: ' + data.length + ' bookings found';
+                })
+                .catch(error => {
+                    console.error('❌ Bookings API failed:', error);
+                    document.getElementById('bookings-status').innerHTML = '❌ Bookings API failed: ' + error.message;
+                });
+
+            // Test 2: Check services API
+            fetch('http://localhost:7000/api/services')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Services API working:', data.length, 'services');
+                    document.getElementById('services-status').innerHTML = '✅ Services API: ' + data.length + ' services found';
+                })
+                .catch(error => {
+                    console.error('❌ Services API failed:', error);
+                    document.getElementById('services-status').innerHTML = '❌ Services API failed: ' + error.message;
+                });
+
+            // Test 3: Try to authenticate
+            fetch('http://localhost:7000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: 'capturedbychristian',
+                    password: 'Wordpass3211'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Auth working:', data);
+                document.getElementById('auth-status').innerHTML = '✅ Authentication: ' + (data.success ? 'Success' : 'Failed');
+                
+                // If auth successful, try to access protected endpoint
+                if (data.success) {
+                    fetch('http://localhost:7000/api/clients')
+                        .then(response => response.json())
+                        .then(clientData => {
+                            console.log('✅ Clients API after auth:', clientData);
+                            document.getElementById('clients-status').innerHTML = '✅ Clients API: ' + (Array.isArray(clientData) ? clientData.length + ' clients' : 'Working');
+                        })
+                        .catch(error => {
+                            console.error('❌ Clients API failed:', error);
+                            document.getElementById('clients-status').innerHTML = '❌ Clients API failed: ' + error.message;
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('❌ Auth failed:', error);
+                document.getElementById('auth-status').innerHTML = '❌ Authentication failed: ' + error.message;
+            });
+        }
+
+        function openCalendar() {
+            // Store auth in localStorage like the app does
+            localStorage.setItem('admin_authenticated', 'true');
+            // Open admin page
+            window.open('http://localhost:7000/admin', '_blank');
+        }
+    </script>
+</head>
+<body>
+    <h1>Calendar Functionality Test</h1>
+    <p>This page tests the calendar backend APIs to diagnose issues.</p>
+    
+    <button onclick="testCalendar()">Test APIs</button>
+    <button onclick="openCalendar()">Open Admin Portal</button>
+    
+    <h2>Test Results:</h2>
+    <div id="bookings-status">⏳ Testing bookings API...</div>
+    <div id="services-status">⏳ Testing services API...</div>
+    <div id="auth-status">⏳ Testing authentication...</div>
+    <div id="clients-status">⏳ Testing clients API...</div>
+    
+    <h2>Instructions:</h2>
+    <ol>
+        <li>Click "Test APIs" to verify backend functionality</li>
+        <li>Click "Open Admin Portal" to access the calendar</li>
+        <li>If admin portal works, navigate to Calendar in the left sidebar</li>
+        <li>Check browser console (F12) for any JavaScript errors</li>
+    </ol>
+</body>
+</html>

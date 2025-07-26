@@ -190,12 +190,12 @@ export function PortfolioManagement() {
         <CardContent>
           <div className="animate-pulse">
             <div className="grid md:grid-cols-3 gap-4 mb-6">
-              {[...Array(3)].map((_, i) => (
+              {[...Array(3)].map((_: any, i: number) => (
                 <div key={i} className="h-24 bg-muted rounded"></div>
               ))}
             </div>
             <div className="grid md:grid-cols-4 gap-4">
-              {[...Array(8)].map((_, i) => (
+              {[...Array(8)].map((_: any, i: number) => (
                 <div key={i} className="aspect-square bg-muted rounded"></div>
               ))}
             </div>
@@ -341,7 +341,7 @@ export function PortfolioManagement() {
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
+                {categories.map((category: any) => (
                   <SelectItem key={category} value={category}>
                     {category === "all" ? "All Categories" : category.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
                   </SelectItem>

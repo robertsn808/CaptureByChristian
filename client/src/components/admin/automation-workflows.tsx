@@ -63,8 +63,8 @@ export function AutomationWorkflows() {
   // Calculate workflow statistics from real booking data
   const calculateWorkflowStats = () => {
     const totalBookings = bookings.length;
-    const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
-    const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+    const confirmedBookings = bookings.filter((b: any) => b.status === 'confirmed').length;
+    const pendingBookings = bookings.filter((b: any) => b.status === 'pending').length;
     
     return {
       totalWorkflows: workflows.length || 1,
@@ -257,11 +257,11 @@ export function AutomationWorkflows() {
     return `${Math.floor(hours / 24)} days`;
   };
 
-  const totalStats = workflows.reduce((acc, workflow) => ({
+  const totalStats = workflows.reduce((acc: any, workflow: any) => ({
     triggered: acc.triggered + workflow.stats.triggered,
     completed: acc.completed + workflow.stats.completed,
-    avgOpenRate: Math.round(workflows.reduce((sum, w) => sum + w.stats.openRate, 0) / workflows.length),
-    avgClickRate: Math.round(workflows.reduce((sum, w) => sum + w.stats.clickRate, 0) / workflows.length)
+    avgOpenRate: Math.round(workflows.reduce((sum: any, w: any) => sum + w.stats.openRate, 0) / workflows.length),
+    avgClickRate: Math.round(workflows.reduce((sum: any, w: any) => sum + w.stats.clickRate, 0) / workflows.length)
   }), { triggered: 0, completed: 0, avgOpenRate: 0, avgClickRate: 0 });
 
   return (
@@ -273,7 +273,7 @@ export function AutomationWorkflows() {
             <div className="flex items-center space-x-2">
               <Zap className="h-4 w-4 text-bronze" />
               <div>
-                <p className="text-2xl font-bold">{workflows.filter(w => w.active).length}</p>
+                <p className="text-2xl font-bold">{workflows.filter((w: any) => w.active).length}</p>
                 <p className="text-xs text-muted-foreground">Active Workflows</p>
               </div>
             </div>
@@ -333,7 +333,7 @@ export function AutomationWorkflows() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {workflows.map((workflow) => (
+            {workflows.map((workflow: any) => (
               <div key={workflow.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -368,7 +368,7 @@ export function AutomationWorkflows() {
 
                     {/* Workflow Steps Visualization */}
                     <div className="flex flex-wrap items-center gap-2">
-                      {workflow.steps.map((step, index) => (
+                      {workflow.steps.map((step: any, index: number) => (
                         <React.Fragment key={index}>
                           <div className="flex items-center space-x-2 bg-muted/50 px-3 py-1 rounded-lg">
                             {getStepIcon(step.type)}

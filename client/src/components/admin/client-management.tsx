@@ -129,7 +129,7 @@ function AddClientForm({ onSuccess }: { onSuccess?: () => void }) {
               <FormItem>
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <Input placeholder="(808) 555-0123" {...field} />
+                  <Input placeholder="(808) 555-0123" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -141,7 +141,7 @@ function AddClientForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Lead Source</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select source" />
@@ -169,7 +169,7 @@ function AddClientForm({ onSuccess }: { onSuccess?: () => void }) {
             <FormItem>
               <FormLabel>Notes</FormLabel>
               <FormControl>
-                <Textarea placeholder="Additional notes about the client..." {...field} />
+                <Textarea placeholder="Additional notes about the client..." {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -251,7 +251,7 @@ export function ClientManagement() {
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(5)].map((_: any, i: number) => (
               <div key={i} className="h-16 bg-muted rounded"></div>
             ))}
           </div>
@@ -409,7 +409,7 @@ export function ClientManagement() {
 }
 
 function ClientDetails({ client, bookings }: { client: any; bookings: any[] }) {
-  const totalSpent = bookings.reduce((sum, booking) => sum + parseFloat(booking.totalPrice), 0);
+  const totalSpent = bookings.reduce((sum: any, booking: any) => sum + parseFloat(booking.totalPrice), 0);
 
   return (
     <div className="space-y-6">

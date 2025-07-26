@@ -364,8 +364,8 @@ export function QuestionnaireSystem() {
   const questionnaireStats = {
     total: questionnaires.length,
     active: questionnaires.filter(q => q.active).length,
-    totalResponses: questionnaires.reduce((sum, q) => sum + q.responses, 0),
-    avgCompletion: Math.round(questionnaires.reduce((sum, q) => sum + q.completionRate, 0) / questionnaires.length)
+    totalResponses: questionnaires.reduce((sum: any, q: any) => sum + q.responses, 0),
+    avgCompletion: Math.round(questionnaires.reduce((sum: any, q: any) => sum + q.completionRate, 0) / questionnaires.length)
   };
 
   return (
@@ -443,7 +443,7 @@ export function QuestionnaireSystem() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {questionnaires.map((questionnaire) => (
+            {questionnaires.map((questionnaire: any) => (
               <div key={questionnaire.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -485,7 +485,7 @@ export function QuestionnaireSystem() {
                     <div>
                       <p className="text-sm font-medium mb-2">Questions Preview:</p>
                       <div className="flex flex-wrap gap-2">
-                        {questionnaire.questions.slice(0, 5).map((question, index) => (
+                        {questionnaire.questions.slice(0, 5).map((question: any, index: number) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {getQuestionIcon(question.type)} {question.question.substring(0, 30)}...
                           </Badge>
@@ -530,7 +530,7 @@ export function QuestionnaireSystem() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {responses.map((response) => {
+            {responses.map((response: any) => {
               const questionnaire = questionnaires.find(q => q.id === response.questionnaireId);
               return (
                 <div key={response.id} className="border rounded-lg p-4">

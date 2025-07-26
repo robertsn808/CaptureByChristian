@@ -86,7 +86,7 @@ export function RealTimeAnalytics() {
           </div>
         </div>
         <div className="grid gap-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3, 4].map((i: any) => (
             <Card key={i} className="animate-pulse">
               <CardContent className="p-6">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -253,7 +253,7 @@ export function RealTimeAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {realTimeData.topPages.map((page, index) => (
+              {realTimeData.topPages.map((page: any, index: number) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
@@ -278,7 +278,7 @@ export function RealTimeAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {realTimeData.recentActivity.map((activity, index) => (
+              {realTimeData.recentActivity.map((activity: any, index: number) => (
                 <div key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                   <div className="flex-1">
@@ -301,7 +301,7 @@ export function RealTimeAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {realTimeData.trafficSources.map((source, index) => (
+              {realTimeData.trafficSources.map((source: any, index: number) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className={`w-3 h-3 rounded-full ${
@@ -332,7 +332,7 @@ export function RealTimeAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {realTimeData.deviceTypes.map((device, index) => (
+              {realTimeData.deviceTypes.map((device: any, index: number) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     {device.type === 'Mobile' && <Smartphone className="h-4 w-4 text-muted-foreground" />}
@@ -361,7 +361,7 @@ export function RealTimeAnalytics() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {realTimeData.locations.map((location, index) => (
+            {realTimeData.locations.map((location: any, index: number) => (
               <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />

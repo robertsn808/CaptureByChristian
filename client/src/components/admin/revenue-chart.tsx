@@ -81,7 +81,7 @@ export function RevenueChart() {
 
   const monthlyRevenue = getMonthlyRevenue();
   const serviceBreakdown = getServiceBreakdown();
-  const totalRevenue = serviceBreakdown.reduce((sum, item) => sum + item.revenue, 0);
+  const totalRevenue = serviceBreakdown.reduce((sum: any, item: any) => sum + item.revenue, 0);
 
   return (
     <div className="grid lg:grid-cols-2 gap-6">
@@ -100,7 +100,7 @@ export function RevenueChart() {
             </div>
             
             <div className="space-y-3">
-              {monthlyRevenue.map((item, index) => (
+              {monthlyRevenue.map((item: any, index: number) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>{item.month}</span>
@@ -130,7 +130,7 @@ export function RevenueChart() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {serviceBreakdown.map((item, index) => (
+            {serviceBreakdown.map((item: any, index: number) => (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <div>

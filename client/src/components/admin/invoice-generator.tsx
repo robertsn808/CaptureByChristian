@@ -134,7 +134,7 @@ export function InvoiceGenerator() {
   };
 
   const calculateTotals = (): InvoiceTotals => {
-    const subtotal = invoiceItems.reduce((total, item) => total + (typeof item.amount === 'number' ? item.amount : 0), 0);
+    const subtotal = invoiceItems.reduce((total: any, item: any) => total + (typeof item.amount === 'number' ? item.amount : 0), 0);
     const tax = (subtotal * taxRate) / 100;
     const discount = (subtotal * discountRate) / 100;
     const total = subtotal + tax - discount;
@@ -362,7 +362,7 @@ export function InvoiceGenerator() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {invoiceItems.map((item, index) => (
+                    {invoiceItems.map((item: any, index: number) => (
                       <div key={index} className="grid grid-cols-6 gap-2 items-end">
                         <div className="col-span-2">
                           <Label>Description</Label>
@@ -558,7 +558,7 @@ export function InvoiceGenerator() {
             </div>
           ) : (
           <div className="space-y-4">
-            {invoices.map((invoice) => (
+            {invoices.map((invoice: any) => (
               <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
                   <div>
@@ -660,7 +660,7 @@ export function InvoiceGenerator() {
                     </tr>
                   </thead>
                   <tbody>
-                    {previewInvoice.items.map((item, index) => (
+                    {previewInvoice.items.map((item: any, index: number) => (
                       <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
                         <td className="p-4 text-gray-800 font-medium">{item.description}</td>
                         <td className="text-right p-4 text-gray-800">{item.quantity}</td>

@@ -389,7 +389,7 @@ Base your recommendations on current photography industry standards and the spec
       ? INDIVIDUAL_CONTRACT_TEMPLATE 
       : BUSINESS_CONTRACT_TEMPLATE;
     
-    const selectedClient = clients.find(c => c.id === parseInt(contractForm.clientId));
+    const selectedClient = clients.find((c: any) => c.id === parseInt(contractForm.clientId));
     
     return template
       .replace(/\[DATE\]/g, new Date().toLocaleDateString())
@@ -412,7 +412,7 @@ Base your recommendations on current photography industry standards and the spec
   };
 
   const handleCreateContract = () => {
-    const selectedClient = clients.find(c => c.id === parseInt(contractForm.clientId));
+    const selectedClient = clients.find((c: any) => c.id === parseInt(contractForm.clientId));
     if (!selectedClient) {
       toast({ title: "Please select a client", variant: "destructive" });
       return;

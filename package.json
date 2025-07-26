@@ -6,9 +6,24 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "bundle:analyze": "npx vite-bundle-analyzer dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "lint": "echo 'Linting not configured yet'",
+    "format:check": "echo 'Format checking not configured yet'",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:api": "vitest run tests/api/",
+    "test:integration": "vitest run tests/integration.test.ts",
+    "test:crud": "vitest run tests/api/crud.test.ts",
+    "test:database": "vitest run tests/api/database.test.ts",
+    "test:uploads": "vitest run tests/api/file-upload.test.ts",
+    "test:email": "vitest run tests/api/email-notifications.test.ts",
+    "test:performance": "vitest run --reporter=verbose tests/api/ --testTimeout=60000"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -98,16 +113,22 @@
     "@types/passport-local": "^1.0.38",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
+    "@types/supertest": "^6.0.2",
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^4.3.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.28.1",
     "esbuild": "^0.25.0",
     "postcss": "^8.4.47",
+    "supertest": "^7.0.0",
     "tailwindcss": "^3.4.17",
+    "terser": "^5.43.1",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^2.1.8"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

@@ -1,0 +1,20 @@
+{
+  "name": "Capture by Christian",
+  "short_name": "CaptureByChristian",
+  "description": "Professional Photography Business Management Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8B5A3C",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["photography", "business", "productivity"],
+  "lang": "en-US"
+}

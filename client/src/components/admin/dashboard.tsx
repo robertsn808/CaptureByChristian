@@ -28,7 +28,7 @@ export function AdminDashboard() {
       <div className="space-y-6">
         <h1 className="font-playfair text-3xl font-bold">Dashboard</h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(4)].map((_: any, i: number) => (
             <Card key={i}>
               <CardContent className="p-6">
                 <div className="animate-pulse">
@@ -151,7 +151,7 @@ export function AdminDashboard() {
 
       {/* Enhanced Stats Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
+        {stats.map((stat: any, index: number) => (
           <Card key={index} className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">

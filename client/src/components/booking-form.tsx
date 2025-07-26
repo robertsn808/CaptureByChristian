@@ -246,7 +246,7 @@ export function BookingForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {timeSlots.map((slot) => (
+                        {timeSlots.map((slot: any) => (
                           <SelectItem key={slot} value={slot}>
                             {slot}
                           </SelectItem>

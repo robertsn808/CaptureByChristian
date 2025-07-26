@@ -93,7 +93,7 @@ export function LeadManagement() {
     total: leads.length,
     hot: leads.filter(lead => lead.temperature === "hot").length,
     qualified: leads.filter(lead => lead.qualification === "qualified").length,
-    avgScore: leads.length > 0 ? Math.round(leads.reduce((sum, lead) => sum + lead.score, 0) / leads.length) : 0
+    avgScore: leads.length > 0 ? Math.round(leads.reduce((sum: any, lead: any) => sum + lead.score, 0) / leads.length) : 0
   };
 
 
@@ -235,7 +235,7 @@ export function LeadManagement() {
 
           {/* Leads List */}
           <div className="space-y-4">
-            {filteredLeads.map((lead) => (
+            {filteredLeads.map((lead: any) => (
               <div key={lead.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

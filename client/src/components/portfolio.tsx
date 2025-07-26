@@ -71,7 +71,7 @@ export function Portfolio() {
 
         {/* Portfolio Categories */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {categories.map((category) => (
+          {categories.map((category: any) => (
             <Button
               key={category.id}
               variant={activeFilter === category.id ? "default" : "outline"}

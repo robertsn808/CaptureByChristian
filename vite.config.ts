@@ -34,11 +34,53 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks for better caching
+          vendor: ['react', 'react-dom'],
+          ui: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+          ],
+          charts: ['recharts'],
+          utils: ['date-fns', 'clsx', 'tailwind-merge'],
+          routing: ['wouter'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+        },
+      },
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+    // Enable source maps for production debugging
+    sourcemap: process.env.NODE_ENV === 'production' ? false : true,
+    // Use esbuild for faster minification
+    minify: 'esbuild',
+    target: 'es2018',
   },
   server: {
     fs: {
       strict: true,
       deny: ["**/.*"],
     },
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'wouter',
+      'react-hook-form',
+      '@hookform/resolvers/zod',
+      'zod',
+      'date-fns',
+      'recharts',
+    ],
   },
 });

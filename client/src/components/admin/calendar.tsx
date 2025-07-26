@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchBookings, updateBooking } from "@/lib/api";
+import { fetchBookings, updateBooking, fetchClients, createBooking, fetchServices } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,19 +52,25 @@ export function AdminCalendar() {
   });
   const queryClient = useQueryClient();
 
-  const { data: bookings = [], isLoading } = useQuery({
+  const { data: bookings = [], isLoading, error: bookingsError } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
+    retry: 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const { data: services = [] } = useQuery({
+  const { data: services = [], error: servicesError } = useQuery({
     queryKey: ['/api/services'],
-    queryFn: () => fetch('/api/services').then(res => res.json()),
+    queryFn: fetchServices,
+    retry: 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const { data: clients = [] } = useQuery({
+  const { data: clients = [], error: clientsError } = useQuery({
     queryKey: ['/api/clients'],
-    queryFn: () => fetch('/api/clients').then(res => res.json()),
+    queryFn: fetchClients,
+    retry: 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const updateBookingMutation = useMutation({
@@ -77,20 +83,7 @@ export function AdminCalendar() {
   });
 
   const createBookingMutation = useMutation({
-    mutationFn: async (bookingData: any) => {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData)
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create appointment');
-      }
-      
-      return response.json();
-    },
+    mutationFn: createBooking,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/stats'] });
@@ -276,6 +269,52 @@ export function AdminCalendar() {
     }
   };
 
+  // Show error state if any critical APIs fail
+  if (bookingsError || servicesError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Calendar</h2>
+        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center py-8">
+              <h3 className="text-lg font-semibold text-red-600 mb-4">Calendar Loading Error</h3>
+              <div className="space-y-2 text-sm">
+                {bookingsError && (
+                  <div className="text-red-500">
+                    Bookings Error: {bookingsError.message}
+                  </div>
+                )}
+                {servicesError && (
+                  <div className="text-red-500">
+                    Services Error: {servicesError.message}
+                  </div>
+                )}
+                {clientsError && (
+                  <div className="text-orange-500">
+                    Clients Error: {clientsError.message} (Non-critical)
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 text-muted-foreground">
+                <p>Try refreshing the page or check your network connection.</p>
+                <p>Current Data: {bookings.length} bookings, {services.length} services</p>
+              </div>
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="mt-4"
+                variant="outline"
+              >
+                Refresh Page
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -287,7 +326,7 @@ export function AdminCalendar() {
             <div className="animate-pulse space-y-4">
               <div className="h-8 bg-muted rounded w-1/3"></div>
               <div className="grid grid-cols-7 gap-2">
-                {Array.from({ length: 35 }).map((_, i) => (
+                {Array.from({ length: 35 }).map((_: any, i: number) => (
                   <div key={i} className="h-20 bg-muted rounded"></div>
                 ))}
               </div>
@@ -312,7 +351,7 @@ export function AdminCalendar() {
         ))}
 
         {/* Calendar days */}
-        {days.map((day, index) => {
+        {days.map((day: any, index: number) => {
           const dayBookings = getBookingsForDate(day);
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = day.toDateString() === today.toDateString();
@@ -388,7 +427,7 @@ export function AdminCalendar() {
         {/* Week header */}
         <div className="grid grid-cols-8 border-b">
           <div className="p-2"></div>
-          {days.map((day, index) => {
+          {days.map((day: any, index: number) => {
             const dayBookings = getBookingsForDate(day);
             const isToday = day.toDateString() === new Date().toDateString();
 
@@ -417,7 +456,7 @@ export function AdminCalendar() {
           </div>
 
           {/* Day columns */}
-          {days.map((day, dayIndex) => {
+          {days.map((day: any, dayIndex: number) => {
             const dayBookings = getBookingsForDate(day);
 
             return (

@@ -178,8 +178,8 @@ export function AdvancedAnalytics() {
   };
 
   // Calculate growth only if we have data
-  const currentMonthRevenue = revenueData.length > 0 ? revenueData[revenueData.length - 1].revenue : 0;
-  const previousMonthRevenue = revenueData.length > 1 ? revenueData[revenueData.length - 2].revenue : 0;
+  const currentMonthRevenue = revenueData.length > 0 ? (revenueData[revenueData.length - 1] as any).revenue : 0;
+  const previousMonthRevenue = revenueData.length > 1 ? (revenueData[revenueData.length - 2] as any).revenue : 0;
   const revenueGrowth = previousMonthRevenue > 0 ? ((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue * 100).toFixed(1) : "0";
 
   return (
@@ -330,7 +330,7 @@ export function AdvancedAnalytics() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {serviceBreakdown.map((entry, index) => (
+                  {serviceBreakdown.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -338,7 +338,7 @@ export function AdvancedAnalytics() {
               </PieChart>
             </ResponsiveContainer>
             <div className="mt-4 space-y-2">
-              {serviceBreakdown.map((service, index) => (
+              {serviceBreakdown.map((service: any, index: number) => (
                 <div key={service.name} className="flex justify-between items-center text-sm">
                   <div className="flex items-center">
                     <div 
@@ -367,7 +367,7 @@ export function AdvancedAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {leadSourceData.map((source, index) => (
+              {leadSourceData.map((source: any, index: number) => (
                 <div key={source.source} className="border rounded-lg p-3">
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="font-medium">{source.source}</h4>

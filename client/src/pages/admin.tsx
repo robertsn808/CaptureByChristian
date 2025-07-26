@@ -248,7 +248,7 @@ export default function Admin() {
             {/* Navigation Menu */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-6">
-                {menuSections.map((section) => (
+                {menuSections.map((section: any) => (
                   <div key={section.title}>
                     {!sidebarCollapsed && (
                       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -256,7 +256,7 @@ export default function Admin() {
                       </h3>
                     )}
                     <div className="space-y-1">
-                      {section.items.map((item) => (
+                      {section.items.map((item: any) => (
                         <Button
                           key={item.id}
                           variant={activeTab === item.id ? "default" : "ghost"}
