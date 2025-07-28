@@ -1,42 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
-# CapturedCCollective Docker Startup Script
+# Wait for PostgreSQL to be ready
+echo "Waiting for PostgreSQL to be ready..."
 
-echo "🚀 Starting CapturedCCollective..."
+# Use Node.js script for better compatibility with absolute path
+node /app/docker-scripts/wait-for-db.js
 
-# Check if .env exists
-if [ ! -f .env ]; then
-    echo "⚠️  Creating .env file from .env.docker template..."
-    cp .env.docker .env
-    echo "✅ Please edit .env file with your actual API keys before running again"
-    exit 1
+if [ $? -eq 0 ]; then
+  echo "Database is ready - proceeding with startup"
+  
+  # Run database migrations
+  echo "Running database migrations..."
+  npm run db:migrate
+  
+  # Start the application
+  echo "Starting application..."
+  npm start
+else
+  echo "Database connection failed - exiting"
+  exit 1
 fi
-
-# Create necessary directories
-mkdir -p uploads logs ssl
-
-# Start services
-echo "🐳 Starting Docker services..."
-docker-compose up -d
-
-# Wait for services to be healthy
-echo "⏳ Waiting for services to start..."
-sleep 10
-
-# Check service health
-echo "🔍 Checking service health..."
-docker-compose ps
-
-# Show logs
-echo "📝 Recent logs:"
-docker-compose logs --tail=20
-
-echo "✅ CapturedCCollective is running!"
-echo "🌐 Access the application at: http://localhost:5000"
-echo "📊 Database is available at: localhost:5432"
-echo ""
-echo "Commands:"
-echo "  docker-compose logs -f app     # View app logs"
-echo "  docker-compose logs -f database # View database logs"
-echo "  docker-compose down           # Stop services"
-echo "  docker-compose restart       # Restart services"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminDashboard } from "@/components/admin/dashboard";
@@ -19,7 +19,8 @@ import { ProfileManagement } from "@/components/admin/profile-management";
 import { ClientPortal } from "@/components/admin/client-portal";
 import { ServiceManagement } from "@/components/admin/service-management";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// Card components removed - not used in current implementation
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -33,10 +34,10 @@ import {
   FileText, 
   BarChart3,
   Settings,
-  Upload,
+  // Upload,
   Brain,
   Mail,
-  Home,
+  // Home,
   Moon,
   Sun,
   ChevronLeft,
@@ -248,7 +249,7 @@ export default function Admin() {
             {/* Navigation Menu */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-6">
-                {menuSections.map((section: any) => (
+                {menuSections.map((section) => (
                   <div key={section.title}>
                     {!sidebarCollapsed && (
                       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -256,7 +257,7 @@ export default function Admin() {
                       </h3>
                     )}
                     <div className="space-y-1">
-                      {section.items.map((item: any) => (
+                      {section.items.map((item) => (
                         <Button
                           key={item.id}
                           variant={activeTab === item.id ? "default" : "ghost"}
