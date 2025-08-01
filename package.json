@@ -30,7 +30,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.18.0",
-    "@types/multer": "^1.4.12",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.1.0",
     "@types/pg": "^8.11.6",
     "ai": "^4.3.19",
@@ -54,7 +54,7 @@
     "supertest": "^7.1.4",
     "tailwindcss": "^4.1.11",
     "twilio": "^5.3.2",
-    "typescript": "^5.5.2",
+    "typescript": "^5.9.2",
     "vaul": "^1.1.2",
     "vitest-axe": "^0.1.0",
     "zod": "^3.23.8"
