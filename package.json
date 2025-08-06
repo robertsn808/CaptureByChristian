@@ -39,7 +39,7 @@
     "postinstall": "cd client && npm install"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.66",
+    "@ai-sdk/openai": "^2.0.4",
     "@types/pg": "^8.15.5",
     "ai": "^3.0.0",
     "bcryptjs": "^2.4.3",
