@@ -75,7 +75,13 @@
       "Bash(env)",
       "Bash(NODE_ENV=production node dist/server/index.js)",
       "Bash(NODE_ENV=production DATABASE_URL=postgresql://test:test@localhost:5432/test SESSION_SECRET=test-secret node dist/server/index.js)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(gh pr close:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
