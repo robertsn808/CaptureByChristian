@@ -16,6 +16,12 @@ import {
 } from "lucide-react";
 import { RevenueChart } from "./revenue-chart";
 
+type BookingLite = {
+  status: string;
+  totalPrice: string;
+  date: string | Date;
+};
+
 export function AdminDashboard() {
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ["/api/analytics/stats"],
@@ -55,7 +61,7 @@ export function AdminDashboard() {
   // Calculate real metrics from booking data
   const totalRevenue =
     bookings?.reduce(
-      (sum: number, booking: any) =>
+      (sum: number, booking: BookingLite) =>
         booking.status === "confirmed" || booking.status === "completed"
           ? sum + parseFloat(booking.totalPrice)
           : sum,
@@ -64,11 +70,11 @@ export function AdminDashboard() {
 
   const totalBookings = bookings?.length || 0;
   const pendingBookings =
-    bookings?.filter((b: any) => b.status === "pending").length || 0;
+    bookings?.filter((b: { status: string }) => b.status === "pending").length || 0;
   const confirmedBookings =
-    bookings?.filter((b: any) => b.status === "confirmed").length || 0;
+    bookings?.filter((b: { status: string }) => b.status === "confirmed").length || 0;
   const completedBookings =
-    bookings?.filter((b: any) => b.status === "completed").length || 0;
+    bookings?.filter((b: { status: string }) => b.status === "completed").length || 0;
 
   // Calculate real growth rates (would need historical data for accurate calculations)
   const bookingGrowth =
@@ -126,11 +132,11 @@ export function AdminDashboard() {
     const today = new Date();
     return bookings
       .filter(
-        (booking: any) =>
+        (booking: BookingLite) =>
           new Date(booking.date) > today && booking.status !== "cancelled",
       )
       .sort(
-        (a: any, b: any) =>
+        (a: BookingLite, b: BookingLite) =>
           new Date(a.date).getTime() - new Date(b.date).getTime(),
       )
       .slice(0, 3);
@@ -138,7 +144,7 @@ export function AdminDashboard() {
 
   const getPendingActions = () => {
     if (!bookings) return [];
-    return bookings.filter((booking: any) => booking.status === "pending");
+    return bookings.filter((booking: { status: string }) => booking.status === "pending");
   };
 
   const upcomingBookings = getUpcomingBookings();
