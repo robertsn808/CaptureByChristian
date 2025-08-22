@@ -85,6 +85,72 @@ vi.mock("./twilio", () => ({
   isTwilioConfigured: vi.fn().mockReturnValue(false),
 }));
 
+// Helper builders to match shared/schema types without leaking schema imports into tests
+function buildClient(overrides: Partial<Record<string, any>> = {}) {
+  return {
+    id: 1,
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "123-456-7890",
+    notes: null,
+    tags: [],
+    status: "lead",
+    leadSource: null,
+    leadScore: 0,
+    clientType: "seller",
+    investmentExperience: "beginner",
+    preferredCommunication: "email",
+    timezone: "America/New_York",
+    lastContact: null,
+    nextFollowUp: null,
+    lifetimeValue: "0.00",
+    referralSource: null,
+    motivationLevel: 5,
+    timeframe: null,
+    address: null,
+    creditScore: null,
+    annualIncome: null,
+    liquidCash: null,
+    customFields: {},
+    createdAt: new Date(),
+    ...overrides,
+  };
+}
+
+function buildService(overrides: Partial<Record<string, any>> = {}) {
+  return {
+    id: 1,
+    name: "Service",
+    description: null,
+    price: "0.00",
+    duration: 60,
+    category: null,
+    active: true,
+    createdAt: new Date(),
+    ...overrides,
+  };
+}
+
+function buildBooking(overrides: Partial<Record<string, any>> = {}) {
+  return {
+    id: 1,
+    clientId: 1,
+    serviceId: 1,
+    date: new Date("2024-06-15T10:00:00Z"),
+    duration: 60,
+    location: "Honolulu Beach",
+    totalPrice: "0.00",
+    depositPaid: false,
+    status: "pending",
+    notes: null,
+    addOns: null,
+    createdAt: new Date(),
+    client: buildClient(),
+    service: buildService(),
+    ...overrides,
+  };
+}
+
 describe("API Endpoints Comprehensive Tests", () => {
   let app: express.Express;
 
@@ -120,27 +186,7 @@ describe("API Endpoints Comprehensive Tests", () => {
   });
 
   describe("Client Management Endpoints", () => {
-    const mockClient = {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "123-456-7890",
-      notes: null,
-      tags: null,
-      status: "lead",
-      leadSource: null,
-      leadScore: 0,
-      instagramHandle: null,
-      anniversaryDate: null,
-      preferredCommunication: "email",
-      timezone: "America/New_York",
-      lastContact: null,
-      nextFollowUp: null,
-      lifetimeValue: "0.00",
-      referralSource: null,
-      customFields: {},
-      createdAt: new Date(),
-    };
+    const mockClient = buildClient({ id: 1, name: "John Doe", email: "john@example.com", phone: "123-456-7890" });
 
     it("GET /api/clients - should get all clients", async () => {
       vi.mocked(storage.getClients).mockResolvedValue([mockClient]);
@@ -159,25 +205,9 @@ describe("API Endpoints Comprehensive Tests", () => {
         phone: "987-654-3210",
       };
 
-      vi.mocked(storage.createClient).mockResolvedValue({
-        id: 2,
-        ...newClient,
-        notes: null,
-        tags: null,
-        status: "lead",
-        leadSource: null,
-        leadScore: 0,
-        instagramHandle: null,
-        anniversaryDate: null,
-        preferredCommunication: "email",
-        timezone: "America/New_York",
-        lastContact: null,
-        nextFollowUp: null,
-        lifetimeValue: "0.00",
-        referralSource: null,
-        customFields: {},
-        createdAt: new Date(),
-      });
+      vi.mocked(storage.createClient).mockResolvedValue(
+        buildClient({ id: 2, ...newClient }) as any,
+      );
 
       const response = await request(app).post("/api/clients").send(newClient);
 
@@ -222,7 +252,7 @@ describe("API Endpoints Comprehensive Tests", () => {
   });
 
   describe("Service Management Endpoints", () => {
-    const mockService = {
+    const mockService = buildService({
       id: 1,
       name: "Wedding Photography",
       description: "Full wedding coverage",
@@ -230,9 +260,7 @@ describe("API Endpoints Comprehensive Tests", () => {
       duration: 480,
       category: "wedding",
       active: true,
-      addOns: null,
-      images: null,
-    };
+    });
 
     it("GET /api/services - should get active services", async () => {
       vi.mocked(storage.getActiveServices).mockResolvedValue([mockService]);
@@ -306,41 +334,11 @@ describe("API Endpoints Comprehensive Tests", () => {
   });
 
   describe("Booking Management Endpoints", () => {
-    const mockBooking = {
-      id: 1,
-      clientId: 1,
-      serviceId: 1,
-      date: new Date("2024-06-15T10:00:00Z"),
+    const mockBooking = buildBooking({
       duration: 240,
       location: "Honolulu Beach",
       totalPrice: "1500.00",
-      depositPaid: false,
-      status: "pending",
-      notes: null,
-      addOns: null,
-      createdAt: new Date(),
-      client: {
-        id: 1,
-        name: "John Doe",
-        email: "john@example.com",
-        phone: "123-456-7890",
-        notes: null,
-        tags: null,
-        status: "lead",
-        leadSource: null,
-        leadScore: 0,
-        instagramHandle: null,
-        anniversaryDate: null,
-        preferredCommunication: "email",
-        timezone: "America/New_York",
-        lastContact: null,
-        nextFollowUp: null,
-        lifetimeValue: "0.00",
-        referralSource: null,
-        customFields: {},
-        createdAt: new Date(),
-      },
-      service: {
+      service: buildService({
         id: 1,
         name: "Portrait Session",
         description: "Individual portrait photography",
@@ -348,10 +346,8 @@ describe("API Endpoints Comprehensive Tests", () => {
         duration: 240,
         category: "portrait",
         active: true,
-        addOns: null,
-        images: null,
-      },
-    };
+      }),
+    });
 
     it("GET /api/bookings - should get all bookings", async () => {
       vi.mocked(storage.getBookings).mockResolvedValue([mockBooking]);
@@ -374,28 +370,13 @@ describe("API Endpoints Comprehensive Tests", () => {
         clientPhone: "555-0123",
       };
 
-      const mockClient = {
+      const mockClient = buildClient({
         id: 2,
         name: "New Client",
         email: "new@example.com",
         phone: null,
-        notes: null,
-        tags: null,
-        status: "lead",
-        leadSource: null,
-        leadScore: 0,
-        instagramHandle: null,
-        anniversaryDate: null,
-        preferredCommunication: "email",
-        timezone: "America/New_York",
-        lastContact: null,
-        nextFollowUp: null,
-        lifetimeValue: "0.00",
-        referralSource: null,
-        customFields: {},
-        createdAt: new Date(),
-      };
-      const mockService = {
+      });
+      const mockService = buildService({
         id: 1,
         name: "Portrait Session",
         description: "Individual portrait photography",
@@ -403,9 +384,7 @@ describe("API Endpoints Comprehensive Tests", () => {
         duration: 120,
         category: "portrait",
         active: true,
-        addOns: null,
-        images: null,
-      };
+      });
 
       vi.mocked(storage.getClientByEmail).mockResolvedValue(undefined);
       vi.mocked(storage.createClient).mockResolvedValue(mockClient);
@@ -1132,27 +1111,7 @@ describe("API Endpoints Comprehensive Tests", () => {
   });
 
   describe("Client Portal Endpoints", () => {
-    const mockClient = {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "123-456-7890",
-      notes: null,
-      tags: null,
-      status: "lead",
-      leadSource: null,
-      leadScore: 0,
-      instagramHandle: null,
-      anniversaryDate: null,
-      preferredCommunication: "email",
-      timezone: "America/New_York",
-      lastContact: null,
-      nextFollowUp: null,
-      lifetimeValue: "0.00",
-      referralSource: null,
-      customFields: {},
-      createdAt: new Date(),
-    };
+    const mockClient = buildClient({ id: 1, name: "John Doe", email: "john@example.com", phone: "123-456-7890" });
 
     it("POST /api/client-portal/login - should authenticate client", async () => {
       vi.mocked(storage.getClientByEmail).mockResolvedValue(mockClient);
