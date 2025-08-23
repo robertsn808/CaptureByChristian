@@ -566,22 +566,39 @@ describe("Database Layer Tests", () => {
 
     it("should get booking stats", async () => {
       const mockDb = await import("./db");
-      vi.mocked(mockDb.db.select).mockReturnValue({
+      const mockSelect = vi.mocked(mockDb.db.select);
+
+      // 1) totalBookings: select().from(bookings) -> resolves to array
+      mockSelect.mockReturnValueOnce({
+        from: vi.fn().mockResolvedValue([{ count: 10 }]),
+      } as any);
+
+      // 2) pendingBookings: select().from(bookings).where(...) -> resolves array
+      mockSelect.mockReturnValueOnce({
         from: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue([{ count: 10 }]),
+          where: vi.fn().mockResolvedValue([{ count: 4 }]),
         }),
-        fields: undefined,
-        session: undefined,
-        dialect: undefined,
-        withList: undefined,
-        distinct: undefined,
-      });
+      } as any);
+
+      // 3) confirmedBookings: select().from(bookings).where(...) -> resolves array
+      mockSelect.mockReturnValueOnce({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue([{ count: 6 }]),
+        }),
+      } as any);
+
+      // 4) getMonthlyRevenue path: select({ total }).from(bookings).where(...) -> resolves array
+      mockSelect.mockReturnValueOnce({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue([{ total: 2500 }]),
+        }),
+      } as any);
 
       const result = await storage.getBookingStats();
-      expect(result).toHaveProperty("totalBookings");
-      expect(result).toHaveProperty("pendingBookings");
-      expect(result).toHaveProperty("confirmedBookings");
-      expect(result).toHaveProperty("monthlyRevenue");
+      expect(result).toHaveProperty("totalBookings", 10);
+      expect(result).toHaveProperty("pendingBookings", 4);
+      expect(result).toHaveProperty("confirmedBookings", 6);
+      expect(result).toHaveProperty("monthlyRevenue", 2500);
     });
 
     it("should get business KPIs", async () => {
@@ -606,23 +623,37 @@ describe("Database Layer Tests", () => {
 
     it("should get client metrics", async () => {
       const mockDb = await import("./db");
-      vi.mocked(mockDb.db.select).mockReturnValue({
+      const mockSelect = vi.mocked(mockDb.db.select);
+
+      // 1) allClients: select().from(clients) -> resolves to array of clients
+      const now = new Date();
+      mockSelect.mockReturnValueOnce({
+        from: vi.fn().mockResolvedValue([
+          { id: 1, name: "A", email: "a@example.com", createdAt: now } as any,
+          { id: 2, name: "B", email: "b@example.com", createdAt: now } as any,
+        ]),
+      } as any);
+
+      // 2) clientsWithMultipleBookings: select({clientId,count}).from(bookings).groupBy(...).having(...) -> resolves array
+      mockSelect.mockReturnValueOnce({
         from: vi.fn().mockReturnValue({
           groupBy: vi.fn().mockReturnValue({
             having: vi.fn().mockResolvedValue([{ clientId: 1, count: 3 }]),
           }),
         }),
-        fields: undefined,
-        session: undefined,
-        dialect: undefined,
-        withList: undefined,
-        distinct: undefined,
-      });
+      } as any);
+
+      // 3) getMonthlyRevenue path: select({ total }).from(bookings).where(...) -> resolves array
+      mockSelect.mockReturnValueOnce({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue([{ total: 1000 }]),
+        }),
+      } as any);
 
       const result = await storage.getClientMetrics();
-      expect(result).toHaveProperty("totalClients");
+      expect(result).toHaveProperty("totalClients", 2);
       expect(result).toHaveProperty("newThisMonth");
-      expect(result).toHaveProperty("repeatClients");
+      expect(result).toHaveProperty("repeatClients", 1);
       expect(result).toHaveProperty("avgLifetimeValue");
     });
   });
