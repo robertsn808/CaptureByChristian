@@ -2,10 +2,8 @@ services:
   # Main Application Service
   - type: web
     name: capturedbychristian-app
-    runtime: node
-    buildCommand: npm ci && npm run build
-    startCommand: npm run start:production
-    nodeVersion: "20"
+    env: docker
+    dockerfilePath: ./Dockerfile.render
     envVars:
       - key: NODE_ENV
         value: production
@@ -23,7 +21,7 @@ services:
         fromService:
           type: web
           name: capturedbychristian-app
-          property: hostHeader
+          property: host
       - key: OPENAI_API_KEY
         sync: false
       - key: TWILIO_ACCOUNT_SID
@@ -32,7 +30,7 @@ services:
         sync: false
       - key: TWILIO_PHONE_NUMBER
         sync: false
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     buildFilter:
       paths:
         - package*.json
@@ -61,7 +59,6 @@ databases:
     databaseName: capturedcollective
     user: postgres
 
-# Previews for PRs  
+# Previews for PRs
 previews:
   generation: automatic
-  expiration: 7d
