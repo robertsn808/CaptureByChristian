@@ -137,6 +137,146 @@ export class DatabaseInitializer {
   }
 
   /**
+   * Check if database has initial data and seed if needed
+   */
+  async seedIfEmpty(): Promise<boolean> {
+    try {
+      console.log("🔍 Checking if database needs seeding...");
+      
+      // Check if we have any services
+      const servicesResult = await this.pool.query("SELECT COUNT(*) FROM services");
+      const servicesCount = parseInt(servicesResult.rows[0].count);
+      
+      // Check if we have any gallery images
+      const imagesResult = await this.pool.query("SELECT COUNT(*) FROM gallery_images");
+      const imagesCount = parseInt(imagesResult.rows[0].count);
+      
+      if (servicesCount === 0 || imagesCount === 0) {
+        console.log("🌱 Database is empty, running seed script...");
+        
+        // Import and run seed logic inline to avoid circular dependencies
+        const bcrypt = await import("bcryptjs");
+        const { db } = await import("./db.ts");
+        const { services, galleryImages, users } = await import("../shared/schema.ts");
+
+        // Create admin user
+        const adminPassword = await bcrypt.hash("admin123", 10);
+        
+        await db.insert(users).values([
+          {
+            username: "admin",
+            email: "admin@capturedcollective.com",
+            password: adminPassword,
+            role: "admin"
+          }
+        ]).onConflictDoNothing();
+
+        // Create photography services
+        await db.insert(services).values([
+          {
+            name: "Wedding Photography",
+            description: "Complete wedding day coverage with professional editing and online gallery",
+            price: "2500.00",
+            duration: 480,
+            category: "wedding",
+            active: true
+          },
+          {
+            name: "Portrait Session",
+            description: "Professional portrait photography for individuals and families",
+            price: "350.00", 
+            duration: 120,
+            category: "portrait",
+            active: true
+          },
+          {
+            name: "Aerial Drone Photography",
+            description: "FAA-certified drone photography for unique aerial perspectives",
+            price: "500.00",
+            duration: 90,
+            category: "aerial",
+            active: true
+          },
+          {
+            name: "Event Photography",
+            description: "Professional coverage for corporate events, parties, and celebrations",
+            price: "800.00",
+            duration: 240,
+            category: "event", 
+            active: true
+          },
+          {
+            name: "Real Estate Photography",
+            description: "High-quality interior and exterior photography for property listings",
+            price: "300.00",
+            duration: 60,
+            category: "real_estate",
+            active: true
+          }
+        ]).onConflictDoNothing();
+
+        // Create sample gallery images
+        await db.insert(galleryImages).values([
+          {
+            filename: "wedding-beach-sunset.jpg",
+            originalName: "Beach Wedding Sunset",
+            url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
+            category: "wedding",
+            featured: true,
+            size: 1024000,
+            mimeType: "image/jpeg"
+          },
+          {
+            filename: "aerial-coastline.jpg", 
+            originalName: "Dramatic Coastline Aerial",
+            url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
+            category: "aerial",
+            featured: true,
+            size: 1152000,
+            mimeType: "image/jpeg"
+          },
+          {
+            filename: "family-portrait.jpg",
+            originalName: "Family Beach Portrait", 
+            url: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
+            category: "portrait",
+            featured: true,
+            size: 896000,
+            mimeType: "image/jpeg"
+          },
+          {
+            filename: "luxury-home-exterior.jpg",
+            originalName: "Modern Luxury Home",
+            url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
+            category: "real_estate",
+            featured: true,
+            size: 1280000,
+            mimeType: "image/jpeg"
+          },
+          {
+            filename: "corporate-event.jpg",
+            originalName: "Corporate Gala Event",
+            url: "https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800", 
+            category: "event",
+            featured: true,
+            size: 1056000,
+            mimeType: "image/jpeg"
+          }
+        ]).onConflictDoNothing();
+        
+        console.log("✅ Database seeded successfully");
+      } else {
+        console.log(`ℹ️ Database already has data (${servicesCount} services, ${imagesCount} images)`);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("❌ Database seeding failed:", error);
+      return false;
+    }
+  }
+
+  /**
    * Check if required tables exist
    */
   async verifySchema(): Promise<boolean> {
@@ -220,6 +360,12 @@ export class DatabaseInitializer {
         console.log(
           "⚠️ Schema verification failed, but continuing (tables may be created by migrations)",
         );
+      }
+
+      // Step 5: Seed database if empty
+      const seedingSuccess = await this.seedIfEmpty();
+      if (!seedingSuccess) {
+        console.log("⚠️ Database seeding failed, but continuing");
       }
 
       this.isInitialized = true;

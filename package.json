@@ -24,6 +24,7 @@
     "db:migrate": "tsx server/database-init.ts",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
+    "db:seed": "tsx seed-database.ts",
     "comment_testing": "Testing and quality assurance",
     "test": "vitest",
     "test:run": "vitest run",

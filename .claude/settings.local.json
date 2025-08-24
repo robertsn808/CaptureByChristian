@@ -81,7 +81,8 @@
       "WebFetch(domain:github.com)",
       "Bash(gh pr:*)",
       "mcp__render__create_postgres",
-      "WebFetch(domain:docs.render.com)"
+      "WebFetch(domain:docs.render.com)",
+      "WebFetch(domain:capturedbychristian-app-yvbr.onrender.com)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
