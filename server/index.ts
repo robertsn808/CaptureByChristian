@@ -31,18 +31,27 @@ if (isProd) {
     );
     process.exit(1);
   }
+  if (!process.env.FRONTEND_URL && !process.env.RENDER_EXTERNAL_URL) {
+    console.error(
+      "❌ FRONTEND_URL or RENDER_EXTERNAL_URL must be set in production for CORS security",
+    );
+    process.exit(1);
+  }
 }
 
 const app = express();
 const PORT = Number(process.env.PORT) || 7000;
 
-// CORS configuration
+// In production behind a proxy (Render), trust the proxy so secure cookies work
+if (isProd) {
+  app.set("trust proxy", 1);
+}
+
+// CORS configuration - secure production origins
 const allowedOrigins = isProd
   ? process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL.split(",")
-    : process.env.RENDER_EXTERNAL_URL
-      ? [`https://${process.env.RENDER_EXTERNAL_URL}`]
-      : true
+    ? process.env.FRONTEND_URL.split(",").map(url => url.trim())
+    : [`https://${process.env.RENDER_EXTERNAL_URL}`]
   : ["http://localhost:5173", "http://127.0.0.1:5173"];
 
 app.use(
@@ -111,7 +120,6 @@ registerRoutes(app)
     if (isProd) {
       // Serve built client from dist/public (aligned with build pipeline)
       const clientDistPath = path.join(__dirname, "../public");
-      app.set("trust proxy", 1); // trust first proxy
       console.log("📦 Client dist path:", clientDistPath);
       app.use(express.static(clientDistPath));
 
@@ -140,9 +148,15 @@ app.use(
     err: unknown,
     req: express.Request,
     res: express.Response,
-    _next: express.NextFunction,
+    next: express.NextFunction,
   ) => {
     console.error("Error:", err);
+    
+    // If response headers have already been sent, delegate to Express default error handler
+    if (res.headersSent) {
+      return next(err);
+    }
+    
     res.status(500).json({
       error: isProd ? "Internal server error" : (err as Error).message,
     });
