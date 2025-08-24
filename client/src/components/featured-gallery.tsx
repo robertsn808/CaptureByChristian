@@ -14,7 +14,6 @@ export function FeaturedGallery() {
     title: string;
     category: string;
   } | null>(null);
-  const [imagesLoaded, setImagesLoaded] = useState(0);
 
   const { data: featuredImages, isLoading } = useQuery({
     queryKey: ["/api/gallery", { featured: true }],
@@ -31,10 +30,6 @@ export function FeaturedGallery() {
       category: image.category,
     });
     setLightboxOpen(true);
-  };
-
-  const handleImageLoad = () => {
-    setImagesLoaded(prev => prev + 1);
   };
 
   if (isLoading) {
@@ -92,7 +87,6 @@ export function FeaturedGallery() {
                       }
                       className="w-full h-auto object-cover transition-all duration-700 group-hover:scale-110"
                       loading="lazy"
-                      onLoad={handleImageLoad}
                     />
                     
                     {/* Floating elements */}
