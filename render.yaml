@@ -54,7 +54,7 @@ services:
 databases:
   # PostgreSQL Database
   - name: capturedbychristian-db
-    plan: free
+    plan: micro
     region: oregon
     databaseName: capturedcollective
     user: captureduser
