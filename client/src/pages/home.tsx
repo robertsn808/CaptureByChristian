@@ -44,18 +44,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* DEBUG: Test if React is rendering - v2.0.0 */}
+      {/* ENHANCED STYLING TEST - v2.0.0 */}
       <div style={{
         position: 'fixed',
         top: 0,
-        left: 0,
-        background: 'red',
+        right: 0,
+        background: 'linear-gradient(45deg, #bd6628, #008a8a)',
         color: 'white',
-        padding: '10px',
+        padding: '15px',
         zIndex: 9999,
-        fontSize: '14px'
+        fontSize: '16px',
+        borderRadius: '0 0 0 15px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        backdropFilter: 'blur(10px)'
       }}>
-        ✅ REACT IS WORKING v2.0.0 - {new Date().toLocaleTimeString()}
+        🎨 Enhanced v2.0.0 Active
       </div>
       
       <Navigation />

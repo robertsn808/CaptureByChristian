@@ -51,8 +51,12 @@ export function FeaturedGallery() {
   }
 
   return (
-    <section id="portfolio" className="section-spacing bg-gradient-to-b from-cream via-white to-cream dark:from-background dark:via-muted dark:to-background">
+    <section id="portfolio" className="section-spacing bg-gradient-to-b from-cream via-white to-cream dark:from-background dark:via-muted dark:to-background" style={{border: '5px solid red', background: 'linear-gradient(45deg, #fafaf9, #bd6628, #008a8a)'}}>
       <div className="container mx-auto px-4">
+        {/* DEBUG: Testing Enhanced Gallery v2.0.0 */}
+        <div style={{background: 'yellow', padding: '20px', margin: '20px 0', textAlign: 'center', fontSize: '18px', fontWeight: 'bold', color: 'black'}}>
+          🎨 ENHANCED GALLERY v2.0.0 - {featuredImages ? `${featuredImages.length} images loaded` : 'Loading...'}
+        </div>
         {/* Header */}
         <div className="text-center mb-20 animate-fade-in">
           <div className="inline-block">

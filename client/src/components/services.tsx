@@ -96,8 +96,13 @@ export function Services() {
     <section
       id="services"
       className="section-spacing bg-gradient-to-b from-white via-cream to-sandstone/20 dark:from-background dark:via-muted dark:to-background"
+      style={{border: '5px solid blue', background: 'linear-gradient(135deg, #008a8a, #bd6628)'}}
     >
       <div className="container mx-auto px-4">
+        {/* DEBUG: Testing Enhanced Services v2.0.0 */}
+        <div style={{background: 'orange', padding: '20px', margin: '20px 0', textAlign: 'center', fontSize: '18px', fontWeight: 'bold', color: 'white'}}>
+          🛠️ ENHANCED SERVICES v2.0.0 - {services ? `${services.length} services loaded` : 'Loading...'}
+        </div>
         <div className="text-center mb-20 animate-fade-in">
           <div className="inline-block">
             <h2 className="font-playfair text-5xl lg:text-6xl font-bold text-charcoal dark:text-foreground mb-6 gradient-text">
