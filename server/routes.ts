@@ -11,7 +11,11 @@ import type {
 import {
   validateParams,
   validateBody,
+  validateQuery,
   idParamSchema,
+  dateRangeQuerySchema,
+  bookingIdParamSchema,
+  sessionIdParamSchema,
 } from "./middleware/validation.ts";
 import { createSecureUpload } from "./middleware/fileValidation.ts";
 
@@ -309,17 +313,15 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Calendar availability route
-  app.get("/api/availability", async (req, res) => {
-    try {
-      const { start, end } = req.query;
-      if (!start || !end) {
-        return res
-          .status(400)
-          .json({ error: "Start and end dates are required" });
-      }
+  app.get(
+    "/api/availability",
+    validateQuery(dateRangeQuerySchema),
+    async (req, res) => {
+      try {
+        const { start, end } = req.query as { start: string; end: string };
 
-      const startDate = new Date(start as string);
-      const endDate = new Date(end as string);
+        const startDate = new Date(start);
+        const endDate = new Date(end);
 
       const bookings = await storage.getBookingsByDateRange(startDate, endDate);
 
@@ -340,11 +342,14 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Contract routes
-  app.get("/api/contracts/:bookingId", async (req, res) => {
-    try {
-      const contract = await storage.getContract(
-        parseInt(req.params.bookingId),
-      );
+  app.get(
+    "/api/contracts/:bookingId", 
+    validateParams(bookingIdParamSchema),
+    async (req, res) => {
+      try {
+        const contract = await storage.getContract(
+          req.params.bookingId as unknown as number,
+        );
       if (!contract) {
         return res.status(404).json({ error: "Contract not found" });
       }
@@ -668,9 +673,12 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
     }
   });
 
-  app.get("/api/ai-chat/:sessionId", async (req, res) => {
-    try {
-      const chat = await storage.getAiChat(req.params.sessionId);
+  app.get(
+    "/api/ai-chat/:sessionId",
+    validateParams(sessionIdParamSchema),
+    async (req, res) => {
+      try {
+        const chat = await storage.getAiChat(req.params.sessionId);
       if (!chat) {
         return res.status(404).json({ error: "Chat session not found" });
       }

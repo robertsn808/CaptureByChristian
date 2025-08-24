@@ -66,3 +66,37 @@ export const paginationQuerySchema = z
   .refine((data) => data.limit >= 1 && data.limit <= 100, {
     message: "Limit must be between 1 and 100",
   });
+
+// Date range validation schema for availability endpoint
+export const dateRangeQuerySchema = z
+  .object({
+    start: z
+      .string()
+      .min(1, "Start date is required")
+      .refine((val) => !isNaN(Date.parse(val)), "Start date must be a valid date"),
+    end: z
+      .string()
+      .min(1, "End date is required")
+      .refine((val) => !isNaN(Date.parse(val)), "End date must be a valid date"),
+  })
+  .refine((data) => {
+    const startDate = new Date(data.start);
+    const endDate = new Date(data.end);
+    return startDate <= endDate;
+  }, "Start date must be before or equal to end date");
+
+// Booking ID parameter schema  
+export const bookingIdParamSchema = z.object({
+  bookingId: z
+    .string()
+    .regex(/^\d+$/, "Booking ID must be a positive integer")
+    .transform(Number),
+});
+
+// Session ID parameter schema
+export const sessionIdParamSchema = z.object({
+  sessionId: z
+    .string()
+    .min(1, "Session ID is required")
+    .regex(/^[a-zA-Z0-9-_]+$/, "Session ID must contain only alphanumeric characters, hyphens, and underscores"),
+});
