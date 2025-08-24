@@ -14,10 +14,14 @@ export class DatabaseInitializer {
   private isInitialized = false;
 
   constructor(connectionString: string) {
+    const isProd = String(process.env.NODE_ENV || "").toLowerCase() === "production";
+    const ssl = isProd ? { rejectUnauthorized: false } : undefined;
+
     this.pool = new Pool({
       connectionString,
       max: 5, // Smaller pool for initialization
       connectionTimeoutMillis: 10000,
+      ssl,
     });
   }
 
@@ -44,10 +48,13 @@ export class DatabaseInitializer {
         `/${targetDbName}`,
         "/postgres",
       );
+      const isProd = String(process.env.NODE_ENV || "").toLowerCase() === "production";
+      const ssl = isProd ? { rejectUnauthorized: false } : undefined;
       const adminPool = new Pool({
         connectionString: adminConnectionString,
         max: 1,
         connectionTimeoutMillis: 10000,
+        ssl,
       });
 
       try {
