@@ -66,11 +66,11 @@ export function FeaturedGallery() {
         {/* Featured Images Grid */}
         {featuredImages && featuredImages.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mb-16">
               {featuredImages.map((image: any, index: number) => (
                 <div
                   key={image.id || index}
-                  className="group relative aspect-square overflow-hidden rounded-2xl bg-muted cursor-pointer transform hover:scale-105 transition-all duration-500 hover:shadow-2xl"
+                  className="group relative break-inside-avoid overflow-hidden rounded-2xl bg-muted cursor-pointer transform hover:scale-105 transition-all duration-500 hover:shadow-2xl"
                   onClick={() => openLightbox(image)}
                 >
                   <img
@@ -78,7 +78,7 @@ export function FeaturedGallery() {
                     alt={
                       image.originalName || image.filename || "Featured image"
                     }
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700"
                     loading="lazy"
                   />
 

@@ -151,9 +151,9 @@ export function GalleryViewer({ galleryId, clientId }: GalleryViewerProps) {
       <div className="space-y-6">
         <div className="animate-pulse">
           <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="columns-1 md:columns-3 lg:columns-4 gap-4 space-y-4">
             {[...Array(12)].map((_, i) => (
-              <div key={i} className="aspect-square bg-muted rounded"></div>
+              <div key={i} className={`bg-muted rounded break-inside-avoid mb-4 ${i % 2 === 0 ? 'h-48' : 'h-64'}`}></div>
             ))}
           </div>
         </div>
@@ -233,14 +233,14 @@ export function GalleryViewer({ galleryId, clientId }: GalleryViewerProps) {
       )}
 
       {/* Photo Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="columns-1 md:columns-3 lg:columns-4 gap-4 space-y-4">
         {gallery.images?.map((image: any, index: number) => (
-          <Card key={image.id} className="overflow-hidden group relative">
-            <div className="aspect-square relative">
+          <Card key={image.id} className="overflow-hidden group relative break-inside-avoid mb-4">
+            <div className="relative">
               <img
                 src={image.thumbnailUrl || image.url}
                 alt={`Photo ${index + 1}`}
-                className="w-full h-full object-cover cursor-pointer transition-transform group-hover:scale-105"
+                className="w-full h-auto object-cover cursor-pointer transition-transform group-hover:scale-105"
                 onClick={() => openLightbox(image, index)}
               />
 

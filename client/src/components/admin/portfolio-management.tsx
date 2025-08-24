@@ -214,9 +214,9 @@ export function PortfolioManagement() {
                 <div key={i} className="h-24 bg-muted rounded"></div>
               ))}
             </div>
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="columns-1 md:columns-3 lg:columns-4 gap-4 space-y-4">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="aspect-square bg-muted rounded"></div>
+                <div key={i} className={`bg-muted rounded break-inside-avoid mb-4 ${i % 3 === 0 ? 'h-48' : i % 3 === 1 ? 'h-64' : 'h-56'}`}></div>
               ))}
             </div>
           </div>
@@ -399,18 +399,18 @@ export function PortfolioManagement() {
           </div>
 
           {/* Image Grid */}
-          <div className="grid md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="columns-1 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
             {filteredImages.map((image: any) => (
               <Dialog key={image.id}>
                 <DialogTrigger asChild>
                   <div
-                    className="group relative aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200"
+                    className="group relative break-inside-avoid bg-muted rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 mb-4"
                     onClick={() => setSelectedImage(image)}
                   >
                     <img
                       src={image.thumbnailUrl}
                       alt={image.originalName}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-200"
                     />
 
                     {/* Overlay */}
