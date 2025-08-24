@@ -1,3 +1,4 @@
+// Enhanced Featured Gallery v2.0.0 - Cinematic Design
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
