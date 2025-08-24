@@ -20,6 +20,11 @@ services:
           type: web
           name: capturedbychristian-app
           property: host
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: capturedbychristian-app
+          property: host
       - key: OPENAI_API_KEY
         sync: false
       - key: TWILIO_ACCOUNT_SID
