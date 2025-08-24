@@ -49,6 +49,7 @@ services:
     plan: starter
     region: oregon
     maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
 databases:
   # PostgreSQL Database
@@ -56,7 +57,7 @@ databases:
     plan: starter
     region: oregon
     databaseName: capturedcollective
-    user: postgres
+    user: captureduser
 
 # Previews for PRs
 previews:
