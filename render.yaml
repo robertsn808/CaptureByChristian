@@ -43,7 +43,6 @@ services:
         - tsconfig.build.json
         - drizzle.config.ts
     autoDeploy: true
-
   # Redis for caching (optional)
   - type: redis
     name: capturedbychristian-redis

@@ -78,7 +78,10 @@
       "Bash(git reset:*)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebSearch",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(gh pr:*)",
+      "mcp__render__create_postgres",
+      "WebFetch(domain:docs.render.com)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
