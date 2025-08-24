@@ -38,6 +38,32 @@ export async function registerRoutes(app: Express): Promise<void> {
       database_initialized: dbInitializer.getInitializationStatus(),
     });
   });
+  
+  // Direct database test endpoint
+  app.get("/api/debug/db-test", async (_req, res) => {
+    try {
+      const { db } = await import("./db.ts");
+      const { services, galleryImages } = await import("../shared/schema.ts");
+      
+      const servicesResult = await db.select().from(services).limit(1);
+      const imagesResult = await db.select().from(galleryImages).limit(1);
+      
+      res.json({
+        success: true,
+        direct_db_test: {
+          services_found: servicesResult.length,
+          services_sample: servicesResult[0] || null,
+          images_found: imagesResult.length, 
+          images_sample: imagesResult[0] || null,
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
 
   // Database status endpoint for debugging
   app.get("/api/admin/database-status", async (_req, res) => {
