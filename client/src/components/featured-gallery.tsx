@@ -55,7 +55,9 @@ export function FeaturedGallery() {
       <div className="container mx-auto px-4">
         {/* DEBUG: Testing Enhanced Gallery v2.0.0 */}
         <div style={{background: 'yellow', padding: '20px', margin: '20px 0', textAlign: 'center', fontSize: '18px', fontWeight: 'bold', color: 'black'}}>
-          🎨 ENHANCED GALLERY v2.0.0 - {featuredImages ? `${featuredImages.length} images loaded` : 'Loading...'}
+          🎨 ENHANCED GALLERY v2.0.0 - {featuredImages ? `${featuredImages.length} images loaded` : `Loading... isLoading: ${isLoading}`}
+          <br />
+          API Status: {featuredImages === undefined ? 'Undefined' : featuredImages === null ? 'Null' : `Array with ${featuredImages?.length || 0} items`}
         </div>
         {/* Header */}
         <div className="text-center mb-20 animate-fade-in">
@@ -71,11 +73,11 @@ export function FeaturedGallery() {
           </p>
         </div>
 
-        {/* Featured Images Grid */}
-        {featuredImages && featuredImages.length > 0 ? (
+        {/* Featured Images Grid - FORCE SHOW FOR DEBUG */}
+        {true ? (
           <>
             <div className="gallery-masonry mb-20">
-              {featuredImages.map((image: any, index: number) => (
+              {featuredImages && featuredImages.length > 0 ? featuredImages.map((image: any, index: number) => (
                 <div
                   key={image.id || index}
                   className={`group relative break-inside-avoid mb-6 overflow-hidden rounded-2xl bg-muted/50 cursor-pointer glass-morphism hover-lift animate-fade-in`}
@@ -129,7 +131,11 @@ export function FeaturedGallery() {
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div style={{background: 'red', color: 'white', padding: '50px', textAlign: 'center', fontSize: '24px'}}>
+                  NO IMAGES LOADED! API returned: {JSON.stringify(featuredImages)}
+                </div>
+              )}
             </div>
 
             {/* View Full Portfolio CTA */}
