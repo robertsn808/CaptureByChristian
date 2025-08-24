@@ -54,11 +54,9 @@ services:
 databases:
   # PostgreSQL Database
   - name: capturedbychristian-db
-    plan: starter
+    plan: free
     region: oregon
     databaseName: capturedcollective
     user: captureduser
 
-# Previews for PRs
-previews:
-  generation: automatic
+# Previews disabled (not available on Hobby)
