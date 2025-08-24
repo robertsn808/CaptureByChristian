@@ -74,75 +74,59 @@ async function seedDatabase() {
     await db.insert(galleryImages).values([
       {
         filename: "wedding-beach-sunset.jpg",
-        originalName: "Beach Wedding Sunset",
+        original_name: "Beach Wedding Sunset",
         url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "wedding",
-        featured: true,
-        size: 1024000,
-        mimeType: "image/jpeg"
+        featured: true
       },
       {
         filename: "aerial-coastline.jpg", 
-        originalName: "Dramatic Coastline Aerial",
+        original_name: "Dramatic Coastline Aerial",
         url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "aerial",
-        featured: true,
-        size: 1152000,
-        mimeType: "image/jpeg"
+        featured: true
       },
       {
         filename: "family-portrait.jpg",
-        originalName: "Family Beach Portrait", 
+        original_name: "Family Beach Portrait", 
         url: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "portrait",
-        featured: true,
-        size: 896000,
-        mimeType: "image/jpeg"
+        featured: true
       },
       {
         filename: "luxury-home-exterior.jpg",
-        originalName: "Modern Luxury Home",
+        original_name: "Modern Luxury Home",
         url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "real_estate",
-        featured: true,
-        size: 1280000,
-        mimeType: "image/jpeg"
+        featured: true
       },
       {
         filename: "corporate-event.jpg",
-        originalName: "Corporate Gala Event",
+        original_name: "Corporate Gala Event",
         url: "https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800", 
         category: "event",
-        featured: true,
-        size: 1056000,
-        mimeType: "image/jpeg"
+        featured: true
       },
       {
         filename: "engagement-session.jpg",
-        originalName: "Romantic Engagement Session",
+        original_name: "Romantic Engagement Session",
         url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "portrait", 
-        featured: false,
-        size: 942000,
-        mimeType: "image/jpeg"
+        featured: false
       },
       {
         filename: "sunset-drone-shot.jpg",
-        originalName: "Golden Hour Aerial Shot",
+        original_name: "Golden Hour Aerial Shot",
         url: "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "aerial",
-        featured: false,
-        size: 1184000,
-        mimeType: "image/jpeg" 
+        featured: false
       },
       {
         filename: "interior-design.jpg",
-        originalName: "Luxury Interior Design",
+        original_name: "Luxury Interior Design",
         url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800",
         category: "real_estate",
-        featured: false,
-        size: 1024000,
-        mimeType: "image/jpeg"
+        featured: false
       }
     ]).onConflictDoNothing();
 
