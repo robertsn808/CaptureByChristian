@@ -47,12 +47,18 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       // Test current connection
       const connectionTest = await dbInitializer.testConnection();
+      
+      // Count records in key tables
+      const servicesCount = await storage.getServices().then(services => services.length).catch(() => -1);
+      const imagesCount = await storage.getGalleryImages().then(images => images.length).catch(() => -1);
 
       res.json({
         success: true,
         database: {
           initialized: isInitialized,
           connection_healthy: connectionTest,
+          services_count: servicesCount,
+          images_count: imagesCount,
           timestamp: new Date().toISOString(),
         },
       });
