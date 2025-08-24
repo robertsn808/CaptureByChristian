@@ -44,6 +44,20 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      {/* DEBUG: Test if React is rendering - v2.0.0 */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        background: 'red',
+        color: 'white',
+        padding: '10px',
+        zIndex: 9999,
+        fontSize: '14px'
+      }}>
+        ✅ REACT IS WORKING v2.0.0 - {new Date().toLocaleTimeString()}
+      </div>
+      
       <Navigation />
 
       {/* Hero Section */}
