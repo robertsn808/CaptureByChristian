@@ -16,7 +16,8 @@ COPY package*.json ./
 COPY client/package*.json ./client/
 
 # Install dependencies (include dev deps for build)
-RUN npm ci
+# Ignore root postinstall (it installs client); install client explicitly next line
+RUN npm ci --ignore-scripts
 RUN cd client && npm ci
 
 # Copy source code
