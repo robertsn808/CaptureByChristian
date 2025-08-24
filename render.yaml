@@ -27,6 +27,7 @@ services:
         - client/**
         - migrations/**
         - shared/**
+        - attached_assets/**
     autoDeploy: true
     
   # PostgreSQL Database
