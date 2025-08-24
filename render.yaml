@@ -51,12 +51,7 @@ services:
     maxmemoryPolicy: allkeys-lru
     ipAllowList: []
 
-databases:
-  # PostgreSQL Database
-  - name: capturedbychristian-db
-    plan: micro
-    region: oregon
-    databaseName: capturedcollective
-    user: captureduser
+## Note: No databases section to avoid creating a new DB.
+## DATABASE_URL pulls from an existing Render Postgres named 'capturedbychristian-db'.
 
 # Previews disabled (not available on Hobby)
