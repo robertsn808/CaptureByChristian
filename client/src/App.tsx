@@ -11,7 +11,6 @@ import Admin from "@/pages/admin";
 import { AdminLogin } from "@/pages/admin-login";
 import Booking from "@/pages/booking";
 import { ClientPortalPage } from "@/pages/client-portal";
-import ErrorBoundary from "@/components/error-boundary";
 
 function Router() {
   return (
@@ -21,7 +20,6 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/admin-login" component={AdminLogin} />
       <Route path="/booking" component={Booking} />
-      <Route path="/book" component={Booking} />
       <Route path="/client-portal" component={ClientPortalPage} />
       <Route component={NotFound} />
     </Switch>
@@ -34,9 +32,7 @@ function App() {
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
-          <ErrorBoundary>
-            <Router />
-          </ErrorBoundary>
+          <Router />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

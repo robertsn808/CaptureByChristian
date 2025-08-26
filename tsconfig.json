@@ -34,14 +34,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "build",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "server/app.ts",
-    "server/database-init.ts",
-    "seed-database.ts",
-    "health.ts"
+    "build"
   ]
 }

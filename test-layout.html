@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Test - CaptureByChristian</title>
+    <link rel="stylesheet" href="dist/public/assets/index-D4qmcnl3.css">
+</head>
+<body>
+    <div class="container mx-auto p-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-bronze">Layout Test</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Test Card 1 -->
+            <div class="bg-white dark:bg-card rounded-lg shadow-lg p-6 admin-card">
+                <h2 class="text-2xl font-semibold mb-4 text-foreground">Card Title</h2>
+                <p class="text-muted-foreground mb-4">This is a test card to verify that Tailwind CSS is working correctly.</p>
+                <button class="btn-bronze px-4 py-2 rounded">Test Button</button>
+            </div>
+            
+            <!-- Test Card 2 -->
+            <div class="bg-cream rounded-lg shadow-lg p-6 admin-card">
+                <h2 class="text-2xl font-semibold mb-4 text-charcoal">Cream Card</h2>
+                <p class="text-muted-foreground mb-4">Testing the custom cream background color.</p>
+                <button class="bg-teal text-white px-4 py-2 rounded">Teal Button</button>
+            </div>
+            
+            <!-- Test Card 3 -->
+            <div class="bg-charcoal rounded-lg shadow-lg p-6 admin-card">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Charcoal Card</h2>
+                <p class="text-muted-foreground mb-4 text-white">Testing the custom charcoal background color.</p>
+                <button class="bg-bronze text-white px-4 py-2 rounded">Bronze Button</button>
+            </div>
+        </div>
+        
+        <!-- Test Typography -->
+        <div class="mt-12">
+            <h2 class="text-3xl font-playfair mb-4 text-foreground">Typography Test</h2>
+            <p class="text-lg text-muted-foreground mb-4">This tests the Inter and Playfair Display fonts.</p>
+            <div class="text-high-contrast">High contrast text</div>
+            <div class="text-medium-contrast">Medium contrast text</div>
+        </div>
+        
+        <!-- Test Responsive Design -->
+        <div class="mt-12">
+            <h2 class="text-3xl font-playfair mb-4 text-foreground">Responsive Test</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-primary text-primary-foreground p-4 rounded text-center">XS</div>
+                <div class="bg-secondary text-secondary-foreground p-4 rounded text-center">SM</div>
+                <div class="bg-accent text-accent-foreground p-4 rounded text-center">MD</div>
+                <div class="bg-destructive text-destructive-foreground p-4 rounded text-center">LG</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
