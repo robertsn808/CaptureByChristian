@@ -1,0 +1,31 @@
+# Render Dockerfile for CaptureByChristian
+FROM node:20-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    postgresql-client \
+    curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --ignore-scripts
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Expose the port
+EXPOSE 5000
+
+# Start the application
+CMD ["npm", "start"]
