@@ -21,15 +21,17 @@ export function AdminDashboard() {
     queryFn: fetchAnalytics,
   });
 
-  const { data: bookings, isLoading: bookingsLoading } = useQuery({
+  const { data: bookingsRaw, isLoading: bookingsLoading } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
   });
+  const bookings: any[] = Array.isArray(bookingsRaw) ? bookingsRaw : [];
 
-  const { data: clients } = useQuery({
+  const { data: clientsRaw } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: fetchClients,
   });
+  const clients: any[] = Array.isArray(clientsRaw) ? clientsRaw : [];
 
   if (analyticsLoading || bookingsLoading) {
     return (
@@ -52,15 +54,15 @@ export function AdminDashboard() {
   }
 
   // Calculate real metrics from booking data
-  const totalRevenue = bookings?.reduce((sum: number, booking: any) => 
+  const totalRevenue = bookings.reduce((sum: number, booking: any) => 
     booking.status === 'confirmed' || booking.status === 'completed' 
       ? sum + parseFloat(booking.totalPrice) 
       : sum, 0) || 0;
 
-  const totalBookings = bookings?.length || 0;
-  const pendingBookings = bookings?.filter((b: any) => b.status === 'pending').length || 0;
-  const confirmedBookings = bookings?.filter((b: any) => b.status === 'confirmed').length || 0;
-  const completedBookings = bookings?.filter((b: any) => b.status === 'completed').length || 0;
+  const totalBookings = bookings.length || 0;
+  const pendingBookings = bookings.filter((b: any) => b.status === 'pending').length || 0;
+  const confirmedBookings = bookings.filter((b: any) => b.status === 'confirmed').length || 0;
+  const completedBookings = bookings.filter((b: any) => b.status === 'completed').length || 0;
 
   // Calculate real growth rates (would need historical data for accurate calculations)
   const bookingGrowth = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
