@@ -76,10 +76,10 @@ export function ProfileManagement() {
 
   // Initialize profile data when loaded
   React.useEffect(() => {
-    if (profile && !profileData) {
+    if (profile) {
       setProfileData(profile as ProfileData);
     }
-  }, [profile, profileData]);
+  }, [profile]);
 
   const handleHeadshotUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -208,7 +208,7 @@ export function ProfileManagement() {
             <div className="flex justify-center">
               <div className="relative">
                 <img
-                  src={(profile as any)?.headshot}
+                  src={profileData?.headshot}
                   alt="Profile headshot"
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                 />
@@ -259,11 +259,11 @@ export function ProfileManagement() {
                 {isEditing ? (
                   <Input
                     id="name"
-                    value={(profile as any)?.name || ''}
+                    value={profileData?.name || ''}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                   />
                 ) : (
-                  <p className="p-2 bg-muted rounded-md">{(profile as any)?.name}</p>
+                  <p className="p-2 bg-muted rounded-md">{profileData?.name}</p>
                 )}
               </div>
 
@@ -272,11 +272,11 @@ export function ProfileManagement() {
                 {isEditing ? (
                   <Input
                     id="title"
-                    value={(profile as any)?.title || ''}
+                    value={profileData?.title || ''}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                   />
                 ) : (
-                  <p className="p-2 bg-muted rounded-md">{(profile as any)?.title}</p>
+                  <p className="p-2 bg-muted rounded-md">{profileData?.title}</p>
                 )}
               </div>
             </div>
@@ -286,14 +286,14 @@ export function ProfileManagement() {
               {isEditing ? (
                 <Textarea
                   id="bio"
-                  value={(profile as any)?.bio || ''}
+                  value={profileData?.bio || ''}
                   onChange={(e) => handleInputChange('bio', e.target.value)}
                   rows={4}
                   placeholder="Tell your story..."
                 />
               ) : (
                 <div className="p-3 bg-muted rounded-md">
-                  <p className="text-sm leading-relaxed">{(profile as any)?.bio}</p>
+                  <p className="text-sm leading-relaxed">{profileData?.bio}</p>
                 </div>
               )}
             </div>
@@ -314,13 +314,13 @@ export function ProfileManagement() {
               {isEditing ? (
                 <Input
                   id="phone"
-                  value={(profile as any)?.phone || ''}
+                  value={profileData?.phone || ''}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                 />
               ) : (
                 <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(profile as any)?.phone}</span>
+                  <span>{profileData?.phone}</span>
                 </div>
               )}
             </div>
@@ -331,13 +331,13 @@ export function ProfileManagement() {
                 <Input
                   id="email"
                   type="email"
-                  value={(profile as any)?.email || ''}
+                  value={profileData?.email || ''}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                 />
               ) : (
                 <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{(profile as any)?.email}</span>
+                  <span>{profileData?.email}</span>
                 </div>
               )}
             </div>
@@ -347,13 +347,13 @@ export function ProfileManagement() {
               {isEditing ? (
                 <Input
                   id="address"
-                  value={(profile as any)?.address || ''}
+                  value={profileData?.address || ''}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                 />
               ) : (
                 <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{(profile as any)?.address}</span>
+                  <span>{profileData?.address}</span>
                 </div>
               )}
             </div>
@@ -379,16 +379,16 @@ export function ProfileManagement() {
               <div className="space-y-2">
                 <Label htmlFor="instagram">Instagram</Label>
                 {isEditing ? (
-                  <Input
-                    id="instagram"
-                    value={(profile as any)?.socialMedia?.instagram || ''}
-                    onChange={(e) => handleInputChange('socialMedia.instagram', e.target.value)}
-                    placeholder="@username"
-                  />
+                <Input
+                  id="instagram"
+                  value={profileData?.socialMedia?.instagram || ''}
+                  onChange={(e) => handleInputChange('socialMedia.instagram', e.target.value)}
+                  placeholder="@username"
+                />
                 ) : (
                   <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                     <Instagram className="h-4 w-4 text-muted-foreground" />
-                    <span>{(profile as any)?.socialMedia?.instagram}</span>
+                    <span>{profileData?.socialMedia?.instagram}</span>
                   </div>
                 )}
               </div>
@@ -396,16 +396,16 @@ export function ProfileManagement() {
               <div className="space-y-2">
                 <Label htmlFor="facebook">Facebook</Label>
                 {isEditing ? (
-                  <Input
-                    id="facebook"
-                    value={(profile as any)?.socialMedia?.facebook || ''}
-                    onChange={(e) => handleInputChange('socialMedia.facebook', e.target.value)}
-                    placeholder="Page name"
-                  />
+                <Input
+                  id="facebook"
+                  value={profileData?.socialMedia?.facebook || ''}
+                  onChange={(e) => handleInputChange('socialMedia.facebook', e.target.value)}
+                  placeholder="Page name"
+                />
                 ) : (
                   <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                     <Facebook className="h-4 w-4 text-muted-foreground" />
-                    <span>{(profile as any)?.socialMedia?.facebook}</span>
+                    <span>{profileData?.socialMedia?.facebook}</span>
                   </div>
                 )}
               </div>
@@ -413,12 +413,12 @@ export function ProfileManagement() {
               <div className="space-y-2">
                 <Label htmlFor="youtube">YouTube</Label>
                 {isEditing ? (
-                  <Input
-                    id="youtube"
-                    value={(profile as any)?.socialMedia?.youtube || ''}
-                    onChange={(e) => handleInputChange('socialMedia.youtube', e.target.value)}
-                    placeholder="Channel name"
-                  />
+                <Input
+                  id="youtube"
+                  value={profileData?.socialMedia?.youtube || ''}
+                  onChange={(e) => handleInputChange('socialMedia.youtube', e.target.value)}
+                  placeholder="Channel name"
+                />
                 ) : (
                   <div className="flex items-center space-x-2 p-2 bg-muted-foreground rounded-md">
                     <Youtube className="h-4 w-4 text-muted-foreground" />
