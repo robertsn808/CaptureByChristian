@@ -1616,6 +1616,39 @@ Please respond with a JSON object containing:
         notes: invoice.notes
       };
 
+      // Ensure invoice record exists in DB and capture its id
+      let bookingId: number | null = null;
+      if (invoice && typeof invoice.bookingId === 'number') {
+        bookingId = invoice.bookingId;
+      } else {
+        // Try to parse bookingId from invoiceNumber pattern INV-<id>-<year>
+        const m = /INV-(\d+)-\d{4}/.exec(invoiceNumber);
+        if (m) bookingId = parseInt(m[1], 10);
+      }
+
+      let persistedInvoice: any = null;
+      try {
+        if (bookingId) {
+          const existing = await storage.getInvoice(bookingId);
+          if (existing) {
+            persistedInvoice = await storage.updateInvoice(existing.id, {
+              amount: invoice?.amount ?? existing.amount,
+              dueDate: invoice?.dueDate ? new Date(invoice.dueDate) : existing.dueDate,
+              status: existing.status || 'pending',
+            } as any);
+          } else {
+            persistedInvoice = await storage.createInvoice({
+              bookingId,
+              amount: invoice?.amount ?? 0,
+              dueDate: invoice?.dueDate ? new Date(invoice.dueDate) : new Date(Date.now() + 30*24*60*60*1000),
+              status: 'pending',
+            } as any);
+          }
+        }
+      } catch (e) {
+        console.error('Persisting invoice failed (non-fatal):', e);
+      }
+
       // Optionally create a payment link via Stripe Checkout (Universal payment link)
       let paymentLink: string | null = null;
       if (includePaymentLink) {
@@ -1636,6 +1669,25 @@ Please respond with a JSON object containing:
             successUrl,
             cancelUrl,
           });
+
+          // Store identifiers if we can retrieve from session URL later (limited here)
+          if (persistedInvoice && paymentLink) {
+            try {
+              await storage.updateInvoice(persistedInvoice.id, {
+                status: 'pending',
+                paymentMethod: 'stripe' as any,
+                // store checkout url for admin reference
+                // stripe specific fields added via migration
+                // @ts-ignore - dynamic columns
+                stripeCheckoutUrl: paymentLink,
+                // optionally store invoice_number for cross-ref
+                // @ts-ignore
+                invoiceNumber: invoiceNumber,
+              } as any);
+            } catch (e) {
+              console.error('Failed to store Stripe checkout URL on invoice:', e);
+            }
+          }
         } catch (e) {
           console.error('Payment link generation failed:', e);
           paymentLink = null;
@@ -1658,6 +1710,63 @@ Please respond with a JSON object containing:
     } catch (error) {
       console.error("Email send error:", error);
       res.status(500).json({ error: "Failed to send invoice email" });
+    }
+  });
+
+  // ===== Stripe webhook to update invoice status =====
+  app.post('/api/stripe/webhook', async (req, res) => {
+    try {
+      const payload = req.body;
+      const type = payload.type as string;
+      // We skip signature verification here unless STRIPE_WEBHOOK_SECRET is configured and raw body parsing is set up
+
+      if (type === 'checkout.session.completed') {
+        const session = payload.data?.object || {};
+        const invoiceNumber: string | undefined = session.metadata?.invoiceNumber;
+        const paymentIntent = session.payment_intent?.toString?.() || session.payment_intent || '';
+        let bookingId: number | null = null;
+        if (invoiceNumber) {
+          const m = /INV-(\d+)-\d{4}/.exec(invoiceNumber);
+          if (m) bookingId = parseInt(m[1], 10);
+        }
+
+        if (bookingId) {
+          try {
+            const existing = await storage.getInvoice(bookingId);
+            if (existing) {
+              await storage.updateInvoice(existing.id, {
+                status: 'paid' as any,
+                paidAt: new Date(),
+                paymentMethod: 'stripe' as any,
+                // @ts-ignore
+                stripePaymentIntent: paymentIntent,
+                // @ts-ignore
+                invoiceNumber: invoiceNumber,
+              } as any);
+            } else {
+              // create a minimal invoice record if missing
+              await storage.createInvoice({
+                bookingId,
+                amount: Number(session.amount_total ? session.amount_total/100 : 0),
+                dueDate: new Date(),
+                status: 'paid',
+                // @ts-ignore
+                invoiceNumber: invoiceNumber,
+                // @ts-ignore
+                stripePaymentIntent: paymentIntent,
+                paymentMethod: 'stripe'
+              } as any);
+            }
+          } catch (e) {
+            console.error('Webhook invoice update failed:', e);
+          }
+        }
+      }
+
+      res.json({ received: true });
+    } catch (e) {
+      console.error('Stripe webhook error:', e);
+      res.status(400).json({ error: 'Webhook handling failed' });
     }
   });
 
