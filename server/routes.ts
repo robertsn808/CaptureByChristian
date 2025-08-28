@@ -1651,15 +1651,17 @@ Please respond with a JSON object containing:
 
       // Optionally create a payment link via Stripe Checkout (Universal payment link)
       let paymentLink: string | null = null;
+      let stripeSessionId: string | null = null;
       if (includePaymentLink) {
         try {
           const { createCheckoutSessionUrl } = await import('./stripe');
           const baseUrl = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`;
           const successUrl = `${baseUrl}/client-portal?paid=${encodeURIComponent(invoiceNumber)}`;
           const cancelUrl = `${baseUrl}/client-portal?cancelled=${encodeURIComponent(invoiceNumber)}`;
-          paymentLink = await createCheckoutSessionUrl({
+          const sessionRes = await createCheckoutSessionUrl({
             customerEmail: invoice.clientEmail,
             invoiceNumber,
+            bookingId: bookingId || undefined,
             items: Array.isArray(invoice.items) ? invoice.items.map((it: any) => ({
               description: it.description,
               quantity: Number(it.quantity) || 1,
@@ -1669,9 +1671,11 @@ Please respond with a JSON object containing:
             successUrl,
             cancelUrl,
           });
+          paymentLink = sessionRes.url;
+          stripeSessionId = sessionRes.id;
 
           // Store identifiers if we can retrieve from session URL later (limited here)
-          if (persistedInvoice && paymentLink) {
+          if (persistedInvoice && (paymentLink || stripeSessionId)) {
             try {
               await storage.updateInvoice(persistedInvoice.id, {
                 status: 'pending',
@@ -1679,7 +1683,9 @@ Please respond with a JSON object containing:
                 // store checkout url for admin reference
                 // stripe specific fields added via migration
                 // @ts-ignore - dynamic columns
-                stripeCheckoutUrl: paymentLink,
+                stripeCheckoutUrl: paymentLink || undefined,
+                // @ts-ignore
+                stripeSessionId: stripeSessionId || undefined,
                 // optionally store invoice_number for cross-ref
                 // @ts-ignore
                 invoiceNumber: invoiceNumber,
@@ -1723,9 +1729,12 @@ Please respond with a JSON object containing:
       if (type === 'checkout.session.completed') {
         const session = payload.data?.object || {};
         const invoiceNumber: string | undefined = session.metadata?.invoiceNumber;
+        const metaBookingId: string | undefined = session.metadata?.bookingId;
         const paymentIntent = session.payment_intent?.toString?.() || session.payment_intent || '';
         let bookingId: number | null = null;
-        if (invoiceNumber) {
+        if (metaBookingId && !isNaN(Number(metaBookingId))) {
+          bookingId = Number(metaBookingId);
+        } else if (invoiceNumber) {
           const m = /INV-(\d+)-\d{4}/.exec(invoiceNumber);
           if (m) bookingId = parseInt(m[1], 10);
         }

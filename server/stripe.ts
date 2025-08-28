@@ -15,13 +15,14 @@ export function getStripe(): Stripe | null {
 export async function createCheckoutSessionUrl(params: {
   customerEmail?: string;
   invoiceNumber: string;
+  bookingId?: number | string;
   items: Array<{ description: string; quantity: number; rate: number; }>;
   total?: number; // optional fallback when items are not detailed
   successUrl: string;
   cancelUrl: string;
-}): Promise<string | null> {
+}): Promise<{ url: string | null; id: string | null }> {
   const stripe = getStripe();
-  if (!stripe) return null;
+  if (!stripe) return { url: null, id: null };
 
   const lineItems = (params.items && params.items.length > 0)
     ? params.items.map((it) => ({
@@ -47,9 +48,11 @@ export async function createCheckoutSessionUrl(params: {
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,
     customer_email: params.customerEmail,
-    metadata: { invoiceNumber: params.invoiceNumber },
+    metadata: { 
+      invoiceNumber: params.invoiceNumber,
+      bookingId: params.bookingId ? String(params.bookingId) : undefined,
+    },
   });
 
-  return session.url || null;
+  return { url: session.url || null, id: session.id };
 }
-

@@ -146,9 +146,12 @@ export function InvoiceGenerator() {
   };
 
   const generateInvoiceNumber = () => {
-    const year = new Date().getFullYear();
-    const random = Math.floor(Math.random() * 900) + 100;
-    return `INV-${year}-${random}`;
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const bookingIdPart = selectedBooking?.id ? String(selectedBooking.id) : 'MAN';
+    // Format: INV-YYYYMM-<bookingId|MAN>
+    return `INV-${yyyy}${mm}-${bookingIdPart}`;
   };
 
   const handleCreateInvoice = () => {
