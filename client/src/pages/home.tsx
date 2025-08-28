@@ -387,7 +387,7 @@ export default function Home() {
             <div>
               <h3 className="font-playfair text-2xl font-bold mb-4 flex items-center text-[#f5f5f5]">
                 <Camera className="h-6 w-6 mr-2 text-bronze" />
-                <Link href="/admin" className="hover:text-bronze transition-colors duration-200">
+                <Link href="/" className="hover:text-bronze transition-colors duration-200">
                   {profile?.name || "Christian Falonzo"}
                 </Link>
               </h3>
