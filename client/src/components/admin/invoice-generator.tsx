@@ -564,6 +564,15 @@ export function InvoiceGenerator() {
                   </div>
                   
                   <div className="flex space-x-1">
+                    {(invoice as any).stripeCheckoutUrl && invoice.status === 'pending' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open((invoice as any).stripeCheckoutUrl as string, '_blank')}
+                      >
+                        Pay Link
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"

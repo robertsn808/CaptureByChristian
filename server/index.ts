@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors";
-import { registerRoutes } from "./routes";
+import { registerRoutes, registerPreJsonRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./database-init";
 
@@ -15,8 +15,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Mount pre-JSON routes (e.g., Stripe webhook signature verification) before body parsers
+registerPreJsonRoutes(app);
+
+// Use larger limits to support base64 images (profile headshot uploads)
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: false, limit: '25mb' }));
 
 // Serve attached assets (videos, images, documents)
 app.use('/attached_assets', express.static('attached_assets'));

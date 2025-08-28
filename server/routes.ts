@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
@@ -1337,12 +1337,13 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
         // Calculate totals using totalPrice from booking (which includes base + add-ons)
         const totalAmount = Number(booking.totalPrice || baseServicePrice);
 
-        const invoice = {
+        const invoice: any = {
           id: `INV-${booking.id}`,
           bookingId: booking.id,
           clientName: booking.client?.name || 'Unknown Client',
           clientEmail: booking.client?.email || '',
-          invoiceNumber: `INV-${booking.id}-${new Date(booking.date).getFullYear()}`,
+          // Standardized invoice number: INV-YYYYMM-<bookingId>
+          invoiceNumber: `INV-${new Date(booking.date).getFullYear()}${String(new Date(booking.date).getMonth()+1).padStart(2,'0')}-${booking.id}`,
           amount: totalAmount,
           status: booking.status === 'confirmed' ? 'pending' : 'draft',
           dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
@@ -1352,6 +1353,21 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
           total: totalAmount,
           notes: `Photography session for ${booking.client?.name || 'client'} on ${new Date(booking.date).toLocaleDateString()}. ${booking.notes || ''}`
         };
+
+        // Overlay with stored invoice data from DB if present
+        try {
+          const dbInv = await storage.getInvoice(booking.id);
+          if (dbInv) {
+            invoice.status = dbInv.status || invoice.status;
+            // @ts-ignore
+            if ((dbInv as any).stripeCheckoutUrl) invoice.stripeCheckoutUrl = (dbInv as any).stripeCheckoutUrl;
+            // @ts-ignore
+            if ((dbInv as any).invoiceNumber) invoice.invoiceNumber = (dbInv as any).invoiceNumber;
+          }
+        } catch (e) {
+          // ignore overlay errors
+        }
+
         invoicesList.push(invoice);
       }
 
@@ -2140,4 +2156,81 @@ Please respond with a JSON object containing:
 
   const httpServer = createServer(app);
   return httpServer;
+}
+
+// Pre-JSON routes (e.g., Stripe webhook with signature verification)
+export function registerPreJsonRoutes(app: Express) {
+  app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+      const secret = process.env.STRIPE_WEBHOOK_SECRET;
+      const { getStripe } = await import('./stripe');
+      const stripe = getStripe();
+
+      let event: any;
+      if (secret && stripe) {
+        const sig = req.headers['stripe-signature'] as string;
+        try {
+          event = (stripe as any).webhooks.constructEvent(req.body, sig, secret);
+        } catch (err) {
+          console.error('Stripe signature verification failed:', err);
+          return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
+        }
+      } else {
+        // Fallback: parse JSON without verification
+        event = JSON.parse(req.body.toString('utf8'));
+      }
+
+      const type = event.type as string;
+      if (type === 'checkout.session.completed') {
+        const session = event.data?.object || {};
+        const invoiceNumber: string | undefined = session.metadata?.invoiceNumber;
+        const metaBookingId: string | undefined = session.metadata?.bookingId;
+        const paymentIntent = session.payment_intent?.toString?.() || session.payment_intent || '';
+        let bookingId: number | null = null;
+        if (metaBookingId && !isNaN(Number(metaBookingId))) {
+          bookingId = Number(metaBookingId);
+        } else if (invoiceNumber) {
+          const m = /INV-(\d+)-\d{4}/.exec(invoiceNumber);
+          if (m) bookingId = parseInt(m[1], 10);
+        }
+
+        if (bookingId) {
+          try {
+            const { storage } = await import('./storage');
+            const existing = await storage.getInvoice(bookingId);
+            if (existing) {
+              await storage.updateInvoice(existing.id, {
+                status: 'paid' as any,
+                paidAt: new Date(),
+                paymentMethod: 'stripe' as any,
+                // @ts-ignore
+                stripePaymentIntent: paymentIntent,
+                // @ts-ignore
+                invoiceNumber: invoiceNumber,
+              } as any);
+            } else {
+              await storage.createInvoice({
+                bookingId,
+                amount: Number(session.amount_total ? session.amount_total/100 : 0),
+                dueDate: new Date(),
+                status: 'paid',
+                // @ts-ignore
+                invoiceNumber: invoiceNumber,
+                paymentMethod: 'stripe' as any,
+                // @ts-ignore
+                stripePaymentIntent: paymentIntent,
+              } as any);
+            }
+          } catch (e) {
+            console.error('Webhook (pre-json) invoice update failed:', e);
+          }
+        }
+      }
+
+      res.json({ received: true, verified: !!secret });
+    } catch (e) {
+      console.error('Stripe webhook (pre-json) error:', e);
+      res.status(400).json({ error: 'Webhook handling failed' });
+    }
+  });
 }
