@@ -548,6 +548,11 @@ export function InvoiceGenerator() {
                     <div className="font-semibold">{invoice.invoiceNumber}</div>
                     <div className="text-sm text-muted-foreground">
                       {invoice.clientName} • Created {new Date(invoice.createdDate).toLocaleDateString()}
+                      {invoice.status === 'paid' && (
+                        <>
+                          {' '}• Paid {(() => { try { return new Date((invoice as any).paidAt || invoice.createdDate).toLocaleDateString(); } catch { return ''; } })()}
+                        </>
+                      )}
                     </div>
                   </div>
                   <Badge className={getStatusColor(invoice.status)}>
@@ -564,6 +569,24 @@ export function InvoiceGenerator() {
                   </div>
                   
                   <div className="flex space-x-1">
+                    {invoice.status !== 'paid' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          const bid = invoice.bookingId;
+                          if (!bid) return;
+                          const resp = await fetch(`/api/invoices/${bid}/mark-paid`, { method: 'POST' });
+                          if (resp.ok) {
+                            toast({ title: 'Marked as Paid', description: `Invoice ${invoice.invoiceNumber} marked paid.` });
+                          } else {
+                            toast({ title: 'Failed', description: 'Could not mark as paid', variant: 'destructive' });
+                          }
+                        }}
+                      >
+                        Mark Paid
+                      </Button>
+                    )}
                     {(invoice as any).stripeCheckoutUrl && invoice.status === 'pending' && (
                       <Button
                         variant="outline"

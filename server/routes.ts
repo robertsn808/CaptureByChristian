@@ -158,13 +158,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/clients", async (req, res) => {
     try {
-      const clientData = insertClientSchema.parse(req.body);
+      // Normalize incoming payload for common UI forms
+      const body = { ...req.body };
+      if (typeof body.tags === 'string') {
+        body.tags = body.tags
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean);
+      }
+      if (typeof body.leadScore === 'string') body.leadScore = parseInt(body.leadScore) || 0;
+      // Allow minimal payload
+      const clientData = insertClientSchema.partial().parse(body);
+      if (!clientData.name || !clientData.email) {
+        return res.status(400).json({ error: 'Name and email are required' });
+      }
+      // Ensure defaults for optional fields
+      clientData.status = clientData.status || 'lead';
       const client = await storage.createClient(clientData);
       res.json(client);
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ error: "Invalid client data", details: error.errors });
       } else {
+        console.error('Create client failed:', error);
         res.status(500).json({ error: "Failed to create client" });
       }
     }
@@ -1735,6 +1751,41 @@ Please respond with a JSON object containing:
     }
   });
 
+  // Mark invoice as paid manually (admin action)
+  app.post('/api/invoices/:bookingId/mark-paid', async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      if (Number.isNaN(bookingId)) {
+        return res.status(400).json({ error: 'Invalid bookingId' });
+      }
+
+      const existing = await storage.getInvoice(bookingId);
+      if (existing) {
+        await storage.updateInvoice(existing.id, {
+          status: 'paid' as any,
+          paidAt: new Date(),
+          paymentMethod: 'manual' as any,
+        } as any);
+      } else {
+        await storage.createInvoice({
+          bookingId,
+          amount: 0 as any,
+          dueDate: new Date(),
+          status: 'paid',
+        } as any);
+      }
+      try {
+        await storage.updateBooking(bookingId, { status: 'completed' } as any);
+      } catch (e) {
+        console.error('Failed to update booking on manual payment:', e);
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Manual mark-paid failed:', error);
+      res.status(500).json({ error: 'Failed to mark invoice as paid' });
+    }
+  });
+
   // Strict JSON webhook disabled; use verified pre-JSON route in registerPreJsonRoutes
 
   // Real-time analytics endpoint
@@ -2118,8 +2169,8 @@ export function registerPreJsonRoutes(app: Express) {
           return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
         }
       } else {
-        // Fallback: parse JSON without verification
-        event = JSON.parse(req.body.toString('utf8'));
+        console.error('Stripe webhook secret not configured. Set STRIPE_WEBHOOK_SECRET.');
+        return res.status(400).json({ error: 'Webhook signature not configured' });
       }
 
       const type = event.type as string;
