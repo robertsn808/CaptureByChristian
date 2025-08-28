@@ -70,10 +70,11 @@ export function InvoiceGenerator() {
   const [notes, setNotes] = useState("Payment due within 30 days of invoice date. Late payments may incur additional fees.");
   const { toast } = useToast();
 
-  const { data: bookings } = useQuery({
+  const { data: bookingsRaw } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
   });
+  const bookings: any[] = Array.isArray(bookingsRaw) ? bookingsRaw : [];
 
 
   const { data: invoiceStats = {} } = useQuery({
@@ -89,8 +90,7 @@ export function InvoiceGenerator() {
       return response.json();
     },
   });
-
-  const invoices: Invoice[] = invoicesData || [];
+  const invoices: Invoice[] = Array.isArray(invoicesData) ? invoicesData : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -240,7 +240,7 @@ export function InvoiceGenerator() {
     }
   };
 
-  const pendingBookings = bookings?.filter((booking: any) => 
+  const pendingBookings = bookings.filter((booking: any) => 
     booking.status === 'confirmed' || booking.status === 'completed'
   );
 
