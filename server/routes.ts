@@ -1616,6 +1616,32 @@ Please respond with a JSON object containing:
         notes: invoice.notes
       };
 
+      // Optionally create a payment link via Stripe Checkout (Universal payment link)
+      let paymentLink: string | null = null;
+      if (includePaymentLink) {
+        try {
+          const { createCheckoutSessionUrl } = await import('./stripe');
+          const baseUrl = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`;
+          const successUrl = `${baseUrl}/client-portal?paid=${encodeURIComponent(invoiceNumber)}`;
+          const cancelUrl = `${baseUrl}/client-portal?cancelled=${encodeURIComponent(invoiceNumber)}`;
+          paymentLink = await createCheckoutSessionUrl({
+            customerEmail: invoice.clientEmail,
+            invoiceNumber,
+            items: Array.isArray(invoice.items) ? invoice.items.map((it: any) => ({
+              description: it.description,
+              quantity: Number(it.quantity) || 1,
+              rate: Number(it.rate) || Number(it.amount) || 0,
+            })) : [],
+            total: Number(invoice.amount) || 0,
+            successUrl,
+            cancelUrl,
+          });
+        } catch (e) {
+          console.error('Payment link generation failed:', e);
+          paymentLink = null;
+        }
+      }
+
       // Generate PDF and send email (mock implementation)
       const success = await emailInvoice(emailData, "");
 
@@ -1623,7 +1649,7 @@ Please respond with a JSON object containing:
         res.json({ 
           success: true, 
           message: `Invoice ${invoiceNumber} sent successfully to ${invoice.clientEmail}`,
-          paymentLink: includePaymentLink ? `https://pay.christianpicaso.com/invoice/${invoiceNumber}` : null
+          paymentLink
         });
       } else {
         res.status(500).json({ error: "Failed to send email" });

@@ -188,10 +188,16 @@ export function InvoiceGenerator() {
       });
       
       if (response.ok) {
+        const result = await response.json();
+        const extra = result.paymentLink ? ` Payment link created.` : '';
         toast({
-          title: "Email Sent",
-          description: `Invoice ${invoice.invoiceNumber} sent to ${invoice.clientEmail}`,
+          title: "Invoice Sent",
+          description: `Invoice ${invoice.invoiceNumber} sent to ${invoice.clientEmail}.${extra}`,
         });
+        if (result.paymentLink) {
+          // Offer to open the payment link
+          window.open(result.paymentLink, '_blank');
+        }
       } else {
         throw new Error('Email send failed');
       }
