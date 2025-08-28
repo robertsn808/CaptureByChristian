@@ -26,6 +26,7 @@ import { z } from "zod";
 import { generateBookingResponse, analyzeImage } from "./openai";
 import { log } from "./vite";
 import { getDatabaseInitializer } from "./database-init";
+import { pool } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint for Docker
@@ -62,6 +63,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: "Failed to check database status",
         details: error instanceof Error ? error.message : "Unknown error"
       });
+    }
+  });
+
+  // Operational diagnostics for quick troubleshooting (no secrets leaked)
+  app.get("/api/admin/diagnostics", async (_req, res) => {
+    try {
+      const dbInitializer = getDatabaseInitializer();
+      const env = {
+        DATABASE_URL: !!process.env.DATABASE_URL,
+        OPENAI_API_KEY: !!process.env.OPENAI_API_KEY,
+        NODE_ENV: process.env.NODE_ENV || "",
+      };
+
+      // Basic DB connectivity
+      let dbHealthy = false;
+      try {
+        const result = await pool.query("SELECT 1 as ok");
+        dbHealthy = result.rows?.[0]?.ok === 1;
+      } catch {
+        dbHealthy = false;
+      }
+
+      // Check essential tables exist
+      const requiredTables = [
+        'users', 'clients', 'services', 'bookings', 
+        'contracts', 'invoices', 'gallery_images', 
+        'contact_messages', 'ai_chats'
+      ];
+      const missing: string[] = [];
+      if (dbHealthy) {
+        for (const tableName of requiredTables) {
+          try {
+            const exists = await pool.query(
+              `SELECT EXISTS (
+                 SELECT FROM information_schema.tables 
+                 WHERE table_schema = 'public' 
+                 AND table_name = $1
+               ) as e`,
+              [tableName]
+            );
+            if (!exists.rows?.[0]?.e) missing.push(tableName);
+          } catch {
+            // if one check fails, mark db unhealthy
+            dbHealthy = false;
+            break;
+          }
+        }
+      }
+
+      // Basic counts (safe, optional)
+      let counts: Record<string, number> | null = null;
+      if (dbHealthy && missing.length === 0) {
+        try {
+          const [svc, cli, bkg] = await Promise.all([
+            pool.query('SELECT COUNT(*)::int AS c FROM services'),
+            pool.query('SELECT COUNT(*)::int AS c FROM clients'),
+            pool.query('SELECT COUNT(*)::int AS c FROM bookings'),
+          ]);
+          counts = {
+            services: svc.rows[0].c,
+            clients: cli.rows[0].c,
+            bookings: bkg.rows[0].c,
+          };
+        } catch {
+          counts = null;
+        }
+      }
+
+      res.json({
+        initialized: dbInitializer.getInitializationStatus(),
+        env,
+        db: {
+          healthy: dbHealthy,
+          missingTables: missing,
+          counts,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Diagnostics failed", details: (error as Error).message });
     }
   });
 

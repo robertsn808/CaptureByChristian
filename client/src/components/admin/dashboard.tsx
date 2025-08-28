@@ -7,6 +7,15 @@ import { Calendar, DollarSign, Camera, TrendingUp, Clock, AlertCircle, Zap, Star
 import { RevenueChart } from "./revenue-chart";
 
 export function AdminDashboard() {
+  // System diagnostics to surface backend issues in UI
+  const { data: diagnostics } = useQuery({
+    queryKey: ['/api/admin/diagnostics'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/diagnostics');
+      return res.json();
+    },
+    staleTime: 1000 * 30,
+  });
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ['/api/analytics/stats'],
     queryFn: fetchAnalytics,
@@ -112,6 +121,26 @@ export function AdminDashboard() {
 
   return (
     <div className="space-y-8">
+      {/* Diagnostics banner */}
+      {diagnostics && (!diagnostics?.db?.healthy || diagnostics?.db?.missingTables?.length) && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+          <div className="font-semibold mb-1">System Issue Detected</div>
+          <div className="text-sm">
+            {diagnostics?.env?.DATABASE_URL ? null : (
+              <div>DATABASE_URL is not set.</div>
+            )}
+            {!diagnostics?.initialized && (
+              <div>Database not initialized on boot.</div>
+            )}
+            {!diagnostics?.db?.healthy && (
+              <div>Cannot connect to database.</div>
+            )}
+            {diagnostics?.db?.missingTables?.length > 0 && (
+              <div>Missing tables: {diagnostics.db.missingTables.join(', ')}</div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Enhanced Header with Gradient */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-bronze text-white p-8">
         <div className="absolute inset-0 bg-black/20"></div>
