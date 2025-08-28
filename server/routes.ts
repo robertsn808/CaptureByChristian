@@ -1735,65 +1735,7 @@ Please respond with a JSON object containing:
     }
   });
 
-  // ===== Stripe webhook to update invoice status =====
-  app.post('/api/stripe/webhook', async (req, res) => {
-    try {
-      const payload = req.body;
-      const type = payload.type as string;
-      // We skip signature verification here unless STRIPE_WEBHOOK_SECRET is configured and raw body parsing is set up
-
-      if (type === 'checkout.session.completed') {
-        const session = payload.data?.object || {};
-        const invoiceNumber: string | undefined = session.metadata?.invoiceNumber;
-        const metaBookingId: string | undefined = session.metadata?.bookingId;
-        const paymentIntent = session.payment_intent?.toString?.() || session.payment_intent || '';
-        let bookingId: number | null = null;
-        if (metaBookingId && !isNaN(Number(metaBookingId))) {
-          bookingId = Number(metaBookingId);
-        } else if (invoiceNumber) {
-          const m = /INV-(\d+)-\d{4}/.exec(invoiceNumber);
-          if (m) bookingId = parseInt(m[1], 10);
-        }
-
-        if (bookingId) {
-          try {
-            const existing = await storage.getInvoice(bookingId);
-            if (existing) {
-              await storage.updateInvoice(existing.id, {
-                status: 'paid' as any,
-                paidAt: new Date(),
-                paymentMethod: 'stripe' as any,
-                // @ts-ignore
-                stripePaymentIntent: paymentIntent,
-                // @ts-ignore
-                invoiceNumber: invoiceNumber,
-              } as any);
-            } else {
-              // create a minimal invoice record if missing
-              await storage.createInvoice({
-                bookingId,
-                amount: Number(session.amount_total ? session.amount_total/100 : 0),
-                dueDate: new Date(),
-                status: 'paid',
-                // @ts-ignore
-                invoiceNumber: invoiceNumber,
-                // @ts-ignore
-                stripePaymentIntent: paymentIntent,
-                paymentMethod: 'stripe'
-              } as any);
-            }
-          } catch (e) {
-            console.error('Webhook invoice update failed:', e);
-          }
-        }
-      }
-
-      res.json({ received: true });
-    } catch (e) {
-      console.error('Stripe webhook error:', e);
-      res.status(400).json({ error: 'Webhook handling failed' });
-    }
-  });
+  // Strict JSON webhook disabled; use verified pre-JSON route in registerPreJsonRoutes
 
   // Real-time analytics endpoint
   app.get("/api/analytics/realtime", async (_req, res) => {
@@ -2208,6 +2150,12 @@ export function registerPreJsonRoutes(app: Express) {
                 // @ts-ignore
                 invoiceNumber: invoiceNumber,
               } as any);
+              // Also mark booking as completed
+              try {
+                await storage.updateBooking(bookingId, { status: 'completed' } as any);
+              } catch (e) {
+                console.error('Failed to update booking status on payment:', e);
+              }
             } else {
               await storage.createInvoice({
                 bookingId,
@@ -2220,6 +2168,11 @@ export function registerPreJsonRoutes(app: Express) {
                 // @ts-ignore
                 stripePaymentIntent: paymentIntent,
               } as any);
+              try {
+                await storage.updateBooking(bookingId, { status: 'completed' } as any);
+              } catch (e) {
+                console.error('Failed to update booking status on payment:', e);
+              }
             }
           } catch (e) {
             console.error('Webhook (pre-json) invoice update failed:', e);
