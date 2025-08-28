@@ -16,7 +16,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --ignore-scripts
+# Ensure devDependencies (like tsx) are installed even if production env is set
+RUN npm ci --ignore-scripts --include=dev
 
 # Copy source code
 COPY . .
