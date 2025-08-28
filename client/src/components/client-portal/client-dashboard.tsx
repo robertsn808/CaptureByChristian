@@ -37,31 +37,36 @@ export function ClientDashboard({ clientData, onLogout, onViewGallery }: ClientD
   const [, setLocation] = useLocation();
 
   // Fetch client-specific data
-  const { data: clientBookings } = useQuery({
+  const { data: clientBookingsRaw } = useQuery({
     queryKey: ['/api/client-portal/bookings', clientData.id],
     queryFn: () => fetch(`/api/client-portal/bookings?clientId=${clientData.id}`).then(r => r.json()),
   });
+  const clientBookings: any[] = Array.isArray(clientBookingsRaw) ? clientBookingsRaw : [];
 
-  const { data: clientGalleries } = useQuery({
+  const { data: clientGalleriesRaw } = useQuery({
     queryKey: ['/api/client-portal/galleries', clientData.id],
     queryFn: () => fetch(`/api/client-portal/galleries?clientId=${clientData.id}`).then(r => r.json()),
   });
+  const clientGalleries: any[] = Array.isArray(clientGalleriesRaw) ? clientGalleriesRaw : [];
 
-  const { data: clientContracts } = useQuery({
+  const { data: clientContractsRaw } = useQuery({
     queryKey: ['/api/client-portal/contracts', clientData.id],
     queryFn: () => fetch(`/api/client-portal/contracts?clientId=${clientData.id}`).then(r => r.json()),
   });
+  const clientContracts: any[] = Array.isArray(clientContractsRaw) ? clientContractsRaw : [];
 
-  const { data: clientInvoices } = useQuery({
+  const { data: clientInvoicesRaw } = useQuery({
     queryKey: ['/api/client-portal/invoices', clientData.id],
     queryFn: () => fetch(`/api/client-portal/invoices?clientId=${clientData.id}`).then(r => r.json()),
   });
+  const clientInvoices: any[] = Array.isArray(clientInvoicesRaw) ? clientInvoicesRaw : [];
 
   // Fetch client messages
-  const { data: clientMessages = [] } = useQuery({
+  const { data: clientMessagesRaw } = useQuery({
     queryKey: ['/api/client-portal/messages', clientData.id],
     queryFn: () => fetch(`/api/client-portal/messages?clientId=${clientData.id}`).then(r => r.json()),
   });
+  const clientMessages: any[] = Array.isArray(clientMessagesRaw) ? clientMessagesRaw : [];
 
   // Send message mutation
   const sendMessageMutation = useMutation({

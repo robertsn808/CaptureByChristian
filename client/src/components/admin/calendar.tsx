@@ -51,20 +51,25 @@ export function AdminCalendar() {
   });
   const queryClient = useQueryClient();
 
-  const { data: bookings = [], isLoading } = useQuery({
+  const { data: bookingsRaw, isLoading } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
   });
 
-  const { data: services = [] } = useQuery({
+  // Normalize to arrays to avoid runtime `.map is not a function` errors
+  const bookings: any[] = Array.isArray(bookingsRaw) ? bookingsRaw : [];
+
+  const { data: servicesRaw } = useQuery({
     queryKey: ['/api/services'],
     queryFn: () => fetch('/api/services').then(res => res.json()),
   });
+  const services: any[] = Array.isArray(servicesRaw) ? servicesRaw : [];
 
-  const { data: clients = [] } = useQuery({
+  const { data: clientsRaw } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: () => fetch('/api/clients').then(res => res.json()),
   });
+  const clients: any[] = Array.isArray(clientsRaw) ? clientsRaw : [];
 
   const updateBookingMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: any }) => updateBooking(id, data),
