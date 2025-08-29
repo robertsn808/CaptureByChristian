@@ -1690,6 +1690,18 @@ Please respond with a JSON object containing:
           const baseUrl = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`;
           const successUrl = `${baseUrl}/client-portal?paid=${encodeURIComponent(invoiceNumber)}`;
           const cancelUrl = `${baseUrl}/client-portal?cancelled=${encodeURIComponent(invoiceNumber)}`;
+          // Enrich metadata with booking/service/client context if available
+          let serviceCategory: string | undefined;
+          let clientIdMeta: string | undefined;
+          let clientEmailMeta: string | undefined;
+          try {
+            if (bookingId) {
+              const booking = await storage.getBooking(bookingId);
+              serviceCategory = booking?.service?.category;
+              clientIdMeta = booking?.client?.id ? String(booking.client.id) : undefined;
+              clientEmailMeta = booking?.client?.email;
+            }
+          } catch {}
           const sessionRes = await createCheckoutSessionUrl({
             customerEmail: invoice.clientEmail,
             invoiceNumber,

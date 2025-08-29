@@ -51,6 +51,7 @@ export async function createCheckoutSessionUrl(params: {
     metadata: { 
       invoiceNumber: params.invoiceNumber,
       bookingId: params.bookingId ? String(params.bookingId) : undefined,
+      // Service and client enrichment may be appended at call site via future API if needed
     },
   });
 

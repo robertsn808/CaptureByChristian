@@ -18,6 +18,7 @@ import { ClientCredentials } from "@/components/admin/client-credentials";
 import { ProfileManagement } from "@/components/admin/profile-management";
 import { ClientPortal } from "@/components/admin/client-portal";
 import { ServiceManagement } from "@/components/admin/service-management";
+import { AccountingIntegrations } from "@/components/admin/accounting-integrations";
 import { Button } from "@/components/ui/button";
 // Card components removed - not used in current implementation
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -78,6 +79,7 @@ const menuSections = [
       { id: "inbox", label: "Messages", icon: Mail },
       { id: "contracts", label: "Contracts", icon: FileText },
       { id: "invoices", label: "Invoices", icon: FileText },
+      { id: "accounting", label: "Accounting", icon: Settings },
     ]
   },
   {
@@ -362,6 +364,8 @@ export default function Admin() {
         return <ClientCredentials />;
       case "profile":
         return <ProfileManagement />;
+      case "accounting":
+        return <AccountingIntegrations />;
       default:
         return <AdminDashboard />;
     }
