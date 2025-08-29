@@ -2094,8 +2094,30 @@ Please respond with a JSON object containing:
 
   app.put("/api/profile", async (req, res) => {
     try {
-      const profileData = req.body;
-      const updatedProfile = await storage.updateProfile(profileData);
+      // Whitelist fields and coerce types to avoid timestamp errors
+      const {
+        name,
+        title,
+        bio,
+        phone,
+        email,
+        address,
+        headshot,
+        socialMedia,
+        isActive,
+      } = req.body || {};
+      const cleaned: any = {
+        ...(name !== undefined ? { name } : {}),
+        ...(title !== undefined ? { title } : {}),
+        ...(bio !== undefined ? { bio } : {}),
+        ...(phone !== undefined ? { phone } : {}),
+        ...(email !== undefined ? { email } : {}),
+        ...(address !== undefined ? { address } : {}),
+        ...(headshot !== undefined ? { headshot } : {}),
+        ...(socialMedia !== undefined ? { socialMedia } : {}),
+        ...(isActive !== undefined ? { isActive: !!isActive } : {}),
+      };
+      const updatedProfile = await storage.updateProfile(cleaned);
       res.json(updatedProfile);
     } catch (error) {
       console.error("Error updating profile:", error);

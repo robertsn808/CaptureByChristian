@@ -106,6 +106,29 @@ export class DatabaseInitializer {
   }
 
   /**
+   * Ensure critical columns exist for forward compatibility
+   */
+  async ensureCompatibility(): Promise<void> {
+    try {
+      // Add missing client columns that older DBs may lack
+      await this.pool.query(`
+        ALTER TABLE IF EXISTS clients 
+          ADD COLUMN IF NOT EXISTS instagram_handle text,
+          ADD COLUMN IF NOT EXISTS anniversary_date text,
+          ADD COLUMN IF NOT EXISTS preferred_communication text DEFAULT 'email',
+          ADD COLUMN IF NOT EXISTS timezone text DEFAULT 'America/New_York',
+          ADD COLUMN IF NOT EXISTS last_contact timestamp,
+          ADD COLUMN IF NOT EXISTS next_follow_up timestamp,
+          ADD COLUMN IF NOT EXISTS lifetime_value numeric(10,2) DEFAULT '0.00',
+          ADD COLUMN IF NOT EXISTS referral_source text,
+          ADD COLUMN IF NOT EXISTS custom_fields json DEFAULT '{}'::json;
+      `);
+    } catch (e) {
+      console.error('Schema compatibility check failed:', e);
+    }
+  }
+
+  /**
    * Test database connection and basic functionality
    */
   async testConnection(): Promise<boolean> {
@@ -190,6 +213,9 @@ export class DatabaseInitializer {
         console.error('❌ Connection test failed');
         return false;
       }
+
+      // Step 3.5: Ensure forward compatibility for existing databases
+      await this.ensureCompatibility();
 
       // Step 4: Verify schema
       const schemaValid = await this.verifySchema();
