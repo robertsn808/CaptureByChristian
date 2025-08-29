@@ -92,7 +92,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.61.1",
     "react-resizable-panels": "^3.0.3",
-    "react-router-dom": "^6.15.0",
+    "react-router-dom": "^7.8.0",
     "recharts": "^3.1.0",
     "sqlite3": "^5.1.6",
     "stripe": "^18.3.0",
