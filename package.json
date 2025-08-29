@@ -87,7 +87,7 @@
     "node-cron": "^3.0.2",
     "openai": "^4.63.0",
     "pg": "^8.16.3",
-    "react": "^18.2.0",
+    "react": "^19.1.1",
     "react-day-picker": "^9.8.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.61.1",
