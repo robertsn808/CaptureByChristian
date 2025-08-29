@@ -20,6 +20,7 @@ export async function createCheckoutSessionUrl(params: {
   total?: number; // optional fallback when items are not detailed
   successUrl: string;
   cancelUrl: string;
+  metadata?: Record<string, string | undefined>;
 }): Promise<{ url: string | null; id: string | null }> {
   const stripe = getStripe();
   if (!stripe) return { url: null, id: null };
@@ -48,10 +49,10 @@ export async function createCheckoutSessionUrl(params: {
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,
     customer_email: params.customerEmail,
-    metadata: { 
+    metadata: {
       invoiceNumber: params.invoiceNumber,
       bookingId: params.bookingId ? String(params.bookingId) : undefined,
-      // Service and client enrichment may be appended at call site via future API if needed
+      ...(params.metadata || {}),
     },
   });
 

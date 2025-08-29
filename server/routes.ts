@@ -1714,6 +1714,11 @@ Please respond with a JSON object containing:
             total: Number(invoice.amount) || 0,
             successUrl,
             cancelUrl,
+            metadata: {
+              serviceCategory,
+              clientId: clientIdMeta,
+              clientEmail: clientEmailMeta,
+            }
           });
           paymentLink = sessionRes.url;
           stripeSessionId = sessionRes.id;

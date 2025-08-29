@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBookings } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +70,7 @@ export function InvoiceGenerator() {
   const [discountRate, setDiscountRate] = useState(0);
   const [notes, setNotes] = useState("Payment due within 30 days of invoice date. Late payments may incur additional fees.");
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: bookingsRaw } = useQuery({
     queryKey: ['/api/bookings'],
@@ -201,6 +203,9 @@ export function InvoiceGenerator() {
           // Offer to open the payment link
           window.open(result.paymentLink, '_blank');
         }
+        // Refresh invoice list/status
+        queryClient.invalidateQueries({ queryKey: ['/api/invoices'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/invoices/stats'] });
       } else {
         throw new Error('Email send failed');
       }
@@ -579,6 +584,8 @@ export function InvoiceGenerator() {
                           const resp = await fetch(`/api/invoices/${bid}/mark-paid`, { method: 'POST' });
                           if (resp.ok) {
                             toast({ title: 'Marked as Paid', description: `Invoice ${invoice.invoiceNumber} marked paid.` });
+                            queryClient.invalidateQueries({ queryKey: ['/api/invoices'] });
+                            queryClient.invalidateQueries({ queryKey: ['/api/invoices/stats'] });
                           } else {
                             toast({ title: 'Failed', description: 'Could not mark as paid', variant: 'destructive' });
                           }
@@ -650,6 +657,11 @@ export function InvoiceGenerator() {
                   </div>
                   <div className="text-base font-medium text-gray-800">
                     Due: {new Date(previewInvoice.dueDate).toLocaleDateString()}
+                  </div>
+                  <div className="mt-2">
+                    <span className={`inline-block text-xs px-2 py-1 rounded ${previewInvoice.status === 'paid' ? 'bg-green-100 text-green-800' : previewInvoice.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {previewInvoice.status.toUpperCase()}
+                    </span>
                   </div>
                 </div>
               </div>
