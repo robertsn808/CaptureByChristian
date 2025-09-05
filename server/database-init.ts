@@ -3,45 +3,32 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import sqlite3 from 'sqlite3';
 
 // Get the directory name for ES modules
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export class DatabaseInitializer {
-  private pool: Pool | null;
+  private pool: Pool;
   private db: any;
   private isInitialized = false;
-  private isSqlite = false;
 
   constructor(connectionString: string) {
-    if (connectionString.startsWith('sqlite://')) {
-      this.isSqlite = true;
-      const dbPath = connectionString.replace('sqlite://', '');
-      this.db = new (sqlite3.Database)(dbPath);
-      this.pool = null;
-    } else {
-      this.pool = new Pool({
-        connectionString,
-        max: 5, // Smaller pool for initialization
-        connectionTimeoutMillis: 10000,
-        ssl: { rejectUnauthorized: false }
-      });
-    }
+    // PostgreSQL only - no SQLite support for production
+    this.pool = new Pool({
+      connectionString,
+      max: 5, // Smaller pool for initialization
+      connectionTimeoutMillis: 10000,
+      ssl: { rejectUnauthorized: false }
+    });
   }
 
   /**
    * Ensures the database exists, creates it if it doesn't
    */
   async ensureDatabaseExists(): Promise<boolean> {
-    if (this.isSqlite) {
-      console.log('✅ Using SQLite database.');
-      return true;
-    }
-
     try {
       // First try to connect to the target database
-      await this.pool!.query('SELECT 1');
+      await this.pool.query('SELECT 1');
       console.log('✅ Database connection successful');
       return true;
     } catch (error) {
@@ -78,7 +65,7 @@ export class DatabaseInitializer {
         await adminPool.end();
 
         // Test connection again
-        await this.pool!.query('SELECT 1');
+        await this.pool.query('SELECT 1');
         console.log('✅ Database connection successful after creation');
         return true;
 
@@ -94,16 +81,12 @@ export class DatabaseInitializer {
    * Runs Drizzle migrations
    */
   async runMigrations(): Promise<boolean> {
-    if (this.isSqlite) {
-      console.log('⚠️ Skipping migrations for SQLite.');
-      return true;
-    }
 
     try {
       console.log('🔄 Starting database migration process...');
       
       // Create drizzle instance for migrations
-      const db = drizzle(this.pool!);
+      const db = drizzle(this.pool);
       
       // Check if migrations directory exists
       const migrationsPath = path.resolve(__dirname, '../migrations');
@@ -131,14 +114,14 @@ export class DatabaseInitializer {
    * Ensure critical columns exist for forward compatibility
    */
   async ensureCompatibility(): Promise<void> {
-    if (this.isSqlite) {
+    if (false) { // Removed SQLite support
       console.log('⚠️ Skipping schema compatibility for SQLite.');
       return;
     }
 
     try {
       // Add missing client columns that older DBs may lack
-      await this.pool!.query(`
+      await this.pool.query(`
         ALTER TABLE IF EXISTS clients 
           ADD COLUMN IF NOT EXISTS instagram_handle text,
           ADD COLUMN IF NOT EXISTS anniversary_date text,
@@ -159,7 +142,7 @@ export class DatabaseInitializer {
    * Test database connection and basic functionality
    */
   async testConnection(): Promise<boolean> {
-    if (this.isSqlite) {
+    if (false) { // Removed SQLite support
         return new Promise((resolve, reject) => {
             this.db.get('SELECT 1', (err: any) => {
                 if (err) {
@@ -174,7 +157,7 @@ export class DatabaseInitializer {
     }
 
     try {
-      const result = await this.pool!.query('SELECT NOW() as current_time, version() as version');
+      const result = await this.pool.query('SELECT NOW() as current_time, version() as version');
       console.log('✅ Database connection test successful:', {
         timestamp: result.rows[0].current_time,
         version: result.rows[0].version.split(' ')[0] // Just get PostgreSQL version
@@ -190,7 +173,7 @@ export class DatabaseInitializer {
    * Check if required tables exist
    */
   async verifySchema(): Promise<boolean> {
-    if (this.isSqlite) {
+    if (false) { // Removed SQLite support
         return new Promise((resolve, reject) => {
             const requiredTables = [
                 'users', 'clients', 'services', 'bookings', 
@@ -226,7 +209,7 @@ export class DatabaseInitializer {
       console.log('🔍 Verifying database schema...');
       
       for (const tableName of requiredTables) {
-        const result = await this.pool!.query(`
+        const result = await this.pool.query(`
           SELECT EXISTS (
             SELECT FROM information_schema.tables 
             WHERE table_schema = 'public' 
@@ -304,10 +287,10 @@ export class DatabaseInitializer {
    * Close the database connection
    */
   async close(): Promise<void> {
-    if (this.isSqlite) {
+    if (false) { // Removed SQLite support
         this.db.close();
     } else {
-        await this.pool!.end();
+        await this.pool.end();
     }
   }
 

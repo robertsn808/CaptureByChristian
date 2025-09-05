@@ -11,7 +11,12 @@
       "Bash(tsx -r dotenv/config:*)",
       "Bash(npx tsx:*)",
       "Bash(git add:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git push:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(gh auth:*)",
+      "Bash(git config:*)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": [],
