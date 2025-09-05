@@ -1,7 +1,16 @@
+
 import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
+import quickbooksRoutes from "./routes/quickbooks";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Configure multer for file uploads
 const upload = multer({
@@ -27,6 +36,7 @@ import { generateBookingResponse, analyzeImage } from "./openai";
 import { log } from "./vite";
 import { getDatabaseInitializer } from "./database-init";
 import { pool } from "./db";
+import { syncToQuickbooks } from "./quickbooks";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint for Docker
@@ -493,27 +503,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (err) {
           if (err instanceof multer.MulterError) {
             if (err.code === 'LIMIT_FILE_SIZE') {
-              return res.status(400).json({ 
-                error: "File too large", 
+              return res.status(400).json({
+                error: "File too large",
                 message: "Image file size must be less than 50MB. Please compress your image and try again.",
-                details: err.message 
+                details: err.message
               });
             }
             if (err.code === 'LIMIT_FILE_COUNT') {
-              return res.status(400).json({ 
-                error: "Too many files", 
+              return res.status(400).json({
+                error: "Too many files",
                 message: "You can upload a maximum of 10 images at once.",
-                details: err.message 
+                details: err.message
               });
             }
-            return res.status(400).json({ 
-              error: "Upload error", 
-              message: err.message 
+            return res.status(400).json({
+              error: "Upload error",
+              message: err.message
             });
           }
-          return res.status(400).json({ 
-            error: "Invalid file", 
-            message: err.message 
+          return res.status(400).json({
+            error: "Invalid file",
+            message: err.message
           });
         }
 
@@ -521,7 +531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { category = "portfolio" } = req.body;
 
         if (!files || files.length === 0) {
-          return res.status(400).json({ 
+          return res.status(400).json({
             error: "No files uploaded",
             message: "Please select at least one image file to upload."
           });
@@ -529,24 +539,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         console.log(`Processing ${files.length} uploaded file(s)...`);
 
+        // Create the uploads directory if it doesn't exist
+        const uploadsDir = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
         // Create database entries for uploaded images
         const uploadedImages = [];
         const { bookingId } = req.body;
-        
+
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const filename = `${Date.now()}_${i}_${file.originalname}`;
-
-          // For demo: using base64 data URL since we don't have cloud storage
-          const base64Data = file.buffer.toString('base64');
-          const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
+          const filePath = path.join(uploadsDir, filename);
+          const fileUrl = `/uploads/${filename}`;
 
           try {
+            // Save the file to the local file system
+            fs.writeFileSync(filePath, file.buffer);
+
             const imageData = {
               filename,
               originalName: file.originalname,
-              url: dataUrl, // Base64 data URL containing the actual image
-              thumbnailUrl: dataUrl, // Using same image as thumbnail for demo
+              url: fileUrl,
+              thumbnailUrl: fileUrl,
               category,
               tags: [category, "uploaded"],
               featured: false,
@@ -565,24 +582,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         if (uploadedImages.length === 0) {
-          return res.status(500).json({ 
-            error: "Save failed", 
+          return res.status(500).json({
+            error: "Save failed",
             message: "Failed to save any images to the gallery. Please try again."
           });
         }
 
         console.log(`Successfully uploaded ${uploadedImages.length} image(s) to gallery`);
 
-        res.json({ 
+        res.json({
           message: `${uploadedImages.length} image(s) uploaded successfully`,
           images: uploadedImages
         });
       } catch (error) {
         console.error("Error in upload handler:", error);
-        res.status(500).json({ 
-          error: "Upload failed", 
+        res.status(500).json({
+          error: "Upload failed",
           message: "An unexpected error occurred while uploading. Please try again.",
-          details: (error as Error).message 
+          details: (error as Error).message
         });
       }
     });
@@ -1977,6 +1994,8 @@ Please respond with a JSON object containing:
     }
   });
 
+  app.use('/api/quickbooks', quickbooksRoutes);
+
   // Automation workflow creation endpoint
   app.post("/api/automation-sequences", async (req, res) => {
     try {
@@ -2267,6 +2286,20 @@ export function registerPreJsonRoutes(app: Express) {
           } catch (e) {
             console.error('Webhook (pre-json) invoice update failed:', e);
           }
+        }
+
+        // Sync to QuickBooks
+        try {
+          await syncToQuickbooks({
+            customerName: session.customer_details?.name || '',
+            customerEmail: session.customer_details?.email || '',
+            amount: session.amount_total / 100,
+            currency: session.currency,
+            invoiceNumber: invoiceNumber,
+            paymentIntent: paymentIntent
+          });
+        } catch (e) {
+          console.error('QuickBooks sync failed:', e);
         }
       }
 

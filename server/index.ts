@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: false, limit: '25mb' }));
 
 // Serve attached assets (videos, images, documents)
 app.use('/attached_assets', express.static('attached_assets'));
+app.use('/uploads', express.static('uploads'));
 
 app.use((req, res, next) => {
   const start = Date.now();
