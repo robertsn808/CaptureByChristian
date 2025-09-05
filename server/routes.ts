@@ -646,56 +646,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Chat routes (legacy OpenAI)
   app.post("/api/ai-chat", async (req, res) => {
     try {
-      const { sessionId, message, clientEmail } = req.body;
+      const { sessionId, message } = req.body;
 
       if (!sessionId || !message) {
         return res.status(400).json({ error: "Session ID and message are required" });
       }
 
-      // Get or create chat session
-      let chat = await storage.getAiChat(sessionId);
-
-      if (!chat) {
-        chat = await storage.createAiChat({
-          sessionId,
-          clientEmail: clientEmail || null,
-          messages: [],
-          bookingData: {},
-        });
-      }
-
-      // Add user message
-      const messages = [
-        ...chat.messages,
-        {
-          role: 'user' as const,
-          content: message,
-          timestamp: Date.now(),
-        }
-      ];
-
-      // Generate AI response
-      const aiResponse = await generateBookingResponse(messages, chat.bookingData);
-
-      // Add AI response
-      messages.push({
-        role: 'assistant' as const,
-        content: aiResponse.message,
+      // Generate AI response directly (database storage temporarily disabled due to schema migration)
+      const messages = [{
+        role: 'user' as const,
+        content: message,
         timestamp: Date.now(),
-      });
+      }];
 
-      // Update chat
-      await storage.updateAiChat(sessionId, {
-        messages,
-        bookingData: { ...chat.bookingData, ...aiResponse.bookingData },
-        clientEmail: clientEmail || chat.clientEmail,
-      });
+      const aiResponse = await generateBookingResponse(messages, {});
 
       res.json({
         message: aiResponse.message,
         bookingData: aiResponse.bookingData,
       });
     } catch (error) {
+      console.error("AI chat error:", error);
       res.status(500).json({ error: "Failed to process AI chat" });
     }
   });
@@ -739,14 +710,13 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
     }
   });
 
-  app.get("/api/ai-chat/:sessionId", async (req, res) => {
+  app.get("/api/ai-chat/:sessionId", async (_req, res) => {
     try {
-      const chat = await storage.getAiChat(req.params.sessionId);
-      if (!chat) {
-        return res.status(404).json({ error: "Chat session not found" });
-      }
-      res.json(chat);
+      // Note: Chat session retrieval temporarily disabled due to database schema migration
+      // Always return not found for now
+      return res.status(404).json({ error: "Chat session not found" });
     } catch (error) {
+      console.error("Failed to fetch chat session:", error);
       res.status(500).json({ error: "Failed to fetch chat session" });
     }
   });
