@@ -12,14 +12,32 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-// Configure multer for file uploads
+// Ensure uploads directory exists and configure multer to write directly to disk
+const uploadsRoot = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsRoot)) {
+  fs.mkdirSync(uploadsRoot, { recursive: true });
+}
+
+const storageEngine = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadsRoot);
+  },
+  filename: (_req, file, cb) => {
+    const timestamp = Date.now();
+    const safeOriginal = file.originalname.replace(/\s+/g, '_');
+    cb(null, `${timestamp}_${safeOriginal}`);
+  },
+});
+
+// Configure multer for file uploads (disk storage to avoid memory pressure on multi-upload)
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: storageEngine,
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit for high-resolution photography
+    fileSize: 50 * 1024 * 1024, // 50MB per file
     files: 10, // Maximum 10 files per upload
   },
   fileFilter: (_req, file, cb) => {
+    // Accept common image types
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
@@ -539,26 +557,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         console.log(`Processing ${files.length} uploaded file(s)...`);
 
-        // Create the uploads directory if it doesn't exist
-        const uploadsDir = path.join(__dirname, '..', 'uploads');
-        if (!fs.existsSync(uploadsDir)) {
-          fs.mkdirSync(uploadsDir, { recursive: true });
-        }
-
         // Create database entries for uploaded images
         const uploadedImages = [];
         const { bookingId } = req.body;
 
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const filename = `${Date.now()}_${i}_${file.originalname}`;
-          const filePath = path.join(uploadsDir, filename);
+          const filename = file.filename;
           const fileUrl = `/uploads/${filename}`;
 
           try {
-            // Save the file to the local file system
-            fs.writeFileSync(filePath, file.buffer);
-
             const imageData = {
               filename,
               originalName: file.originalname,
