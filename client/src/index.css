@@ -56,13 +56,12 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Gradient text effects */
+/* Gradient text effects - Simplified for better visibility */
 .gradient-text {
-  background: linear-gradient(135deg, hsl(25, 65%, 45%), hsl(180, 100%, 27%));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: hsl(25, 65%, 45%); /* Fallback color */
+  /* Use solid bronze color to ensure visibility */
+  color: hsl(25, 65%, 45%) !important;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Font class */
@@ -498,11 +497,10 @@
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, var(--bronze), var(--teal));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: var(--bronze); /* Fallback color for browsers that don't support background-clip */
+    /* Use solid bronze color to ensure visibility */
+    color: var(--bronze) !important;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   .section-spacing {
