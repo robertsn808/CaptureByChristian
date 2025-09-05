@@ -296,7 +296,10 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
   const preferredDate = bookingData?.date ? ` for ${new Date(bookingData.date).toLocaleDateString()}` : '';
   
   // PRIORITY: Check for availability queries first (regardless of service type)
-  if (lastMessage.includes('available') || lastMessage.includes('book') || lastMessage.includes('schedule') || lastMessage.includes('when') || lastMessage.includes('date')) {
+  const availabilityKeywords = ['available', 'availability', 'book', 'booking', 'schedule', 'when', 'date', 'calendar', 'open', 'free'];
+  const hasAvailabilityKeyword = availabilityKeywords.some(keyword => lastMessage.toLowerCase().includes(keyword));
+  
+  if (hasAvailabilityKeyword) {
     // Determine service type from context
     let serviceType = 'general';
     if (lastMessage.includes('wedding') || lastMessage.includes('marry') || lastMessage.includes('bride') || lastMessage.includes('groom')) {
