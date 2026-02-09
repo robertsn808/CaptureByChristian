@@ -5,14 +5,33 @@ import { registerRoutes, registerPreJsonRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./database-init";
 
+// Validate required environment variables in production
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.FRONTEND_URL) {
+    console.error('❌ FRONTEND_URL is required in production');
+    process.exit(1);
+  }
+  if (!process.env.DATABASE_URL) {
+    console.error('❌ DATABASE_URL is required in production');
+    process.exit(1);
+  }
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === 'your-secret-key-change-in-production') {
+    console.error('❌ SESSION_SECRET must be set to a secure value in production');
+    process.exit(1);
+  }
+}
+
 const app = express();
 
 // Enable CORS for frontend-backend communication
 app.use(cors({
-  origin: true,
+  origin: process.env.NODE_ENV === 'production' 
+    ? (process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : false)
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true,
+  optionsSuccessStatus: 200, // For legacy browser support
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Mount pre-JSON routes (e.g., Stripe webhook signature verification) before body parsers
