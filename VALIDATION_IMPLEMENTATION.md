@@ -31,7 +31,7 @@ A new middleware module containing:
 ## Files Modified
 
 ### `server/routes.ts`
-Updated 21 API endpoints with validation:
+Updated 22 API endpoints with validation:
 
 #### ID Parameter Validation (14 endpoints)
 - `GET /api/clients/:id`
@@ -49,13 +49,14 @@ Updated 21 API endpoints with validation:
 - `PUT /api/contracts/:id`
 - `POST /api/contracts/:id/send`
 
-#### Request Body Validation (6 endpoints)
+#### Request Body Validation (7 endpoints)
 - `PATCH /api/services/:id` - Uses `insertServiceSchema.partial()`
 - `PATCH /api/bookings/:id` - Uses `insertBookingSchema.partial()`
 - `PATCH /api/contracts/:id` - Uses `insertContractSchema.partial()`
 - `PATCH /api/gallery/:id/featured` - Validates `{ featured: boolean }`
 - `POST /api/client-portal/contracts/:id/sign` - Validates signature data structure
 - `PUT /api/contracts/:id` - Uses `insertContractSchema.partial()`
+- `PATCH /api/contact-messages/:id` - Uses `insertContactMessageSchema.partial()`
 
 #### Query Parameter Validation (1 endpoint)
 - `GET /api/availability` - Validates `start` and `end` datetime parameters
