@@ -55,7 +55,9 @@ export const validateQuery = (schema: z.ZodSchema) => {
 /**
  * Async error handler wrapper to eliminate try-catch boilerplate
  */
-export const asyncHandler = (fn: Function) => {
+export const asyncHandler = (
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

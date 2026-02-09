@@ -47,7 +47,8 @@ const upload = multer({
 });
 import { 
   insertClientSchema, insertBookingSchema, insertServiceSchema,
-  insertContractSchema, insertInvoiceSchema, insertGalleryImageSchema
+  insertContractSchema, insertInvoiceSchema, insertGalleryImageSchema,
+  insertContactMessageSchema
 } from "@shared/schema";
 import { z } from "zod";
 import { generateBookingResponse, analyzeImage } from "./openai";
@@ -1589,10 +1590,10 @@ Please respond with a JSON object containing:
 
   app.patch("/api/contact-messages/:id", 
     validateParams(idParamSchema),
+    validateBody(insertContactMessageSchema.partial()),
     async (req, res) => {
       try {
-        const updates = req.body;
-        const message = await storage.updateContactMessage(req.params.id, updates);
+        const message = await storage.updateContactMessage(req.params.id, req.body);
         res.json(message);
       } catch (error) {
         console.error("Error updating contact message:", error);
