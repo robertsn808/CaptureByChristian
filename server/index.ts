@@ -17,7 +17,8 @@ if (process.env.NODE_ENV === 'production') {
   }
   if (!process.env.SESSION_SECRET || 
       process.env.SESSION_SECRET === 'your-secret-key-change-in-production' ||
-      process.env.SESSION_SECRET === 'CHANGE_ME_TO_RANDOM_64_CHAR_STRING') {
+      process.env.SESSION_SECRET === 'CHANGE_ME_TO_RANDOM_64_CHAR_STRING' ||
+      process.env.SESSION_SECRET.startsWith('<')) {
     console.error('❌ SESSION_SECRET must be set to a secure value in production');
     process.exit(1);
   }
