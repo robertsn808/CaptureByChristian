@@ -65,7 +65,7 @@
     "@types/twilio": "^3.19.3",
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^4.0.0",
-    "axios": "^1.11.0",
+    "axios": "^1.12.0",
     "bcryptjs": "^3.0.2",
     "cheerio": "^1.0.0-rc.12",
     "class-variance-authority": "^0.7.1",
