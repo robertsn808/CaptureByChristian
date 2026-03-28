@@ -5,13 +5,11 @@
 ### Quick Start
 
 1. **Install Vercel CLI**
-
    ```bash
    npm install -g vercel
    ```
 
 2. **Login to Vercel**
-
    ```bash
    vercel login
    ```
@@ -84,7 +82,6 @@ CapturedCCollective/
 ### Features Available After Deployment
 
 ✅ **Core Features**
-
 - Professional photography portfolio
 - AI-powered booking system
 - Client management dashboard
@@ -92,7 +89,6 @@ CapturedCCollective/
 - Admin analytics and reporting
 
 ✅ **Advanced Features**
-
 - Real-time booking calendar
 - Client portal with gallery access
 - Automated email notifications
@@ -100,7 +96,6 @@ CapturedCCollective/
 - Revenue tracking and analytics
 
 ✅ **AI Integration**
-
 - OpenAI-powered booking assistant
 - Image analysis and tagging
 - Business insights and recommendations
@@ -132,20 +127,20 @@ docker-compose -f docker-compose.dev.yml up
 
 ### Required Variables
 
-| Variable         | Description                    | Example                               |
-| ---------------- | ------------------------------ | ------------------------------------- |
-| `DATABASE_URL`   | PostgreSQL connection string   | `postgresql://user:pass@host:5432/db` |
-| `OPENAI_API_KEY` | OpenAI API key for AI features | `sk-...`                              |
-| `NODE_ENV`       | Environment mode               | `production`                          |
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
+| `OPENAI_API_KEY` | OpenAI API key for AI features | `sk-...` |
+| `NODE_ENV` | Environment mode | `production` |
 
 ### Optional Variables
 
-| Variable              | Description             | Default |
-| --------------------- | ----------------------- | ------- |
-| `TWILIO_ACCOUNT_SID`  | Twilio account SID      | None    |
-| `TWILIO_AUTH_TOKEN`   | Twilio auth token       | None    |
-| `TWILIO_PHONE_NUMBER` | Twilio phone number     | None    |
-| `VERCEL`              | Vercel environment flag | `false` |
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `TWILIO_ACCOUNT_SID` | Twilio account SID | None |
+| `TWILIO_AUTH_TOKEN` | Twilio auth token | None |
+| `TWILIO_PHONE_NUMBER` | Twilio phone number | None |
+| `VERCEL` | Vercel environment flag | `false` |
 
 ## Post-Deployment Checklist
 

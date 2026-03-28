@@ -1,5 +1,5 @@
 {
-  "id": "b9df7ebf-d010-4426-9f45-300b8fbdf8d4",
+  "id": "fb9375a6-ff3f-4953-b66a-51fad2503775",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -32,8 +32,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "deal_data": {
-          "name": "deal_data",
+        "booking_data": {
+          "name": "booking_data",
           "type": "json",
           "primaryKey": false,
           "notNull": false
@@ -132,7 +132,7 @@
           "name": "service_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "date": {
           "name": "date",
@@ -144,7 +144,7 @@
           "name": "duration",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "location": {
           "name": "location",
@@ -154,9 +154,9 @@
         },
         "total_price": {
           "name": "total_price",
-          "type": "text",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "deposit_paid": {
           "name": "deposit_paid",
@@ -169,7 +169,7 @@
           "name": "status",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'pending'"
         },
         "notes": {
@@ -198,8 +198,12 @@
           "name": "bookings_client_id_clients_id_fk",
           "tableFrom": "bookings",
           "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -207,8 +211,12 @@
           "name": "bookings_service_id_services_id_fk",
           "tableFrom": "bookings",
           "tableTo": "services",
-          "columnsFrom": ["service_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "service_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -281,8 +289,12 @@
           "name": "client_messages_client_id_clients_id_fk",
           "tableFrom": "client_messages",
           "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -347,8 +359,12 @@
           "name": "client_portal_sessions_client_id_clients_id_fk",
           "tableFrom": "client_portal_sessions",
           "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -358,7 +374,9 @@
         "client_portal_sessions_session_token_unique": {
           "name": "client_portal_sessions_session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["session_token"]
+          "columns": [
+            "session_token"
+          ]
         }
       },
       "policies": {},
@@ -425,19 +443,17 @@
           "notNull": false,
           "default": 0
         },
-        "client_type": {
-          "name": "client_type",
+        "instagram_handle": {
+          "name": "instagram_handle",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'seller'"
+          "notNull": false
         },
-        "investment_experience": {
-          "name": "investment_experience",
+        "anniversary_date": {
+          "name": "anniversary_date",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'beginner'"
+          "notNull": false
         },
         "preferred_communication": {
           "name": "preferred_communication",
@@ -475,43 +491,6 @@
         "referral_source": {
           "name": "referral_source",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "motivation_level": {
-          "name": "motivation_level",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 5
-        },
-        "timeframe": {
-          "name": "timeframe",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "credit_score": {
-          "name": "credit_score",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "annual_income": {
-          "name": "annual_income",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "liquid_cash": {
-          "name": "liquid_cash",
-          "type": "numeric(12, 2)",
           "primaryKey": false,
           "notNull": false
         },
@@ -622,8 +601,12 @@
           "name": "communication_log_client_id_clients_id_fk",
           "tableFrom": "communication_log",
           "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -631,134 +614,12 @@
           "name": "communication_log_user_id_users_id_fk",
           "tableFrom": "communication_log",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.comparables": {
-      "name": "comparables",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "property_id": {
-          "name": "property_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "comp_address": {
-          "name": "comp_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "distance": {
-          "name": "distance",
-          "type": "numeric(4, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sale_price": {
-          "name": "sale_price",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sale_date": {
-          "name": "sale_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bedrooms": {
-          "name": "bedrooms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bathrooms": {
-          "name": "bathrooms",
-          "type": "numeric(3, 1)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "square_feet": {
-          "name": "square_feet",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "price_per_sqft": {
-          "name": "price_per_sqft",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "days_on_market": {
-          "name": "days_on_market",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "condition": {
-          "name": "condition",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "confidence_score": {
-          "name": "confidence_score",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "adjustments": {
-          "name": "adjustments",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "adjusted_value": {
-          "name": "adjusted_value",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "comparables_property_id_properties_id_fk": {
-          "name": "comparables_property_id_properties_id_fk",
-          "tableFrom": "comparables",
-          "tableTo": "properties",
-          "columnsFrom": ["property_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -838,19 +699,6 @@
         },
         "user_agent": {
           "name": "user_agent",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "ai_category": {
-          "name": "ai_category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'general_inquiry'"
-        },
-        "suggested_response": {
-          "name": "suggested_response",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1002,21 +850,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "client_signature": {
-          "name": "client_signature",
+        "signature_data": {
+          "name": "signature_data",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "client_signed_at": {
-          "name": "client_signed_at",
+        "signed_at": {
+          "name": "signed_at",
           "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "client_ip_address": {
-          "name": "client_ip_address",
-          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -1044,19 +886,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_fully_signed": {
-          "name": "is_fully_signed",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "signature_metadata": {
-          "name": "signature_metadata",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1078,8 +907,12 @@
           "name": "contracts_booking_id_bookings_id_fk",
           "tableFrom": "contracts",
           "tableTo": "bookings",
-          "columnsFrom": ["booking_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "booking_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1087,345 +920,12 @@
           "name": "contracts_client_id_clients_id_fk",
           "tableFrom": "contracts",
           "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.deal_analysis": {
-      "name": "deal_analysis",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "deal_id": {
-          "name": "deal_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "property_id": {
-          "name": "property_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "analysis_type": {
-          "name": "analysis_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "purchase_price": {
-          "name": "purchase_price",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "arv": {
-          "name": "arv",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "repair_costs": {
-          "name": "repair_costs",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "holding_costs": {
-          "name": "holding_costs",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "closing_costs": {
-          "name": "closing_costs",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "monthly_rent": {
-          "name": "monthly_rent",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "monthly_expenses": {
-          "name": "monthly_expenses",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cash_flow": {
-          "name": "cash_flow",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cap_rate": {
-          "name": "cap_rate",
-          "type": "numeric(5, 3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cash_on_cash_return": {
-          "name": "cash_on_cash_return",
-          "type": "numeric(5, 3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "roi": {
-          "name": "roi",
-          "type": "numeric(5, 3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "profit_potential": {
-          "name": "profit_potential",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "risk_score": {
-          "name": "risk_score",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 5
-        },
-        "recommendation": {
-          "name": "recommendation",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "calculated_at": {
-          "name": "calculated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "deal_analysis_deal_id_deals_id_fk": {
-          "name": "deal_analysis_deal_id_deals_id_fk",
-          "tableFrom": "deal_analysis",
-          "tableTo": "deals",
-          "columnsFrom": ["deal_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "deal_analysis_property_id_properties_id_fk": {
-          "name": "deal_analysis_property_id_properties_id_fk",
-          "tableFrom": "deal_analysis",
-          "tableTo": "properties",
-          "columnsFrom": ["property_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.deals": {
-      "name": "deals",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "client_id": {
-          "name": "client_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "property_id": {
-          "name": "property_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "strategy_id": {
-          "name": "strategy_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "deal_name": {
-          "name": "deal_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "stage": {
-          "name": "stage",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'prospect'"
-        },
-        "purchase_price": {
-          "name": "purchase_price",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "arv": {
-          "name": "arv",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "repair_costs": {
-          "name": "repair_costs",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "wholesale_fee": {
-          "name": "wholesale_fee",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "projected_profit": {
-          "name": "projected_profit",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "actual_profit": {
-          "name": "actual_profit",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "contract_date": {
-          "name": "contract_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "closing_date": {
-          "name": "closing_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "earnest_money": {
-          "name": "earnest_money",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "financing_type": {
-          "name": "financing_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "monthly_payment": {
-          "name": "monthly_payment",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "interest_rate": {
-          "name": "interest_rate",
-          "type": "numeric(5, 3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'active'"
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "attachments": {
-          "name": "attachments",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "deals_client_id_clients_id_fk": {
-          "name": "deals_client_id_clients_id_fk",
-          "tableFrom": "deals",
-          "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "deals_property_id_properties_id_fk": {
-          "name": "deals_property_id_properties_id_fk",
-          "tableFrom": "deals",
-          "tableTo": "properties",
-          "columnsFrom": ["property_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "deals_strategy_id_investment_strategies_id_fk": {
-          "name": "deals_strategy_id_investment_strategies_id_fk",
-          "tableFrom": "deals",
-          "tableTo": "investment_strategies",
-          "columnsFrom": ["strategy_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1445,6 +945,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "booking_id": {
+          "name": "booking_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "filename": {
           "name": "filename",
@@ -1482,18 +988,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "ai_analysis": {
+          "name": "ai_analysis",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
         "featured": {
           "name": "featured",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
-        },
-        "booking_id": {
-          "name": "booking_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
         },
         "uploaded_at": {
           "name": "uploaded_at",
@@ -1509,87 +1015,16 @@
           "name": "gallery_images_booking_id_bookings_id_fk",
           "tableFrom": "gallery_images",
           "tableTo": "bookings",
-          "columnsFrom": ["booking_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "booking_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.investment_strategies": {
-      "name": "investment_strategies",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "minimum_profit": {
-          "name": "minimum_profit",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "risk_level": {
-          "name": "risk_level",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'medium'"
-        },
-        "time_to_complete": {
-          "name": "time_to_complete",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "requirements": {
-          "name": "requirements",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "resources": {
-          "name": "resources",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -1650,8 +1085,12 @@
           "name": "invoices_booking_id_bookings_id_fk",
           "tableFrom": "invoices",
           "tableTo": "bookings",
-          "columnsFrom": ["booking_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "booking_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1678,12 +1117,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "property_id": {
-          "name": "property_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "source": {
           "name": "source",
           "type": "text",
@@ -1698,19 +1131,6 @@
         },
         "campaign": {
           "name": "campaign",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "lead_type": {
-          "name": "lead_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'seller'"
-        },
-        "motivation": {
-          "name": "motivation",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1767,17 +1187,12 @@
           "name": "leads_client_id_clients_id_fk",
           "tableFrom": "leads",
           "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "leads_property_id_properties_id_fk": {
-          "name": "leads_property_id_properties_id_fk",
-          "tableFrom": "leads",
-          "tableTo": "properties",
-          "columnsFrom": ["property_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1785,12 +1200,206 @@
           "name": "leads_assigned_to_users_id_fk",
           "tableFrom": "leads",
           "tableTo": "users",
-          "columnsFrom": ["assigned_to"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "assigned_to"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.orders": {
+      "name": "orders",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gallery_id": {
+          "name": "gallery_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "items": {
+          "name": "items",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subtotal": {
+          "name": "subtotal",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax": {
+          "name": "tax",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'pending'"
+        },
+        "shipping_address": {
+          "name": "shipping_address",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tracking_number": {
+          "name": "tracking_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fulfilled_at": {
+          "name": "fulfilled_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "orders_client_id_clients_id_fk": {
+          "name": "orders_client_id_clients_id_fk",
+          "tableFrom": "orders",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "orders_gallery_id_gallery_images_id_fk": {
+          "name": "orders_gallery_id_gallery_images_id_fk",
+          "tableFrom": "orders",
+          "tableTo": "gallery_images",
+          "columnsFrom": [
+            "gallery_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.products": {
+      "name": "products",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price": {
+          "name": "price",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cost": {
+          "name": "cost",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sku": {
+          "name": "sku",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "variants": {
+          "name": "variants",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -1849,30 +1458,12 @@
           "primaryKey": false,
           "notNull": false
         },
-        "license_number": {
-          "name": "license_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "brokerage": {
-          "name": "brokerage",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "specialties": {
-          "name": "specialties",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
         "social_media": {
           "name": "social_media",
           "type": "json",
           "primaryKey": false,
           "notNull": false,
-          "default": "'{\"facebook\":\"\",\"instagram\":\"\",\"youtube\":\"\",\"linkedin\":\"\",\"tiktok\":\"\"}'::json"
+          "default": "'{\"instagram\":\"\",\"facebook\":\"\",\"youtube\":\"\"}'::json"
         },
         "is_active": {
           "name": "is_active",
@@ -1904,308 +1495,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.properties": {
-      "name": "properties",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "city": {
-          "name": "city",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "zip_code": {
-          "name": "zip_code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "county": {
-          "name": "county",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "property_type": {
-          "name": "property_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "bedrooms": {
-          "name": "bedrooms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bathrooms": {
-          "name": "bathrooms",
-          "type": "numeric(3, 1)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "square_feet": {
-          "name": "square_feet",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "lot_size": {
-          "name": "lot_size",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "year_built": {
-          "name": "year_built",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "condition": {
-          "name": "condition",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "occupancy": {
-          "name": "occupancy",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'vacant'"
-        },
-        "current_rent": {
-          "name": "current_rent",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "market_rent": {
-          "name": "market_rent",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tax_assessed_value": {
-          "name": "tax_assessed_value",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "annual_taxes": {
-          "name": "annual_taxes",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "insurance": {
-          "name": "insurance",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "utilities": {
-          "name": "utilities",
-          "type": "numeric(6, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hoa": {
-          "name": "hoa",
-          "type": "numeric(6, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parcel_number": {
-          "name": "parcel_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "mls_number": {
-          "name": "mls_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "list_price": {
-          "name": "list_price",
-          "type": "numeric(12, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "days_on_market": {
-          "name": "days_on_market",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "features": {
-          "name": "features",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.property_images": {
-      "name": "property_images",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "property_id": {
-          "name": "property_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deal_id": {
-          "name": "deal_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "filename": {
-          "name": "filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "original_name": {
-          "name": "original_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "url": {
-          "name": "url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "thumbnail_url": {
-          "name": "thumbnail_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "room_type": {
-          "name": "room_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tags": {
-          "name": "tags",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "ai_analysis": {
-          "name": "ai_analysis",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "featured": {
-          "name": "featured",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "uploaded_at": {
-          "name": "uploaded_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "property_images_property_id_properties_id_fk": {
-          "name": "property_images_property_id_properties_id_fk",
-          "tableFrom": "property_images",
-          "tableTo": "properties",
-          "columnsFrom": ["property_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "property_images_deal_id_deals_id_fk": {
-          "name": "property_images_deal_id_deals_id_fk",
-          "tableFrom": "property_images",
-          "tableTo": "deals",
-          "columnsFrom": ["deal_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.questionnaires": {
       "name": "questionnaires",
       "schema": "",
@@ -2228,8 +1517,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "category": {
-          "name": "category",
+        "service_type": {
+          "name": "service_type",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -2246,125 +1535,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.service_providers": {
-      "name": "service_providers",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "company": {
-          "name": "company",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "specialties": {
-          "name": "specialties",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phone": {
-          "name": "phone",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "rating": {
-          "name": "rating",
-          "type": "numeric(3, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hourly_rate": {
-          "name": "hourly_rate",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "project_rate": {
-          "name": "project_rate",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "license_number": {
-          "name": "license_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "insurance_verified": {
-          "name": "insurance_verified",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "preferred": {
-          "name": "preferred",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -2408,19 +1578,19 @@
           "name": "price",
           "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "duration": {
           "name": "duration",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "category": {
           "name": "category",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "active": {
           "name": "active",
@@ -2429,172 +1599,21 @@
           "notNull": false,
           "default": true
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
+        "add_ons": {
+          "name": "add_ons",
+          "type": "json",
           "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+          "notNull": false
+        },
+        "images": {
+          "name": "images",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.tasks": {
-      "name": "tasks",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "deal_id": {
-          "name": "deal_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "client_id": {
-          "name": "client_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "assigned_to": {
-          "name": "assigned_to",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "priority": {
-          "name": "priority",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'medium'"
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'pending'"
-        },
-        "due_date": {
-          "name": "due_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "completed_at": {
-          "name": "completed_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "estimated_cost": {
-          "name": "estimated_cost",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "actual_cost": {
-          "name": "actual_cost",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "service_provider_id": {
-          "name": "service_provider_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "attachments": {
-          "name": "attachments",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "tasks_deal_id_deals_id_fk": {
-          "name": "tasks_deal_id_deals_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "deals",
-          "columnsFrom": ["deal_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "tasks_client_id_clients_id_fk": {
-          "name": "tasks_client_id_clients_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "clients",
-          "columnsFrom": ["client_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "tasks_assigned_to_users_id_fk": {
-          "name": "tasks_assigned_to_users_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "users",
-          "columnsFrom": ["assigned_to"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "tasks_service_provider_id_service_providers_id_fk": {
-          "name": "tasks_service_provider_id_service_providers_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "service_providers",
-          "columnsFrom": ["service_provider_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -2656,8 +1675,12 @@
           "name": "team_members_user_id_users_id_fk",
           "tableFrom": "team_members",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2718,12 +1741,16 @@
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,
-          "columns": ["username"]
+          "columns": [
+            "username"
+          ]
         },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
