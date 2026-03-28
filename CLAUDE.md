@@ -1,227 +1,492 @@
-# CLAUDE.md - REALEST
+# CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with the Realest real estate CRM.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Essential Commands
+## Development Commands
 
-### Development
-
+### Database Management
 ```bash
-# Start development servers (client + server)
+# Deploy schema changes to database
+npm run db:push
+
+# Open database studio GUI
+npm run db:studio
+
+# Generate migration files
+npm run db:generate
+
+# Apply migrations
+npm run db:migrate
+
+# Test database connection
+node -e "const { Pool } = require('pg'); const pool = new Pool({ connectionString: process.env.DATABASE_URL }); pool.query('SELECT NOW()').then(res => console.log('Connected:', res.rows[0]));"
+```
+
+### Development Server
+```bash
+# Start development server (includes frontend and backend)
 npm run dev
 
-# Start individual services
-npm run dev:server    # Server only (port 3000)
-npm run dev:client     # Client only (port 5173)
+# Run TypeScript compiler check
+npm run type-check
 
-# Code quality
-npm run lint           # ESLint check
-npm run typecheck      # TypeScript validation
+# Run ESLint
+npm run lint
+
+# Run tests
+npm test
 ```
 
-### Database Operations
-
+### Build and Deploy
 ```bash
-npm run db:push        # Deploy schema changes to database
-npm run db:generate    # Generate migration files
-npm run db:migrate     # Apply pending migrations
-npm run db:studio      # Open Drizzle Studio (database GUI)
-npm run db:seed        # Seed database with sample data
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Deploy to Vercel
+./deploy-vercel.sh
+# or manually: vercel --prod
+
+# Docker development
+docker-compose -f docker-compose.dev.yml up
+
+# Docker production
+docker-compose up --build
 ```
 
-### Testing & Building
+## Project Architecture
 
-```bash
-npm test              # Run Vitest tests
-npm test:ui           # Run tests with UI
-npm run build         # Build for production
-npm start             # Start production server
+### Technology Stack
+- **Frontend**: React 18 + TypeScript, Vite build tool, Wouter for routing
+- **Backend**: Express.js + TypeScript, Drizzle ORM
+- **Database**: PostgreSQL with Drizzle schema
+- **UI**: Tailwind CSS + shadcn/ui components
+- **AI Integration**: OpenAI API for booking assistant and image analysis
+- **File Storage**: Local filesystem with multer for uploads
+- **Deployment**: Vercel (recommended) or Docker
+
+### Directory Structure
 ```
-
-## Architecture Overview
-
-### Tech Stack Foundation
-
-- **Full-stack TypeScript** with ES modules (`"type": "module"`)
-- **Frontend**: React 18 + Vite, Wouter for routing, Tailwind CSS + shadcn/ui
-- **Backend**: Express.js with session-based authentication
-- **Database**: PostgreSQL with Drizzle ORM, comprehensive schema in `shared/schema.ts`
-- **AI Integration**: OpenAI API for deal analysis, market insights, and lead qualification
-
-### Project Structure
-
-```
+CaptureByChristian/
 ├── client/src/          # React frontend
-│   ├── components/
-│   │   ├── admin/       # Real estate dashboard components
-│   │   ├── client-portal/ # Client/investor portal
-│   │   └── ui/          # shadcn/ui components
-│   ├── pages/           # Route components
-│   ├── hooks/           # Custom React hooks
-│   └── lib/             # API client, utilities, types
-├── server/              # Express backend
-│   ├── index.ts         # Server entry with middleware setup
-│   ├── routes.ts        # API route definitions
-│   ├── storage.ts       # Data access layer (Drizzle queries)
-│   ├── db.ts            # Database connection
-│   └── openai.ts        # AI integration
-├── shared/schema.ts     # Drizzle database schema & types
-└── migrations/          # Database migration files
+│   ├── components/      # UI components (admin/, client-portal/, ui/)
+│   ├── pages/          # Route components
+│   ├── hooks/          # Custom React hooks
+│   └── lib/            # Utilities, API client, types
+├── server/             # Express backend
+│   ├── index.ts        # Server entry point
+│   ├── routes.ts       # API route definitions
+│   ├── db.ts          # Database connection
+│   ├── storage.ts     # Data access layer
+│   └── openai.ts      # AI integration
+├── shared/             # Shared TypeScript types and schemas
+├── api/               # Vercel serverless function entry
+├── migrations/        # Database migration files
+└── attached_assets/   # File uploads storage
 ```
 
-### Core Business Domain
+### Core Database Schema
+Main tables defined in `shared/schema.ts`:
+- **users**: Admin authentication
+- **clients**: Customer management with lead scoring
+- **services**: Photography packages and pricing
+- **bookings**: Session scheduling
+- **contracts**: Digital contract signing
+- **invoices**: Billing with PDF generation
+- **gallery_images**: Portfolio and client galleries
+- **contact_messages**: Website form submissions with AI analysis
+- **ai_chats**: Booking assistant conversations
 
-This is a **comprehensive real estate investment CRM** inspired by Pace Morby's subject-to community with:
+### API Architecture
+The application uses a hybrid approach:
+- **Development**: Express server with Vite dev middleware (`server/index.ts`)
+- **Production**: Vercel serverless functions (`api/index.ts`)
 
-- **Deal Management**: Complete deal pipeline from lead to closing
-- **Property Analysis**: ARV calculations, repair estimates, profit projections
-- **Investment Strategies**: Subject-to, seller financing, wholesale, BRRRR, fix & flip
-- **Lead Management**: Multi-channel lead capture and nurturing
-- **Client Portal**: Investor/seller communication and document sharing
-- **Market Intelligence**: Comparable sales, market trends, automated valuations
-- **Task Management**: Deal workflow automation and team coordination
-- **AI Features**: Deal analysis, market insights, lead qualification
+Key API patterns:
+- RESTful endpoints in `server/routes.ts`
+- Zod schema validation for all inputs
+- File upload handling with multer (50MB limit, images only)
+- AI integration for booking responses and image analysis
 
-### Database Architecture
+### Frontend Architecture
+- **Routing**: Wouter for client-side routing
+- **State Management**: TanStack Query for server state, React hooks for local state
+- **UI Framework**: shadcn/ui components with Tailwind CSS
+- **Forms**: React Hook Form with Zod validation
+- **Authentication**: Custom hook (`useAuth`) with session management
 
-The schema (`shared/schema.ts`) implements a comprehensive real estate CRM with:
+### Business Logic Components
+The application serves both admin users and clients:
 
-- **Core entities**: `clients`, `properties`, `deals`, `investmentStrategies`, `contracts`
-- **Analysis tools**: `dealAnalysis`, `comparables`, `propertyImages`
-- **Advanced CRM**: `leads`, `communicationLog`, `automationSequences`, `tasks`
-- **Service management**: `serviceProviders`, `teamMembers`
-- **Client engagement**: `clientPortalSessions`, `aiChats`
+**Admin Dashboard** (`client/src/pages/admin.tsx`):
+- Client management with CRM features
+- Booking calendar and scheduling
+- Service management
+- Invoice generation with PDF export
+- Portfolio management
+- Analytics and revenue tracking
 
-All tables use Drizzle ORM with proper relations and Zod validation schemas.
+**Client Portal** (`client/src/pages/client-portal.tsx`):
+- Gallery viewing for booked sessions
+- Contract signing
+- Booking management
 
-### Real Estate Client Types
+**Public Website**:
+- Portfolio showcase with password protection
+- AI-powered booking assistant
+- Contact form with lead capture
 
-- **Sellers**: Motivated sellers, distressed properties, inherited properties
-- **Buyers**: Cash buyers, first-time investors, experienced investors
-- **Investors**: Private money lenders, institutional investors, partners
-- **Wholesalers**: Deal finders, bird dogs, assignment specialists
-- **Service Providers**: Contractors, inspectors, appraisers, attorneys, title companies
+## Environment Configuration
 
-### Investment Strategies Supported
+Required environment variables in `.env`:
+```env
+DATABASE_URL=postgresql://user:pass@host:5432/capturedccollective
+OPENAI_API_KEY=sk-...
+NODE_ENV=development
+```
 
-- **Subject-To**: Taking over existing mortgage payments
-- **Seller Financing**: Owner-financed deals with flexible terms
-- **Wholesale**: Quick assignments for wholesale fees
-- **Fix & Flip**: Renovation projects for resale profit
-- **BRRRR**: Buy, Rehab, Rent, Refinance, Repeat strategy
-- **Lease Options**: Rent-to-own arrangements
+Optional variables:
+```env
+TWILIO_ACCOUNT_SID=...
+TWILIO_AUTH_TOKEN=...
+TWILIO_PHONE_NUMBER=...
+VERCEL=1  # Set in Vercel deployment
+```
 
-### Authentication & Sessions
+## Database Operations
 
-- Express sessions with cookie-parser for admin auth
-- Client portal uses token-based access (`clientPortalSessions` table)
-- CORS configured for development (localhost:5173) and production
+### Schema Management
+- Schema defined in `shared/schema.ts` using Drizzle ORM
+- Use `npm run db:push` for development schema changes
+- Use `npm run db:generate` and `npm run db:migrate` for production migrations
+- Database connection and queries handled in `server/storage.ts`
 
-### API Patterns
+### Connection Setup
+The application supports multiple database providers:
+- **Local PostgreSQL**: For development
+- **Neon**: Recommended for production (configured in docs)
+- **Supabase**: Alternative cloud provider
+- **Railway**: Another deployment option
 
-- RESTful endpoints under `/api/` prefix
-- All routes defined in `server/routes.ts`
-- Data access layer in `server/storage.ts` using Drizzle queries
-- Comprehensive error handling with environment-aware responses
+## Key Integration Points
 
-### Development Workflow
+### OpenAI Integration
+- Booking assistant in `server/openai.ts`
+- Image analysis for uploaded photos
+- Business insights and recommendations
+- Natural language booking form processing
 
-1. **Database First**: Schema changes in `shared/schema.ts`
-2. **API Layer**: Update `server/storage.ts` and `server/routes.ts`
-3. **Frontend**: Components in appropriate directories, API calls via `lib/api.ts`
-4. **Always run** `npm run lint` and `npm run typecheck` before committing
+### File Upload System
+- 50MB limit for high-resolution photography
+- Images only (validation in multer config)
+- Stored in `attached_assets/` directory
+- Served via Express static middleware
 
-### Environment Requirements
+### Business Operations
+Core business functionality:
+- Invoice generation with PDF export
+- Digital contract signing system
+- Revenue tracking and analytics
+- Service package management
 
-- `DATABASE_URL`: PostgreSQL connection string (required)
-- `OPENAI_API_KEY`: For AI features (required)
-- `SESSION_SECRET`: Session security (defaults provided)
-- `TWILIO_*`: SMS notifications (optional)
-- `MLS_API_KEY`: For property data integration (optional)
-- `GOOGLE_MAPS_API_KEY`: For mapping and location services (optional)
+## Testing and Quality
 
-### File Upload Handling
+### Type Safety
+- Strict TypeScript configuration in `tsconfig.json`
+- Zod schemas for runtime validation
+- Drizzle ORM for type-safe database operations
 
-- Property images stored in `attached_assets/` directory
-- Multer middleware for file processing
-- Property images linked to properties and deals via `propertyImages` table
-- Support for before/after renovation photos
+### Linting and Formatting
+- ESLint configuration for TypeScript and React
+- Run `npm run lint` before commits
+- Run `npm run type-check` for TypeScript validation
 
-### Production Deployment
+## Deployment Notes
 
-- Supports Vercel (primary), Docker, and Render
-- Static files served from `client/dist` in production
-- Health check endpoint at `/health`
-- Node.js 18+ required
+### Vercel Deployment (Recommended)
+- Uses `api/index.ts` as serverless function entry point
+- Environment variables configured in Vercel dashboard
+- Static files served from `dist/public/`
+- Database schema deployed before deployment
 
-## Real Estate Specific Features
+### Docker Deployment
+- Development: `docker-compose.dev.yml`
+- Production: `docker-compose.yml`
+- Includes PostgreSQL service and application container
 
-### Deal Pipeline Management
+### Database Deployment
+Always run database operations before application deployment:
+1. Set `DATABASE_URL` environment variable
+2. Run `npm run db:push` to deploy schema
+3. Verify connection with test command
+4. Deploy application code
 
-- Lead capture from multiple sources (driving for dollars, direct mail, online)
-- Deal stages: Prospect → Under Contract → Due Diligence → Closing → Closed
-- Automated follow-up sequences based on lead temperature and stage
-- Task management for each deal milestone
+## Common Workflows
 
-### Property Analysis Tools
+### Adding New Features
+1. Define database schema changes in `shared/schema.ts`
+2. Run `npm run db:push` to update database
+3. Update storage layer in `server/storage.ts`
+4. Add API routes in `server/routes.ts`
+5. Create frontend components in `client/src/components/`
+6. Add routing in `client/src/App.tsx`
 
-- ARV (After Repair Value) calculations with comparable sales
-- Repair cost estimation with contractor integration
-- Cash flow analysis for rental properties
-- ROI and cash-on-cash return calculations
-- Risk assessment scoring (1-10 scale)
-- Deal recommendation engine (buy/pass/negotiate)
+### Database Schema Changes
+1. Modify schema in `shared/schema.ts`
+2. For development: `npm run db:push`
+3. For production: `npm run db:generate` then `npm run db:migrate`
+4. Update storage interfaces and API routes as needed
 
-### Market Intelligence
+### AI Feature Development
+- OpenAI integration in `server/openai.ts`
+- Use existing patterns for new AI features
+- Configure API keys in environment variables
+=======
+# CLAUDE.md
 
-- Automated comparable sales analysis
-- Market trend tracking by area
-- Days on market statistics
-- Price per square foot analysis
-- Neighborhood scoring and demographics
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-### Lead Generation & Management
+## Development Commands
 
-- Multi-channel lead capture (Facebook, websites, direct mail responses)
-- Lead scoring based on motivation and timeline
-- Automated lead nurturing sequences
-- Bird dog and wholesaler referral tracking
-- Motivation tracking (foreclosure, divorce, inheritance, etc.)
+### Database Management
+```bash
+# Deploy schema changes to database
+npm run db:push
 
-### Client & Investor Management
+# Open database studio GUI
+npm run db:studio
 
-- Investor profiles with funding capacity and preferences
-- Client communication history and preferences
-- Document sharing and contract management
-- Automated reporting for investors
-- Performance tracking and ROI reporting
+# Generate migration files
+npm run db:generate
 
-### SEO & Marketing Features
+# Apply migrations
+npm run db:migrate
 
-- Lead capture landing pages with A/B testing
-- Automated email sequences for different lead types
-- Social media integration for lead generation
-- Content management for educational resources
-- Referral tracking and reward systems
-- Local market SEO optimization
+# Test database connection
+node -e "const { Pool } = require('pg'); const pool = new Pool({ connectionString: process.env.DATABASE_URL }); pool.query('SELECT NOW()').then(res => console.log('Connected:', res.rows[0]));"
+```
 
-## Development Guidelines
+### Development Server
+```bash
+# Start development server (includes frontend and backend)
+npm run dev
 
-### Commit Message Guidelines
+# Run TypeScript compiler check
+npm run type-check
 
-- Do not add your signature to commit messages
+# Run ESLint
+npm run lint
 
-### File Management Guidelines
+# Run tests
+npm test
+```
 
-- Choose the most efficient approach - create new files if it's faster/easier than editing existing ones
-- Actively remove unused files to keep the codebase clean
-- NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.
+### Build and Deploy
+```bash
+# Build for production
+npm run build
 
-### Real Estate Terminology
+# Start production server
+npm start
 
-- Use industry-standard terms (ARV, BRRRR, Subject-To, etc.)
-- Maintain consistent terminology across UI and database
-- Follow Pace Morby's methodology and terminology where applicable
-- Consider both beginner and advanced investor needs
+# Deploy to Vercel
+./deploy-vercel.sh
+# or manually: vercel --prod
 
-- You're connected to the Render MCP
+# Docker development
+docker-compose -f docker-compose.dev.yml up
+
+# Docker production
+docker-compose up --build
+```
+
+## Project Architecture
+
+### Technology Stack
+- **Frontend**: React 18 + TypeScript, Vite build tool, Wouter for routing
+- **Backend**: Express.js + TypeScript, Drizzle ORM
+- **Database**: PostgreSQL with Drizzle schema
+- **UI**: Tailwind CSS + shadcn/ui components
+- **AI Integration**: OpenAI API for booking assistant and image analysis
+- **File Storage**: Local filesystem with multer for uploads
+- **Deployment**: Vercel (recommended) or Docker
+
+### Directory Structure
+```
+CaptureByChristian/
+├── client/src/          # React frontend
+│   ├── components/      # UI components (admin/, client-portal/, ui/)
+│   ├── pages/          # Route components
+│   ├── hooks/          # Custom React hooks
+│   └── lib/            # Utilities, API client, types
+├── server/             # Express backend
+│   ├── index.ts        # Server entry point
+│   ├── routes.ts       # API route definitions
+│   ├── db.ts          # Database connection
+│   ├── storage.ts     # Data access layer
+│   └── openai.ts      # AI integration
+├── shared/             # Shared TypeScript types and schemas
+├── api/               # Vercel serverless function entry
+├── migrations/        # Database migration files
+└── attached_assets/   # File uploads storage
+```
+
+### Core Database Schema
+Main tables defined in `shared/schema.ts`:
+- **users**: Admin authentication
+- **clients**: Customer management with lead scoring
+- **services**: Photography packages and pricing
+- **bookings**: Session scheduling
+- **contracts**: Digital contract signing
+- **invoices**: Billing with PDF generation
+- **gallery_images**: Portfolio and client galleries
+- **contact_messages**: Website form submissions with AI analysis
+- **ai_chats**: Booking assistant conversations
+
+### API Architecture
+The application uses a hybrid approach:
+- **Development**: Express server with Vite dev middleware (`server/index.ts`)
+- **Production**: Vercel serverless functions (`api/index.ts`)
+
+Key API patterns:
+- RESTful endpoints in `server/routes.ts`
+- Zod schema validation for all inputs
+- File upload handling with multer (50MB limit, images only)
+- AI integration for booking responses and image analysis
+
+### Frontend Architecture
+- **Routing**: Wouter for client-side routing
+- **State Management**: TanStack Query for server state, React hooks for local state
+- **UI Framework**: shadcn/ui components with Tailwind CSS
+- **Forms**: React Hook Form with Zod validation
+- **Authentication**: Custom hook (`useAuth`) with session management
+
+### Business Logic Components
+The application serves both admin users and clients:
+
+**Admin Dashboard** (`client/src/pages/admin.tsx`):
+- Client management with CRM features
+- Booking calendar and scheduling
+- Service management
+- Invoice generation with PDF export
+- Portfolio management
+- Analytics and revenue tracking
+
+**Client Portal** (`client/src/pages/client-portal.tsx`):
+- Gallery viewing for booked sessions
+- Contract signing
+- Booking management
+
+**Public Website**:
+- Portfolio showcase with password protection
+- AI-powered booking assistant
+- Contact form with lead capture
+
+## Environment Configuration
+
+Required environment variables in `.env`:
+```env
+DATABASE_URL=postgresql://user:pass@host:5432/capturedccollective
+OPENAI_API_KEY=sk-...
+NODE_ENV=development
+```
+
+Optional variables:
+```env
+TWILIO_ACCOUNT_SID=...
+TWILIO_AUTH_TOKEN=...
+TWILIO_PHONE_NUMBER=...
+VERCEL=1  # Set in Vercel deployment
+```
+
+## Database Operations
+
+### Schema Management
+- Schema defined in `shared/schema.ts` using Drizzle ORM
+- Use `npm run db:push` for development schema changes
+- Use `npm run db:generate` and `npm run db:migrate` for production migrations
+- Database connection and queries handled in `server/storage.ts`
+
+### Connection Setup
+The application supports multiple database providers:
+- **Local PostgreSQL**: For development
+- **Neon**: Recommended for production (configured in docs)
+- **Supabase**: Alternative cloud provider
+- **Railway**: Another deployment option
+
+## Key Integration Points
+
+### OpenAI Integration
+- Booking assistant in `server/openai.ts`
+- Image analysis for uploaded photos
+- Business insights and recommendations
+- Natural language booking form processing
+
+### File Upload System
+- 50MB limit for high-resolution photography
+- Images only (validation in multer config)
+- Stored in `attached_assets/` directory
+- Served via Express static middleware
+
+### Business Operations
+Core business functionality:
+- Invoice generation with PDF export
+- Digital contract signing system
+- Revenue tracking and analytics
+- Service package management
+
+## Testing and Quality
+
+### Type Safety
+- Strict TypeScript configuration in `tsconfig.json`
+- Zod schemas for runtime validation
+- Drizzle ORM for type-safe database operations
+
+### Linting and Formatting
+- ESLint configuration for TypeScript and React
+- Run `npm run lint` before commits
+- Run `npm run type-check` for TypeScript validation
+
+## Deployment Notes
+
+### Vercel Deployment (Recommended)
+- Uses `api/index.ts` as serverless function entry point
+- Environment variables configured in Vercel dashboard
+- Static files served from `dist/public/`
+- Database schema deployed before deployment
+
+### Docker Deployment
+- Development: `docker-compose.dev.yml`
+- Production: `docker-compose.yml`
+- Includes PostgreSQL service and application container
+
+### Database Deployment
+Always run database operations before application deployment:
+1. Set `DATABASE_URL` environment variable
+2. Run `npm run db:push` to deploy schema
+3. Verify connection with test command
+4. Deploy application code
+
+## Common Workflows
+
+### Adding New Features
+1. Define database schema changes in `shared/schema.ts`
+2. Run `npm run db:push` to update database
+3. Update storage layer in `server/storage.ts`
+4. Add API routes in `server/routes.ts`
+5. Create frontend components in `client/src/components/`
+6. Add routing in `client/src/App.tsx`
+
+### Database Schema Changes
+1. Modify schema in `shared/schema.ts`
+2. For development: `npm run db:push`
+3. For production: `npm run db:generate` then `npm run db:migrate`
+4. Update storage interfaces and API routes as needed
+
+### AI Feature Development
+- OpenAI integration in `server/openai.ts`
+- Use existing patterns for new AI features
+- Configure API keys in environment variables
+- Test AI responses in development before deployment

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBookings } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,30 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  FileText,
-  Download,
-  Plus,
-  DollarSign,
+import { 
+  FileText, 
+  Download, 
+  Plus, 
+  DollarSign, 
   Calendar,
   User,
   Eye,
   Trash,
-  Send,
+  Send
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -41,7 +36,7 @@ interface Invoice {
   clientEmail: string;
   invoiceNumber: string;
   amount: number;
-  status: "pending" | "paid" | "overdue" | "cancelled";
+  status: 'pending' | 'paid' | 'overdue' | 'cancelled';
   dueDate: string;
   createdDate: string;
   items: InvoiceItem[];
@@ -69,76 +64,60 @@ export function InvoiceGenerator() {
   const [newInvoiceOpen, setNewInvoiceOpen] = useState(false);
   const [previewInvoice, setPreviewInvoice] = useState<Invoice | null>(null);
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([
-    { description: "Photography Session", quantity: 1, rate: 0, amount: 0 },
+    { description: "Photography Session", quantity: 1, rate: 0, amount: 0 }
   ]);
   const [taxRate, setTaxRate] = useState(4.712); // Hawaii General Excise Tax
   const [discountRate, setDiscountRate] = useState(0);
-  const [notes, setNotes] = useState(
-    "Payment due within 30 days of invoice date. Late payments may incur additional fees.",
-  );
+  const [notes, setNotes] = useState("Payment due within 30 days of invoice date. Late payments may incur additional fees.");
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { data: bookings } = useQuery({
-    queryKey: ["/api/bookings"],
+  const { data: bookingsRaw } = useQuery({
+    queryKey: ['/api/bookings'],
     queryFn: fetchBookings,
   });
+  const bookings: any[] = Array.isArray(bookingsRaw) ? bookingsRaw : [];
+
 
   const { data: invoiceStats = {} } = useQuery({
-    queryKey: ["/api/invoices/stats"],
-    queryFn: () => fetch("/api/invoices/stats").then((r) => r.json()),
+    queryKey: ['/api/invoices/stats'],
+    queryFn: () => fetch('/api/invoices/stats').then(r => r.json()),
   });
 
   // Fetch real invoices from database
   const { data: invoicesData } = useQuery({
-    queryKey: ["/api/invoices"],
+    queryKey: ['/api/invoices'],
     queryFn: async () => {
-      const response = await fetch("/api/invoices");
+      const response = await fetch('/api/invoices');
       return response.json();
     },
   });
-
-  const invoices: Invoice[] = invoicesData || [];
+  const invoices: Invoice[] = Array.isArray(invoicesData) ? invoicesData : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "paid":
-        return "bg-green-100 text-green-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "overdue":
-        return "bg-red-100 text-red-800";
-      case "cancelled":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'overdue': return 'bg-red-100 text-red-800';
+      case 'cancelled': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const addInvoiceItem = () => {
-    setInvoiceItems([
-      ...invoiceItems,
-      { description: "", quantity: 1, rate: 0, amount: 0 },
-    ]);
+    setInvoiceItems([...invoiceItems, { description: "", quantity: 1, rate: 0, amount: 0 }]);
   };
 
-  const updateInvoiceItem = (
-    index: number,
-    field: keyof InvoiceItem,
-    value: any,
-  ) => {
+  const updateInvoiceItem = (index: number, field: keyof InvoiceItem, value: any) => {
     const updated = [...invoiceItems];
     updated[index] = { ...updated[index], [field]: value };
-
-    if (field === "quantity" || field === "rate") {
-      const quantity =
-        field === "quantity"
-          ? Number(value) || 0
-          : updated[index].quantity || 0;
-      const rate =
-        field === "rate" ? Number(value) || 0 : updated[index].rate || 0;
+    
+    if (field === 'quantity' || field === 'rate') {
+      const quantity = field === 'quantity' ? Number(value) || 0 : (updated[index].quantity || 0);
+      const rate = field === 'rate' ? Number(value) || 0 : (updated[index].rate || 0);
       updated[index].amount = Number((quantity * rate).toFixed(2));
     }
-
+    
     setInvoiceItems(updated);
   };
 
@@ -149,22 +128,18 @@ export function InvoiceGenerator() {
   };
 
   const calculateTotals = (): InvoiceTotals => {
-    const subtotal = invoiceItems.reduce(
-      (total, item) =>
-        total + (typeof item.amount === "number" ? item.amount : 0),
-      0,
-    );
+    const subtotal = invoiceItems.reduce((total, item) => total + (typeof item.amount === 'number' ? item.amount : 0), 0);
     const tax = (subtotal * taxRate) / 100;
     const discount = (subtotal * discountRate) / 100;
     const total = subtotal + tax - discount;
-
+    
     return {
       subtotal,
       taxRate,
       tax,
       discountRate,
       discount,
-      total,
+      total
     };
   };
 
@@ -173,9 +148,12 @@ export function InvoiceGenerator() {
   };
 
   const generateInvoiceNumber = () => {
-    const year = new Date().getFullYear();
-    const random = Math.floor(Math.random() * 900) + 100;
-    return `INV-${year}-${random}`;
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const bookingIdPart = selectedBooking?.id ? String(selectedBooking.id) : 'MAN';
+    // Format: INV-YYYYMM-<bookingId|MAN>
+    return `INV-${yyyy}${mm}-${bookingIdPart}`;
   };
 
   const handleCreateInvoice = () => {
@@ -187,12 +165,10 @@ export function InvoiceGenerator() {
       invoiceNumber: generateInvoiceNumber(),
       amount: getTotalAmount(),
       status: "pending",
-      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-      createdDate: new Date().toISOString().split("T")[0],
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      createdDate: new Date().toISOString().split('T')[0],
       items: [...invoiceItems],
-      notes: "",
+      notes: ""
     };
 
     toast({
@@ -202,70 +178,72 @@ export function InvoiceGenerator() {
 
     setNewInvoiceOpen(false);
     setSelectedBooking(null);
-    setInvoiceItems([
-      { description: "Photography Session", quantity: 1, rate: 0, amount: 0 },
-    ]);
+    setInvoiceItems([{ description: "Photography Session", quantity: 1, rate: 0, amount: 0 }]);
   };
 
   const handleSendInvoice = async (invoice: Invoice) => {
     try {
-      const response = await fetch(
-        `/api/invoices/send/${invoice.invoiceNumber}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            invoice,
-            includePaymentLink: true,
-          }),
-        },
-      );
-
+      const response = await fetch(`/api/invoices/send/${invoice.invoiceNumber}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invoice,
+          includePaymentLink: true
+        }),
+      });
+      
       if (response.ok) {
+        const result = await response.json();
+        const extra = result.paymentLink ? ` Payment link created.` : '';
         toast({
-          title: "Email Sent",
-          description: `Invoice ${invoice.invoiceNumber} sent to ${invoice.clientEmail}`,
+          title: "Invoice Sent",
+          description: `Invoice ${invoice.invoiceNumber} sent to ${invoice.clientEmail}.${extra}`,
         });
+        if (result.paymentLink) {
+          // Offer to open the payment link
+          window.open(result.paymentLink, '_blank');
+        }
+        // Refresh invoice list/status
+        queryClient.invalidateQueries({ queryKey: ['/api/invoices'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/invoices/stats'] });
       } else {
-        throw new Error("Email send failed");
+        throw new Error('Email send failed');
       }
     } catch (error) {
       toast({
-        title: "Email Failed",
+        title: "Email Failed", 
         description: "Unable to send invoice email. Please try again.",
         variant: "destructive",
       });
     }
   };
 
+
   const handleDownloadInvoice = async (invoice: Invoice) => {
     try {
-      const response = await fetch(
-        `/api/invoices/pdf/${invoice.invoiceNumber}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(invoice),
-        },
-      );
-
+      const response = await fetch(`/api/invoices/pdf/${invoice.invoiceNumber}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invoice),
+      });
+      
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
+        const a = document.createElement('a');
         a.href = url;
         a.download = `invoice-${invoice.invoiceNumber}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-
+        
         toast({
           title: "Download Complete",
           description: `Invoice ${invoice.invoiceNumber} downloaded successfully`,
         });
       } else {
-        throw new Error("Download failed");
+        throw new Error('Download failed');
       }
     } catch (error) {
       toast({
@@ -276,9 +254,8 @@ export function InvoiceGenerator() {
     }
   };
 
-  const pendingBookings = bookings?.filter(
-    (booking: any) =>
-      booking.status === "confirmed" || booking.status === "completed",
+  const pendingBookings = bookings.filter((booking: any) => 
+    booking.status === 'confirmed' || booking.status === 'completed'
   );
 
   return (
@@ -287,11 +264,9 @@ export function InvoiceGenerator() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Invoice & Contract Management</h2>
-          <p className="text-muted-foreground">
-            Generate and manage invoices for your photography services
-          </p>
+          <p className="text-muted-foreground">Generate and manage invoices for your photography services</p>
         </div>
-
+        
         <Dialog open={newInvoiceOpen} onOpenChange={setNewInvoiceOpen}>
           <DialogTrigger asChild>
             <Button className="bg-bronze hover:bg-bronze/90">
@@ -303,48 +278,38 @@ export function InvoiceGenerator() {
             <DialogHeader>
               <DialogTitle>Create New Invoice</DialogTitle>
             </DialogHeader>
-
+            
             <div className="space-y-6">
               {/* Client Selection */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Select Booking (Optional)</Label>
-                  <Select
-                    onValueChange={(value) => {
-                      const booking = pendingBookings?.find(
-                        (b: any) => b.id.toString() === value,
-                      );
-                      setSelectedBooking(booking);
-                      if (booking) {
-                        const servicePrice = Number(booking.service.price) || 0;
-                        setInvoiceItems([
-                          {
-                            description: booking.service.name,
-                            quantity: 1,
-                            rate: servicePrice,
-                            amount: servicePrice,
-                          },
-                        ]);
-                      }
-                    }}
-                  >
+                  <Select onValueChange={(value) => {
+                    const booking = pendingBookings?.find((b: any) => b.id.toString() === value);
+                    setSelectedBooking(booking);
+                    if (booking) {
+                      const servicePrice = Number(booking.service.price) || 0;
+                      setInvoiceItems([{
+                        description: booking.service.name,
+                        quantity: 1,
+                        rate: servicePrice,
+                        amount: servicePrice
+                      }]);
+                    }
+                  }}>
                     <SelectTrigger>
                       <SelectValue placeholder="Choose from existing bookings" />
                     </SelectTrigger>
                     <SelectContent>
                       {pendingBookings?.map((booking: any) => (
-                        <SelectItem
-                          key={booking.id}
-                          value={booking.id.toString()}
-                        >
-                          {booking.client.name} - {booking.service.name} -{" "}
-                          {new Date(booking.date).toLocaleDateString()}
+                        <SelectItem key={booking.id} value={booking.id.toString()}>
+                          {booking.client.name} - {booking.service.name} - {new Date(booking.date).toLocaleDateString()}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-
+                
                 <div>
                   <Label>Invoice Number</Label>
                   <Input value={generateInvoiceNumber()} disabled />
@@ -355,9 +320,7 @@ export function InvoiceGenerator() {
               {selectedBooking && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">
-                      Client Information
-                    </CardTitle>
+                    <CardTitle className="text-lg">Client Information</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-2 gap-4">
                     <div>
@@ -370,12 +333,7 @@ export function InvoiceGenerator() {
                     </div>
                     <div>
                       <Label>Booking Date</Label>
-                      <Input
-                        value={new Date(
-                          selectedBooking.date,
-                        ).toLocaleDateString()}
-                        disabled
-                      />
+                      <Input value={new Date(selectedBooking.date).toLocaleDateString()} disabled />
                     </div>
                     <div>
                       <Label>Service</Label>
@@ -393,21 +351,12 @@ export function InvoiceGenerator() {
                 <CardContent>
                   <div className="space-y-4">
                     {invoiceItems.map((item, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-6 gap-2 items-end"
-                      >
+                      <div key={index} className="grid grid-cols-6 gap-2 items-end">
                         <div className="col-span-2">
                           <Label>Description</Label>
                           <Input
                             value={item.description}
-                            onChange={(e) =>
-                              updateInvoiceItem(
-                                index,
-                                "description",
-                                e.target.value,
-                              )
-                            }
+                            onChange={(e) => updateInvoiceItem(index, 'description', e.target.value)}
                             placeholder="Service description"
                           />
                         </div>
@@ -416,13 +365,7 @@ export function InvoiceGenerator() {
                           <Input
                             type="number"
                             value={item.quantity}
-                            onChange={(e) =>
-                              updateInvoiceItem(
-                                index,
-                                "quantity",
-                                Number(e.target.value),
-                              )
-                            }
+                            onChange={(e) => updateInvoiceItem(index, 'quantity', Number(e.target.value))}
                             min="1"
                           />
                         </div>
@@ -431,26 +374,13 @@ export function InvoiceGenerator() {
                           <Input
                             type="number"
                             value={item.rate}
-                            onChange={(e) =>
-                              updateInvoiceItem(
-                                index,
-                                "rate",
-                                Number(e.target.value),
-                              )
-                            }
+                            onChange={(e) => updateInvoiceItem(index, 'rate', Number(e.target.value))}
                             min="0"
                           />
                         </div>
                         <div>
                           <Label>Amount ($)</Label>
-                          <Input
-                            value={
-                              typeof item.amount === "number"
-                                ? item.amount.toFixed(2)
-                                : "0.00"
-                            }
-                            disabled
-                          />
+                          <Input value={typeof item.amount === 'number' ? item.amount.toFixed(2) : '0.00'} disabled />
                         </div>
                         <div>
                           <Button
@@ -464,16 +394,12 @@ export function InvoiceGenerator() {
                         </div>
                       </div>
                     ))}
-
-                    <Button
-                      variant="outline"
-                      onClick={addInvoiceItem}
-                      className="w-full"
-                    >
+                    
+                    <Button variant="outline" onClick={addInvoiceItem} className="w-full">
                       <Plus className="h-4 w-4 mr-2" />
                       Add Item
                     </Button>
-
+                    
                     <div className="border-t pt-4">
                       {/* Tax and Discount Controls */}
                       <div className="grid grid-cols-2 gap-4 mb-4">
@@ -493,14 +419,12 @@ export function InvoiceGenerator() {
                             type="number"
                             step="0.1"
                             value={discountRate}
-                            onChange={(e) =>
-                              setDiscountRate(Number(e.target.value))
-                            }
+                            onChange={(e) => setDiscountRate(Number(e.target.value))}
                             placeholder="0"
                           />
                         </div>
                       </div>
-
+                      
                       {/* Invoice Totals */}
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
@@ -516,9 +440,7 @@ export function InvoiceGenerator() {
                         {discountRate > 0 && (
                           <div className="flex justify-between text-sm text-green-600">
                             <span>Discount ({discountRate}%):</span>
-                            <span>
-                              -${calculateTotals().discount.toFixed(2)}
-                            </span>
+                            <span>-${calculateTotals().discount.toFixed(2)}</span>
                           </div>
                         )}
                         <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
@@ -546,16 +468,10 @@ export function InvoiceGenerator() {
 
               {/* Actions */}
               <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setNewInvoiceOpen(false)}
-                >
+                <Button variant="outline" onClick={() => setNewInvoiceOpen(false)}>
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleCreateInvoice}
-                  className="bg-bronze hover:bg-bronze/90"
-                >
+                <Button onClick={handleCreateInvoice} className="bg-bronze hover:bg-bronze/90">
                   <FileText className="h-4 w-4 mr-2" />
                   Create Invoice
                 </Button>
@@ -572,9 +488,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold text-green-600">
-                  ${invoiceStats.totalRevenue?.toLocaleString() || "0"}
-                </p>
+                <p className="text-2xl font-bold text-green-600">${invoiceStats.totalRevenue?.toLocaleString() || '0'}</p>
               </div>
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
@@ -585,12 +499,8 @@ export function InvoiceGenerator() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">
-                  Pending Payments
-                </p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  ${invoiceStats.pendingAmount?.toLocaleString() || "0"}
-                </p>
+                <p className="text-sm text-muted-foreground">Pending Payments</p>
+                <p className="text-2xl font-bold text-yellow-600">${invoiceStats.pendingAmount?.toLocaleString() || '0'}</p>
               </div>
               <Calendar className="h-8 w-8 text-yellow-600" />
             </div>
@@ -602,9 +512,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Overdue Amount</p>
-                <p className="text-2xl font-bold text-red-600">
-                  ${invoiceStats.overdueAmount?.toLocaleString() || "0"}
-                </p>
+                <p className="text-2xl font-bold text-red-600">${invoiceStats.overdueAmount?.toLocaleString() || '0'}</p>
               </div>
               <FileText className="h-8 w-8 text-red-600" />
             </div>
@@ -616,9 +524,7 @@ export function InvoiceGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Payment Rate</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {invoiceStats.paymentRate || "0"}%
-                </p>
+                <p className="text-2xl font-bold text-blue-600">{invoiceStats.paymentRate || '0'}%</p>
               </div>
               <User className="h-8 w-8 text-blue-600" />
             </div>
@@ -636,126 +542,136 @@ export function InvoiceGenerator() {
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
               <p className="text-lg font-medium">No invoices yet</p>
-              <p className="text-sm">
-                Create your first invoice using the form above
-              </p>
+              <p className="text-sm">Create your first invoice using the form above</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {invoices.map((invoice) => (
-                <div
-                  key={invoice.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <div className="font-semibold">
-                        {invoice.invoiceNumber}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {invoice.clientName} • Created{" "}
-                        {new Date(invoice.createdDate).toLocaleDateString()}
-                      </div>
+          <div className="space-y-4">
+            {invoices.map((invoice) => (
+              <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div>
+                    <div className="font-semibold">{invoice.invoiceNumber}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {invoice.clientName} • Created {new Date(invoice.createdDate).toLocaleDateString()}
+                      {invoice.status === 'paid' && (
+                        <>
+                          {' '}• Paid {(() => { try { return new Date((invoice as any).paidAt || invoice.createdDate).toLocaleDateString(); } catch { return ''; } })()}
+                        </>
+                      )}
                     </div>
-                    <Badge className={getStatusColor(invoice.status)}>
-                      {invoice.status.charAt(0).toUpperCase() +
-                        invoice.status.slice(1)}
-                    </Badge>
                   </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <div className="font-semibold">
-                        ${invoice.amount.toLocaleString()}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Due {new Date(invoice.dueDate).toLocaleDateString()}
-                      </div>
+                  <Badge className={getStatusColor(invoice.status)}>
+                    {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <div className="font-semibold">${invoice.amount.toLocaleString()}</div>
+                    <div className="text-sm text-muted-foreground">
+                      Due {new Date(invoice.dueDate).toLocaleDateString()}
                     </div>
-
-                    <div className="flex space-x-1">
+                  </div>
+                  
+                  <div className="flex space-x-1">
+                    {invoice.status !== 'paid' && (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setPreviewInvoice(invoice)}
+                        onClick={async () => {
+                          const bid = invoice.bookingId;
+                          if (!bid) return;
+                          const resp = await fetch(`/api/invoices/${bid}/mark-paid`, { method: 'POST' });
+                          if (resp.ok) {
+                            toast({ title: 'Marked as Paid', description: `Invoice ${invoice.invoiceNumber} marked paid.` });
+                            queryClient.invalidateQueries({ queryKey: ['/api/invoices'] });
+                            queryClient.invalidateQueries({ queryKey: ['/api/invoices/stats'] });
+                          } else {
+                            toast({ title: 'Failed', description: 'Could not mark as paid', variant: 'destructive' });
+                          }
+                        }}
                       >
-                        <Eye className="h-4 w-4" />
+                        Mark Paid
                       </Button>
+                    )}
+                    {(invoice as any).stripeCheckoutUrl && invoice.status === 'pending' && (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDownloadInvoice(invoice)}
+                        onClick={() => window.open((invoice as any).stripeCheckoutUrl as string, '_blank')}
                       >
-                        <Download className="h-4 w-4" />
+                        Pay Link
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleSendInvoice(invoice)}
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPreviewInvoice(invoice)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDownloadInvoice(invoice)}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSendInvoice(invoice)}
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
           )}
         </CardContent>
       </Card>
 
       {/* Invoice Preview Dialog */}
-      <Dialog
-        open={!!previewInvoice}
-        onOpenChange={() => setPreviewInvoice(null)}
-      >
+      <Dialog open={!!previewInvoice} onOpenChange={() => setPreviewInvoice(null)}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Invoice Preview</DialogTitle>
           </DialogHeader>
-
+          
           {previewInvoice && (
             <div className="space-y-8 p-8 border-2 rounded-lg bg-white text-gray-900 shadow-lg">
               {/* Invoice Header */}
               <div className="flex justify-between items-start border-b-2 border-gray-200 pb-6">
                 <div>
-                  <h2 className="text-4xl font-bold text-bronze mb-2">
-                    INVOICE
-                  </h2>
-                  <p className="text-lg font-semibold text-gray-800">
-                    CapturedCCollective
-                  </p>
-                  <p className="text-base text-gray-700">
-                    Professional Photography Services
-                  </p>
+                  <h2 className="text-4xl font-bold text-bronze mb-2">INVOICE</h2>
+                  <p className="text-lg font-semibold text-gray-800">CapturedCCollective</p>
+                  <p className="text-base text-gray-700">Professional Photography Services</p>
                   <p className="text-sm text-gray-600">Honolulu, Hawaii</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">
-                    {previewInvoice.invoiceNumber}
-                  </div>
+                  <div className="text-2xl font-bold text-gray-900">{previewInvoice.invoiceNumber}</div>
                   <div className="text-base font-medium text-gray-800 mt-2">
-                    Date:{" "}
-                    {new Date(previewInvoice.createdDate).toLocaleDateString()}
+                    Date: {new Date(previewInvoice.createdDate).toLocaleDateString()}
                   </div>
                   <div className="text-base font-medium text-gray-800">
                     Due: {new Date(previewInvoice.dueDate).toLocaleDateString()}
+                  </div>
+                  <div className="mt-2">
+                    <span className={`inline-block text-xs px-2 py-1 rounded ${previewInvoice.status === 'paid' ? 'bg-green-100 text-green-800' : previewInvoice.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {previewInvoice.status.toUpperCase()}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Client Info */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">
-                  Bill To:
-                </h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Bill To:</h3>
                 <div className="text-base text-gray-800">
-                  <div className="font-semibold">
-                    {previewInvoice.clientName}
-                  </div>
-                  <div className="text-gray-700">
-                    {previewInvoice.clientEmail}
-                  </div>
+                  <div className="font-semibold">{previewInvoice.clientName}</div>
+                  <div className="text-gray-700">{previewInvoice.clientEmail}</div>
                 </div>
               </div>
 
@@ -764,49 +680,25 @@ export function InvoiceGenerator() {
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                   <thead>
                     <tr className="bg-gray-100 border-b-2 border-gray-300">
-                      <th className="text-left p-4 font-bold text-gray-900">
-                        Description
-                      </th>
-                      <th className="text-right p-4 font-bold text-gray-900">
-                        Qty
-                      </th>
-                      <th className="text-right p-4 font-bold text-gray-900">
-                        Rate
-                      </th>
-                      <th className="text-right p-4 font-bold text-gray-900">
-                        Amount
-                      </th>
+                      <th className="text-left p-4 font-bold text-gray-900">Description</th>
+                      <th className="text-right p-4 font-bold text-gray-900">Qty</th>
+                      <th className="text-right p-4 font-bold text-gray-900">Rate</th>
+                      <th className="text-right p-4 font-bold text-gray-900">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {previewInvoice.items.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-gray-200 hover:bg-gray-50"
-                      >
-                        <td className="p-4 text-gray-800 font-medium">
-                          {item.description}
-                        </td>
-                        <td className="text-right p-4 text-gray-800">
-                          {item.quantity}
-                        </td>
-                        <td className="text-right p-4 text-gray-800">
-                          ${item.rate.toFixed(2)}
-                        </td>
-                        <td className="text-right p-4 text-gray-800 font-semibold">
-                          ${item.amount.toFixed(2)}
-                        </td>
+                      <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                        <td className="p-4 text-gray-800 font-medium">{item.description}</td>
+                        <td className="text-right p-4 text-gray-800">{item.quantity}</td>
+                        <td className="text-right p-4 text-gray-800">${item.rate.toFixed(2)}</td>
+                        <td className="text-right p-4 text-gray-800 font-semibold">${item.amount.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr className="bg-bronze/10 border-t-2 border-bronze">
-                      <td
-                        colSpan={3}
-                        className="text-right p-4 font-bold text-gray-900 text-lg"
-                      >
-                        Total:
-                      </td>
+                      <td colSpan={3} className="text-right p-4 font-bold text-gray-900 text-lg">Total:</td>
                       <td className="text-right p-4 font-bold text-gray-900 text-xl">
                         ${previewInvoice.amount.toFixed(2)}
                       </td>
@@ -818,12 +710,8 @@ export function InvoiceGenerator() {
               {/* Notes */}
               {previewInvoice.notes && (
                 <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <h3 className="font-bold text-gray-900 mb-2 text-lg">
-                    Notes:
-                  </h3>
-                  <p className="text-base text-gray-800">
-                    {previewInvoice.notes}
-                  </p>
+                  <h3 className="font-bold text-gray-900 mb-2 text-lg">Notes:</h3>
+                  <p className="text-base text-gray-800">{previewInvoice.notes}</p>
                 </div>
               )}
 

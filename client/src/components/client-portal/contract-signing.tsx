@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Pen, Calendar, Shield } from "lucide-react";
+import { 
+  FileText, 
+  Pen, 
+  Calendar,
+  Shield
+} from "lucide-react";
 
 interface ContractSigningProps {
   contract: any;
@@ -14,19 +20,13 @@ interface ContractSigningProps {
   onCancel: () => void;
 }
 
-export default function ContractSigning({
-  contract,
-  onSign,
-  onCancel,
-}: ContractSigningProps) {
+export default function ContractSigning({ contract, onSign, onCancel }: ContractSigningProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [signature, setSignature] = useState("");
   const [fullName, setFullName] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [signatureMethod, setSignatureMethod] = useState<"type" | "draw">(
-    "type",
-  );
+  const [signatureMethod, setSignatureMethod] = useState<'type' | 'draw'>('type');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
@@ -34,28 +34,28 @@ export default function ContractSigning({
     setIsDrawing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
-
+    
     const rect = canvas.getBoundingClientRect();
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
+    
     ctx.beginPath();
     ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
-
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
-
+    
     const rect = canvas.getBoundingClientRect();
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
+    
     ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
     ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
     ctx.stroke();
   };
@@ -70,10 +70,10 @@ export default function ContractSigning({
   const clearSignature = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
+    
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setSignature("");
   };
@@ -83,16 +83,16 @@ export default function ContractSigning({
       toast({
         title: "Please complete all required fields",
         description: "Name and agreement to terms are required.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
 
-    if (signatureMethod === "draw" && !signature) {
+    if (signatureMethod === 'draw' && !signature) {
       toast({
         title: "Signature required",
         description: "Please draw your signature in the box above.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
@@ -100,11 +100,11 @@ export default function ContractSigning({
     const signatureData = {
       fullName,
       date,
-      signature: signatureMethod === "type" ? fullName : signature,
+      signature: signatureMethod === 'type' ? fullName : signature,
       signatureMethod,
       ipAddress: null, // Will be captured server-side
       userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     onSign(signatureData);
@@ -122,26 +122,20 @@ export default function ContractSigning({
           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
-              <span>
-                Created: {new Date(contract.createdAt).toLocaleDateString()}
-              </span>
+              <span>Created: {new Date(contract.createdAt).toLocaleDateString()}</span>
             </div>
             {contract.totalAmount && (
               <div className="flex items-center space-x-1">
-                <span>
-                  Amount: ${parseFloat(contract.totalAmount).toLocaleString()}
-                </span>
+                <span>Amount: ${parseFloat(contract.totalAmount).toLocaleString()}</span>
               </div>
             )}
           </div>
         </CardHeader>
         <CardContent>
           <div className="prose max-w-none">
-            <div
+            <div 
               className="whitespace-pre-wrap border rounded-lg p-4 bg-gray-50 max-h-96 overflow-y-auto"
-              dangerouslySetInnerHTML={{
-                __html: contract.templateContent.replace(/\n/g, "<br />"),
-              }}
+              dangerouslySetInnerHTML={{ __html: contract.templateContent.replace(/\n/g, '<br />') }}
             />
           </div>
         </CardContent>
@@ -155,8 +149,7 @@ export default function ContractSigning({
             <span>Electronic Signature</span>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Please review the contract above and provide your electronic
-            signature below.
+            Please review the contract above and provide your electronic signature below.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -165,14 +158,14 @@ export default function ContractSigning({
             <Label>Signature Method</Label>
             <div className="flex space-x-4">
               <Button
-                variant={signatureMethod === "type" ? "default" : "outline"}
-                onClick={() => setSignatureMethod("type")}
+                variant={signatureMethod === 'type' ? 'default' : 'outline'}
+                onClick={() => setSignatureMethod('type')}
               >
                 Type Name
               </Button>
               <Button
-                variant={signatureMethod === "draw" ? "default" : "outline"}
-                onClick={() => setSignatureMethod("draw")}
+                variant={signatureMethod === 'draw' ? 'default' : 'outline'}
+                onClick={() => setSignatureMethod('draw')}
               >
                 Draw Signature
               </Button>
@@ -180,7 +173,7 @@ export default function ContractSigning({
           </div>
 
           {/* Signature Input */}
-          {signatureMethod === "type" ? (
+          {signatureMethod === 'type' ? (
             <div className="space-y-2">
               <Label htmlFor="typed-signature">Type Your Full Name</Label>
               <Input
@@ -190,7 +183,7 @@ export default function ContractSigning({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="text-lg font-script"
-                style={{ fontFamily: "cursive" }}
+                style={{ fontFamily: 'cursive' }}
               />
             </div>
           ) : (
@@ -248,9 +241,7 @@ export default function ContractSigning({
               <Checkbox
                 id="terms-agreement"
                 checked={agreedToTerms}
-                onCheckedChange={(checked) =>
-                  setAgreedToTerms(checked as boolean)
-                }
+                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
               />
               <div className="grid gap-1.5 leading-none">
                 <label
@@ -260,9 +251,7 @@ export default function ContractSigning({
                   I agree to the terms and conditions
                 </label>
                 <p className="text-xs text-muted-foreground">
-                  By checking this box, I acknowledge that I have read,
-                  understood, and agree to be bound by all terms and conditions
-                  outlined in this contract.
+                  By checking this box, I acknowledge that I have read, understood, and agree to be bound by all terms and conditions outlined in this contract.
                 </p>
               </div>
             </div>
@@ -271,13 +260,10 @@ export default function ContractSigning({
               <div className="flex items-start space-x-2">
                 <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-900">
-                    Electronic Signature Legal Notice
-                  </p>
+                  <p className="font-medium text-blue-900">Electronic Signature Legal Notice</p>
                   <p className="text-blue-700 mt-1">
-                    Your electronic signature has the same legal effect as a
-                    handwritten signature. This document will be legally binding
-                    once signed.
+                    Your electronic signature has the same legal effect as a handwritten signature. 
+                    This document will be legally binding once signed.
                   </p>
                 </div>
               </div>
@@ -289,7 +275,7 @@ export default function ContractSigning({
             <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button
+            <Button 
               onClick={handleSign}
               disabled={!fullName || !agreedToTerms}
               className="bg-green-600 hover:bg-green-700"
