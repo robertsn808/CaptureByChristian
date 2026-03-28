@@ -47,7 +47,8 @@ const upload = multer({
 });
 import { 
   insertClientSchema, insertBookingSchema, insertServiceSchema,
-  insertContractSchema, insertInvoiceSchema, insertGalleryImageSchema
+  insertContractSchema, insertInvoiceSchema, insertGalleryImageSchema,
+  insertContactMessageSchema
 } from "@shared/schema";
 import { z } from "zod";
 import { generateBookingResponse, analyzeImage } from "./openai";
@@ -55,6 +56,13 @@ import { log } from "./vite";
 import { getDatabaseInitializer } from "./database-init";
 import { pool } from "./db";
 import { syncToQuickbooks } from "./quickbooks";
+import { 
+  validateParams, 
+  validateBody, 
+  validateQuery, 
+  idParamSchema, 
+  availabilityQuerySchema 
+} from "./middleware/validation";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint for Docker
@@ -214,17 +222,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/clients/:id", async (req, res) => {
-    try {
-      const client = await storage.getClient(parseInt(req.params.id));
-      if (!client) {
-        return res.status(404).json({ error: "Client not found" });
+  app.get("/api/clients/:id", 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        const client = await storage.getClient(req.params.id);
+        if (!client) {
+          return res.status(404).json({ error: "Client not found" });
+        }
+        res.json(client);
+      } catch (error) {
+        console.error("Error fetching client:", error);
+        res.status(500).json({ error: "Failed to fetch client" });
       }
-      res.json(client);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch client" });
     }
-  });
+  );
 
   // Service routes
   app.get("/api/services", async (_req, res) => {
@@ -251,34 +263,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update service
-  app.patch('/api/services/:id', async (req, res) => {
-    try {
-      const serviceId = parseInt(req.params.id);
-      const updateSchema = insertServiceSchema.partial();
-      const validatedData = updateSchema.parse(req.body);
-
-      const updatedService = await storage.updateService(serviceId, validatedData);
-      res.json(updatedService);
-    } catch (error: any) {
-      if (error.name === 'ZodError') {
-        res.status(400).json({ error: 'Invalid service data', details: error.errors });
-        return;
+  app.patch('/api/services/:id', 
+    validateParams(idParamSchema),
+    validateBody(insertServiceSchema.partial()),
+    async (req, res) => {
+      try {
+        const updatedService = await storage.updateService(req.params.id, req.body);
+        res.json(updatedService);
+      } catch (error: any) {
+        log(`Error updating service: ${error}`, "express");
+        res.status(500).json({ error: 'Failed to update service' });
       }
-      log(`Error updating service: ${error}`, "express");
-      res.status(500).json({ error: 'Failed to update service' });
     }
-  });
+  );
 
   // Delete service
-  app.delete('/api/services/:id', async (req, res) => {
-    try {
-      await storage.deleteService(parseInt(req.params.id));
-      res.json({ success: true });
-    } catch (error) {
-      log(`Error deleting service: ${error}`, "express");
-      res.status(500).json({ error: 'Failed to delete service' });
+  app.delete('/api/services/:id', 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        await storage.deleteService(req.params.id);
+        res.json({ success: true });
+      } catch (error) {
+        log(`Error deleting service: ${error}`, "express");
+        res.status(500).json({ error: 'Failed to delete service' });
+      }
     }
-  });
+  );
 
   // Get all services (including inactive) for admin
   app.get('/api/services/admin', async (_req, res) => {
@@ -385,56 +396,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/bookings/:id", async (req, res) => {
-    try {
-      const booking = await storage.getBooking(parseInt(req.params.id));
-      if (!booking) {
-        return res.status(404).json({ error: "Booking not found" });
+  app.get("/api/bookings/:id", 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        const booking = await storage.getBooking(req.params.id);
+        if (!booking) {
+          return res.status(404).json({ error: "Booking not found" });
+        }
+        res.json(booking);
+      } catch (error) {
+        console.error("Error fetching booking:", error);
+        res.status(500).json({ error: "Failed to fetch booking" });
       }
-      res.json(booking);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch booking" });
     }
-  });
+  );
 
-  app.patch("/api/bookings/:id", async (req, res) => {
-    try {
-      const updateData = req.body;
-      const booking = await storage.updateBooking(parseInt(req.params.id), updateData);
-      res.json(booking);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update booking" });
+  app.patch("/api/bookings/:id", 
+    validateParams(idParamSchema),
+    validateBody(insertBookingSchema.partial()),
+    async (req, res) => {
+      try {
+        const booking = await storage.updateBooking(req.params.id, req.body);
+        res.json(booking);
+      } catch (error) {
+        console.error("Error updating booking:", error);
+        res.status(500).json({ error: "Failed to update booking" });
+      }
     }
-  });
+  );
 
   // Calendar availability route
-  app.get("/api/availability", async (req, res) => {
-    try {
-      const { start, end } = req.query;
-      if (!start || !end) {
-        return res.status(400).json({ error: "Start and end dates are required" });
+  app.get("/api/availability", 
+    validateQuery(availabilityQuerySchema),
+    async (req, res) => {
+      try {
+        const { start, end } = req.query;
+        const startDate = new Date(start as string);
+        const endDate = new Date(end as string);
+
+        const bookings = await storage.getBookingsByDateRange(startDate, endDate);
+
+        // Return availability data
+        res.json({
+          bookings: bookings.map(b => ({
+            id: b.id,
+            date: b.date,
+            duration: b.duration,
+            service: b.service.name,
+            client: b.client.name,
+            status: b.status,
+          })),
+        });
+      } catch (error) {
+        console.error("Error fetching availability:", error);
+        res.status(500).json({ error: "Failed to fetch availability" });
       }
-
-      const startDate = new Date(start as string);
-      const endDate = new Date(end as string);
-
-      const bookings = await storage.getBookingsByDateRange(startDate, endDate);
-
-      // Return availability data
-      res.json({
-        bookings: bookings.map(b => ({
-          id: b.id,
-          date: b.date,
-          duration: b.duration,
-          service: b.service.name,
-          client: b.client.name,
-          status: b.status,
-        })),
-      });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch availability" });
     }
-  });
+  );
 
   // Contract routes
   app.get("/api/contracts/:bookingId", async (req, res) => {
@@ -466,15 +485,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/contracts/:id", async (req, res) => {
-    try {
-      const updateData = req.body;
-      const contract = await storage.updateContract(parseInt(req.params.id), updateData);
-      res.json(contract);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update contract" });
+  app.patch("/api/contracts/:id", 
+    validateParams(idParamSchema),
+    validateBody(insertContractSchema.partial()),
+    async (req, res) => {
+      try {
+        const contract = await storage.updateContract(req.params.id, req.body);
+        res.json(contract);
+      } catch (error) {
+        console.error("Error updating contract:", error);
+        res.status(500).json({ error: "Failed to update contract" });
+      }
     }
-  });
+  );
 
   // Gallery routes
   app.get("/api/gallery", async (req, res) => {
@@ -613,35 +636,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.delete("/api/gallery/:id", async (req, res) => {
-    try {
-      const imageId = parseInt(req.params.id);
-
-      await storage.deleteGalleryImage(imageId);
-
-      res.json({ message: "Image deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting image:", error);
-      res.status(500).json({ error: "Failed to delete image" });
+  app.delete("/api/gallery/:id", 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        await storage.deleteGalleryImage(req.params.id);
+        res.json({ message: "Image deleted successfully" });
+      } catch (error) {
+        console.error("Error deleting image:", error);
+        res.status(500).json({ error: "Failed to delete image" });
+      }
     }
-  });
+  );
 
-  app.patch("/api/gallery/:id/featured", async (req, res) => {
-    try {
-      const imageId = parseInt(req.params.id);
-      const { featured } = req.body;
-
-      await storage.updateGalleryImage(imageId, { featured });
-
-      res.json({ 
-        message: "Image featured status updated",
-        featured
-      });
-    } catch (error) {
-      console.error("Error updating featured status:", error);
-      res.status(500).json({ error: "Failed to update featured status" });
+  app.patch("/api/gallery/:id/featured", 
+    validateParams(idParamSchema),
+    validateBody(z.object({ featured: z.boolean() })),
+    async (req, res) => {
+      try {
+        const { featured } = req.body;
+        await storage.updateGalleryImage(req.params.id, { featured });
+        res.json({ 
+          message: "Image featured status updated",
+          featured
+        });
+      } catch (error) {
+        console.error("Error updating featured status:", error);
+        res.status(500).json({ error: "Failed to update featured status" });
+      }
     }
-  });
+  );
 
   // AI Chat routes (legacy OpenAI)
   app.post("/api/ai-chat", async (req, res) => {
@@ -997,49 +1021,55 @@ Additional Terms: Travel fee may apply for locations over 30 miles from Honolulu
   });
 
   // Client portal contract signing endpoint
-  app.post("/api/client-portal/contracts/:id/sign", async (req, res) => {
-    try {
-      const contractId = parseInt(req.params.id);
-      const { signatureData } = req.body;
+  app.post("/api/client-portal/contracts/:id/sign", 
+    validateParams(idParamSchema),
+    validateBody(z.object({
+      signatureData: z.object({
+        fullName: z.string().min(1, "Full name is required"),
+        signature: z.string().min(1, "Signature is required"),
+        userAgent: z.string().optional(),
+        signatureMethod: z.enum(['electronic', 'digital']).optional()
+      })
+    })),
+    async (req, res) => {
+      try {
+        const { signatureData } = req.body;
 
-      if (!signatureData || !signatureData.fullName) {
-        return res.status(400).json({ error: "Signature data is required" });
-      }
+        // Update contract with client signature
+        const updates = {
+          clientSignature: signatureData.signature,
+          clientSignedAt: new Date(),
+          clientIpAddress: req.ip,
+          status: 'signed' as const,
+          signatureMetadata: {
+            clientDevice: 'web',
+            clientUserAgent: signatureData.userAgent,
+            signatureMethod: signatureData.signatureMethod || 'electronic'
+          },
+          updatedAt: new Date()
+        };
 
-      // Update contract with client signature
-      const updates = {
-        clientSignature: signatureData.signature,
-        clientSignedAt: new Date(),
-        clientIpAddress: req.ip,
-        status: 'signed' as const,
-        signatureMetadata: {
-          clientDevice: 'web',
-          clientUserAgent: signatureData.userAgent,
-          signatureMethod: signatureData.signatureMethod || 'electronic'
-        },
-        updatedAt: new Date()
-      };
+        const updatedContract = await storage.updateContract(req.params.id, updates);
 
-      const updatedContract = await storage.updateContract(contractId, updates);
+        // Check if fully signed (if photographer has already signed)
+        if (updatedContract.photographerSignedAt) {
+          await storage.updateContract(req.params.id, { 
+            isFullySigned: true,
+            status: 'completed'
+          });
+        }
 
-      // Check if fully signed (if photographer has already signed)
-      if (updatedContract.photographerSignedAt) {
-        await storage.updateContract(contractId, { 
-          isFullySigned: true,
-          status: 'completed'
+        res.json({ 
+          success: true, 
+          message: "Contract signed successfully",
+          contract: updatedContract
         });
+      } catch (error) {
+        console.error("Error signing contract:", error);
+        res.status(500).json({ error: "Failed to sign contract" });
       }
-
-      res.json({ 
-        success: true, 
-        message: "Contract signed successfully",
-        contract: updatedContract
-      });
-    } catch (error) {
-      console.error("Error signing contract:", error);
-      res.status(500).json({ error: "Failed to sign contract" });
     }
-  });
+  );
 
   // Get contract for signing by token
   app.get("/api/client-portal/contracts/sign/:token", async (req, res) => {
@@ -1558,29 +1588,32 @@ Please respond with a JSON object containing:
     }
   });
 
-  app.patch("/api/contact-messages/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const updates = req.body;
-
-      const message = await storage.updateContactMessage(parseInt(id), updates);
-      res.json(message);
-    } catch (error) {
-      console.error("Error updating contact message:", error);
-      res.status(500).json({ error: "Failed to update message" });
+  app.patch("/api/contact-messages/:id", 
+    validateParams(idParamSchema),
+    validateBody(insertContactMessageSchema.partial()),
+    async (req, res) => {
+      try {
+        const message = await storage.updateContactMessage(req.params.id, req.body);
+        res.json(message);
+      } catch (error) {
+        console.error("Error updating contact message:", error);
+        res.status(500).json({ error: "Failed to update message" });
+      }
     }
-  });
+  );
 
-  app.delete("/api/contact-messages/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      await storage.deleteContactMessage(parseInt(id));
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting contact message:", error);
-      res.status(500).json({ error: "Failed to delete message" });
+  app.delete("/api/contact-messages/:id", 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        await storage.deleteContactMessage(req.params.id);
+        res.json({ success: true });
+      } catch (error) {
+        console.error("Error deleting contact message:", error);
+        res.status(500).json({ error: "Failed to delete message" });
+      }
     }
-  });
+  );
 
 
   // ===== Invoice PDF & Email Routes =====
@@ -2148,40 +2181,48 @@ Please respond with a JSON object containing:
     }
   });
 
-  app.get("/api/contracts/:id", async (req, res) => {
-    try {
-      const contract = await storage.getContract(parseInt(req.params.id));
-      if (!contract) {
-        return res.status(404).json({ error: "Contract not found" });
+  app.get("/api/contracts/:id", 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        const contract = await storage.getContract(req.params.id);
+        if (!contract) {
+          return res.status(404).json({ error: "Contract not found" });
+        }
+        res.json(contract);
+      } catch (error) {
+        console.error("Error fetching contract:", error);
+        res.status(500).json({ error: "Failed to fetch contract", details: (error as Error).message });
       }
-      res.json(contract);
-    } catch (error) {
-      console.error("Error fetching contract:", error);
-      res.status(500).json({ error: "Failed to fetch contract", details: (error as Error).message });
     }
-  });
+  );
 
-  app.put("/api/contracts/:id", async (req, res) => {
-    try {
-      const updates = req.body;
-      const contract = await storage.updateContract(parseInt(req.params.id), updates);
-      res.json(contract);
-    } catch (error) {
-      console.error("Error updating contract:", error);
-      res.status(500).json({ error: "Failed to update contract", details: (error as Error).message });
+  app.put("/api/contracts/:id", 
+    validateParams(idParamSchema),
+    validateBody(insertContractSchema.partial()),
+    async (req, res) => {
+      try {
+        const contract = await storage.updateContract(req.params.id, req.body);
+        res.json(contract);
+      } catch (error) {
+        console.error("Error updating contract:", error);
+        res.status(500).json({ error: "Failed to update contract", details: (error as Error).message });
+      }
     }
-  });
+  );
 
-  app.post("/api/contracts/:id/send", async (req, res) => {
-    try {
-      const contractId = parseInt(req.params.id);
-      const result = await storage.sendContractToPortal(contractId);
-      res.json(result);
-    } catch (error) {
-      console.error("Error sending contract:", error);
-      res.status(500).json({ error: "Failed to send contract", details: (error as Error).message });
+  app.post("/api/contracts/:id/send", 
+    validateParams(idParamSchema),
+    async (req, res) => {
+      try {
+        const result = await storage.sendContractToPortal(req.params.id);
+        res.json(result);
+      } catch (error) {
+        console.error("Error sending contract:", error);
+        res.status(500).json({ error: "Failed to send contract", details: (error as Error).message });
+      }
     }
-  });
+  );
 
   const httpServer = createServer(app);
   return httpServer;
