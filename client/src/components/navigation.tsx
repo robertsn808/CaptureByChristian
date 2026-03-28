@@ -20,14 +20,16 @@ export function Navigation() {
     <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism backdrop-blur-md border-b border-white/20 transition-all duration-300">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-3 hover-lift">
-            <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
-              <Camera className="h-6 w-6 text-white" />
-            </div>
-            <span className="font-playfair text-xl font-bold gradient-text">
-              Christian Falonzo
+          <Link href="/admin-login">
+            <span className="flex items-center space-x-3 hover-lift cursor-pointer">
+              <div className="p-2 bg-gradient-to-r from-bronze to-teal rounded-full">
+                <Camera className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-playfair text-xl font-bold gradient-text">
+                Christian Falonzo
+              </span>
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">

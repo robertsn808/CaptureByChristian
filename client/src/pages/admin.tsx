@@ -18,7 +18,7 @@ import { ClientCredentials } from "@/components/admin/client-credentials";
 import { ProfileManagement } from "@/components/admin/profile-management";
 import { ClientPortal } from "@/components/admin/client-portal";
 import { ServiceManagement } from "@/components/admin/service-management";
-import PropertyResearch from "@/components/admin/property-research";
+import { AccountingIntegrations } from "@/components/admin/accounting-integrations";
 import { Button } from "@/components/ui/button";
 // Card components removed - not used in current implementation
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,12 +27,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "wouter";
 import { useTheme } from "@/components/theme-provider";
-import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  Camera,
-  FileText,
+import { 
+  LayoutDashboard, 
+  Calendar, 
+  Users, 
+  Camera, 
+  FileText, 
   BarChart3,
   Settings,
   // Upload,
@@ -48,8 +48,7 @@ import {
   TrendingUp,
   Zap,
   LogOut,
-  Key,
-  Search,
+  Key
 } from "lucide-react";
 import ErrorBoundary from "@/components/error-boundary";
 
@@ -60,7 +59,7 @@ const menuSections = [
       { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
       { id: "real-time", label: "Real-Time Analytics", icon: Activity },
       { id: "analytics", label: "Advanced Analytics", icon: BarChart3 },
-    ],
+    ]
   },
   {
     title: "AI Intelligence",
@@ -68,7 +67,7 @@ const menuSections = [
       { id: "ai-insights", label: "Business Insights", icon: Brain },
       { id: "ai-chat", label: "AI Assistant", icon: Brain },
       { id: "predictive", label: "Predictive Analysis", icon: Target },
-    ],
+    ]
   },
   {
     title: "Business Operations",
@@ -80,8 +79,8 @@ const menuSections = [
       { id: "inbox", label: "Messages", icon: Mail },
       { id: "contracts", label: "Contracts", icon: FileText },
       { id: "invoices", label: "Invoices", icon: FileText },
-      { id: "property-research", label: "Property Research", icon: Search },
-    ],
+      { id: "accounting", label: "Accounting", icon: Settings },
+    ]
   },
   {
     title: "Content & Portfolio",
@@ -89,12 +88,14 @@ const menuSections = [
       { id: "gallery", label: "Portfolio Management", icon: Camera },
       { id: "portal", label: "Client Portal", icon: Settings },
       { id: "credentials", label: "Client Credentials", icon: Key },
-    ],
+    ]
   },
   {
-    title: "Settings & Configuration",
-    items: [{ id: "profile", label: "Profile", icon: Settings }],
-  },
+    title: "Settings & Configuration", 
+    items: [
+      { id: "profile", label: "Profile", icon: Settings },
+    ]
+  }
 ];
 
 export default function Admin() {
@@ -109,19 +110,19 @@ export default function Admin() {
   useEffect(() => {
     const checkAuth = async () => {
       // Small delay to ensure localStorage is read properly
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const authStatus = localStorage.getItem("admin_authenticated") === "true";
-
+      
       if (!authStatus) {
         console.log("Not authenticated, redirecting to login");
         setLocation("/admin-login");
         return;
       }
-
+      
       setIsLoading(false);
     };
-
+    
     checkAuth();
   }, [setLocation]);
 
@@ -166,22 +167,13 @@ export default function Admin() {
                   Home
                 </span>
               </Link>
-              <a
-                href="/#portfolio"
-                className="text-foreground hover:text-bronze transition-colors duration-200"
-              >
+              <a href="/#portfolio" className="text-foreground hover:text-bronze transition-colors duration-200">
                 Portfolio
               </a>
-              <a
-                href="/#services"
-                className="text-foreground hover:text-bronze transition-colors duration-200"
-              >
+              <a href="/#services" className="text-foreground hover:text-bronze transition-colors duration-200">
                 Services
               </a>
-              <a
-                href="/#about"
-                className="text-foreground hover:text-bronze transition-colors duration-200"
-              >
+              <a href="/#about" className="text-foreground hover:text-bronze transition-colors duration-200">
                 About
               </a>
 
@@ -231,9 +223,7 @@ export default function Admin() {
       <ErrorBoundary>
         <div className="flex pt-16">
           {/* Sidebar */}
-          <div
-            className={`${sidebarCollapsed ? "w-16" : "w-64"} bg-card border-r border-border transition-all duration-300 flex flex-col min-h-screen`}
-          >
+          <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border transition-all duration-300 flex flex-col min-h-screen`}>
             {/* Sidebar Header */}
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
@@ -253,11 +243,7 @@ export default function Admin() {
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                   className="h-8 w-8 p-0"
                 >
-                  {sidebarCollapsed ? (
-                    <ChevronRight className="h-4 w-4" />
-                  ) : (
-                    <ChevronLeft className="h-4 w-4" />
-                  )}
+                  {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
@@ -280,14 +266,12 @@ export default function Admin() {
                           onClick={() => setActiveTab(item.id)}
                           className={`w-full justify-start h-10 ${
                             activeTab === item.id
-                              ? "bg-bronze text-white hover:bg-bronze/90"
-                              : "hover:bg-muted"
-                          } ${sidebarCollapsed ? "px-2" : "px-3"}`}
+                              ? 'bg-bronze text-white hover:bg-bronze/90'
+                              : 'hover:bg-muted'
+                          } ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
                           title={sidebarCollapsed ? item.label : undefined}
                         >
-                          <item.icon
-                            className={`h-4 w-4 ${sidebarCollapsed ? "" : "mr-3"}`}
-                          />
+                          <item.icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
                           {!sidebarCollapsed && (
                             <span className="truncate">{item.label}</span>
                           )}
@@ -302,10 +286,7 @@ export default function Admin() {
 
             {/* Sidebar Footer */}
             <div className="p-4 border-t border-border">
-              <Badge
-                variant="outline"
-                className="w-full justify-center text-xs"
-              >
+              <Badge variant="outline" className="w-full justify-center text-xs">
                 Admin Dashboard
               </Badge>
             </div>
@@ -318,10 +299,7 @@ export default function Admin() {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="font-playfair text-2xl font-bold">
-                    {menuSections
-                      .flatMap((s) => s.items)
-                      .find((item) => item.id === activeTab)?.label ||
-                      "Dashboard"}
+                    {menuSections.flatMap(s => s.items).find(item => item.id === activeTab)?.label || 'Dashboard'}
                   </h1>
                   <p className="text-muted-foreground mt-1">
                     Manage your photography business with AI-powered tools
@@ -386,8 +364,8 @@ export default function Admin() {
         return <ClientCredentials />;
       case "profile":
         return <ProfileManagement />;
-      case "property-research":
-        return <PropertyResearch />;
+      case "accounting":
+        return <AccountingIntegrations />;
       default:
         return <AdminDashboard />;
     }

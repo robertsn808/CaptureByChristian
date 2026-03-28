@@ -10,17 +10,16 @@ interface AuthState {
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>(() => {
     // Initialize state synchronously from localStorage
-    const isAuthenticated =
-      localStorage.getItem("admin_authenticated") === "true";
+    const isAuthenticated = localStorage.getItem("admin_authenticated") === "true";
     const username = localStorage.getItem("admin_username");
     const loginTime = localStorage.getItem("admin_login_time");
-
+    
     // Check session validity immediately
     if (isAuthenticated && loginTime) {
       const loginTimestamp = new Date(loginTime).getTime();
       const currentTime = new Date().getTime();
       const sessionDuration = 24 * 60 * 60 * 1000;
-
+      
       if (currentTime - loginTimestamp > sessionDuration) {
         // Session expired
         return {
@@ -30,19 +29,18 @@ export function useAuth() {
         };
       }
     }
-
+    
     return {
       isAuthenticated,
       username,
       loginTime,
     };
   });
-  const [, setLocation] = useLocation();
+  const [_location, setLocation] = useLocation();
 
   useEffect(() => {
     const checkAuth = () => {
-      const isAuthenticated =
-        localStorage.getItem("admin_authenticated") === "true";
+      const isAuthenticated = localStorage.getItem("admin_authenticated") === "true";
       const username = localStorage.getItem("admin_username");
       const loginTime = localStorage.getItem("admin_login_time");
 
@@ -67,8 +65,8 @@ export function useAuth() {
     };
 
     // Listen for storage changes from other tabs
-    window.addEventListener("storage", checkAuth);
-    return () => window.removeEventListener("storage", checkAuth);
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
   }, []);
 
   const logout = () => {

@@ -8,19 +8,19 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import {
-  User,
-  Camera,
-  Upload,
-  Phone,
-  Mail,
-  MapPin,
+import { 
+  User, 
+  Camera, 
+  Upload, 
+  Phone, 
+  Mail, 
+  MapPin, 
   Save,
   Edit,
   Instagram,
   Facebook,
   Youtube,
-  Loader2,
+  Loader2
 } from "lucide-react";
 
 interface ProfileData {
@@ -45,14 +45,10 @@ export function ProfileManagement() {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-
+  
   // Fetch profile data from API
   const { data: profile, isLoading } = useQuery({
-    queryKey: ["/api/profile"],
-    queryFn: async () => {
-      const response = await apiRequest("GET", "/api/profile");
-      return response.json();
-    },
+    queryKey: ["/api/profile"]
   });
 
   // Update profile mutation
@@ -80,14 +76,12 @@ export function ProfileManagement() {
 
   // Initialize profile data when loaded
   React.useEffect(() => {
-    if (profile && !profileData) {
-      setProfileData(profile);
+    if (profile) {
+      setProfileData(profile as ProfileData);
     }
-  }, [profile, profileData]);
+  }, [profile]);
 
-  const handleHeadshotUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleHeadshotUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -106,23 +100,18 @@ export function ProfileManagement() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64 = e.target?.result as string;
-
-        setProfileData((prev) =>
-          prev
-            ? {
-                ...prev,
-                headshot: base64,
-              }
-            : null,
-        );
+        
+        setProfileData(prev => prev ? ({
+          ...prev,
+          headshot: base64
+        }) : null);
 
         toast({
           title: "Headshot Updated",
-          description:
-            "Your profile photo has been updated. Don't forget to save your changes!",
+          description: "Your profile photo has been updated. Don't forget to save your changes!",
         });
       };
-
+      
       reader.readAsDataURL(file);
     } catch (error) {
       console.error("Upload error:", error);
@@ -143,29 +132,21 @@ export function ProfileManagement() {
 
   const handleInputChange = (field: string, value: string) => {
     if (!profileData) return;
-
-    if (field.startsWith("socialMedia.")) {
-      const socialField = field.split(".")[1];
-      setProfileData((prev) =>
-        prev
-          ? {
-              ...prev,
-              socialMedia: {
-                ...prev.socialMedia,
-                [socialField]: value,
-              },
-            }
-          : null,
-      );
+    
+    if (field.startsWith('socialMedia.')) {
+      const socialField = field.split('.')[1];
+      setProfileData(prev => prev ? ({
+        ...prev,
+        socialMedia: {
+          ...prev.socialMedia,
+          [socialField]: value
+        }
+      }) : null);
     } else {
-      setProfileData((prev) =>
-        prev
-          ? {
-              ...prev,
-              [field]: value,
-            }
-          : null,
-      );
+      setProfileData(prev => prev ? ({
+        ...prev,
+        [field]: value
+      }) : null);
     }
   };
 
@@ -181,22 +162,19 @@ export function ProfileManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Profile Management
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight">Profile Management</h2>
           <p className="text-muted-foreground">
-            Manage your profile information, headshot, and contact details
-            displayed on the website
+            Manage your profile information, headshot, and contact details displayed on the website
           </p>
         </div>
-
+        
         <div className="flex items-center space-x-3">
           {isEditing ? (
             <>
               <Button variant="outline" onClick={() => setIsEditing(false)}>
                 Cancel
               </Button>
-              <Button
+              <Button 
                 onClick={handleSaveProfile}
                 disabled={updateProfileMutation.isPending}
               >
@@ -230,7 +208,7 @@ export function ProfileManagement() {
             <div className="flex justify-center">
               <div className="relative">
                 <img
-                  src={profileData?.headshot || profile?.headshot || ""}
+                  src={profileData?.headshot}
                   alt="Profile headshot"
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                 />
@@ -241,7 +219,7 @@ export function ProfileManagement() {
                 )}
               </div>
             </div>
-
+            
             {isEditing && (
               <div className="space-y-3">
                 <Label htmlFor="headshot-upload">Upload New Photo</Label>
@@ -253,8 +231,7 @@ export function ProfileManagement() {
                   disabled={isUploading}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Max file size: 50MB. Recommended: Square image, 800x800px or
-                  larger
+                  Max file size: 50MB. Recommended: Square image, 800x800px or larger
                 </p>
               </div>
             )}
@@ -282,13 +259,11 @@ export function ProfileManagement() {
                 {isEditing ? (
                   <Input
                     id="name"
-                    value={profileData?.name || profile?.name || ""}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
+                    value={profileData?.name || ''}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                   />
                 ) : (
-                  <p className="p-2 bg-muted rounded-md">
-                    {profileData?.name || profile?.name || ""}
-                  </p>
+                  <p className="p-2 bg-muted rounded-md">{profileData?.name}</p>
                 )}
               </div>
 
@@ -297,13 +272,11 @@ export function ProfileManagement() {
                 {isEditing ? (
                   <Input
                     id="title"
-                    value={profileData?.title || profile?.title || ""}
-                    onChange={(e) => handleInputChange("title", e.target.value)}
+                    value={profileData?.title || ''}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
                   />
                 ) : (
-                  <p className="p-2 bg-muted rounded-md">
-                    {profileData?.title || profile?.title || ""}
-                  </p>
+                  <p className="p-2 bg-muted rounded-md">{profileData?.title}</p>
                 )}
               </div>
             </div>
@@ -313,16 +286,14 @@ export function ProfileManagement() {
               {isEditing ? (
                 <Textarea
                   id="bio"
-                  value={profileData?.bio || profile?.bio || ""}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
+                  value={profileData?.bio || ''}
+                  onChange={(e) => handleInputChange('bio', e.target.value)}
                   rows={4}
                   placeholder="Tell your story..."
                 />
               ) : (
                 <div className="p-3 bg-muted rounded-md">
-                  <p className="text-sm leading-relaxed">
-                    {profileData?.bio || profile?.bio || ""}
-                  </p>
+                  <p className="text-sm leading-relaxed">{profileData?.bio}</p>
                 </div>
               )}
             </div>
@@ -343,13 +314,13 @@ export function ProfileManagement() {
               {isEditing ? (
                 <Input
                   id="phone"
-                  value={profileData?.phone || profile?.phone || ""}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  value={profileData?.phone || ''}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
                 />
               ) : (
                 <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{profileData?.phone || profile?.phone || ""}</span>
+                  <span>{profileData?.phone}</span>
                 </div>
               )}
             </div>
@@ -360,13 +331,13 @@ export function ProfileManagement() {
                 <Input
                   id="email"
                   type="email"
-                  value={profileData?.email || profile?.email || ""}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  value={profileData?.email || ''}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
                 />
               ) : (
                 <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{profileData?.email || profile?.email || ""}</span>
+                  <span>{profileData?.email}</span>
                 </div>
               )}
             </div>
@@ -376,13 +347,13 @@ export function ProfileManagement() {
               {isEditing ? (
                 <Input
                   id="address"
-                  value={profileData?.address || profile?.address || ""}
-                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  value={profileData?.address || ''}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
                 />
               ) : (
                 <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{profileData?.address || profile?.address || ""}</span>
+                  <span>{profileData?.address}</span>
                 </div>
               )}
             </div>
@@ -408,26 +379,16 @@ export function ProfileManagement() {
               <div className="space-y-2">
                 <Label htmlFor="instagram">Instagram</Label>
                 {isEditing ? (
-                  <Input
-                    id="instagram"
-                    value={
-                      profileData?.socialMedia?.instagram ||
-                      profile?.socialMedia?.instagram ||
-                      ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange("socialMedia.instagram", e.target.value)
-                    }
-                    placeholder="@username"
-                  />
+                <Input
+                  id="instagram"
+                  value={profileData?.socialMedia?.instagram || ''}
+                  onChange={(e) => handleInputChange('socialMedia.instagram', e.target.value)}
+                  placeholder="@username"
+                />
                 ) : (
                   <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                     <Instagram className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      {profileData?.socialMedia?.instagram ||
-                        profile?.socialMedia?.instagram ||
-                        ""}
-                    </span>
+                    <span>{profileData?.socialMedia?.instagram}</span>
                   </div>
                 )}
               </div>
@@ -435,26 +396,16 @@ export function ProfileManagement() {
               <div className="space-y-2">
                 <Label htmlFor="facebook">Facebook</Label>
                 {isEditing ? (
-                  <Input
-                    id="facebook"
-                    value={
-                      profileData?.socialMedia?.facebook ||
-                      profile?.socialMedia?.facebook ||
-                      ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange("socialMedia.facebook", e.target.value)
-                    }
-                    placeholder="Page name"
-                  />
+                <Input
+                  id="facebook"
+                  value={profileData?.socialMedia?.facebook || ''}
+                  onChange={(e) => handleInputChange('socialMedia.facebook', e.target.value)}
+                  placeholder="Page name"
+                />
                 ) : (
                   <div className="flex items-center space-x-2 p-2 bg-muted rounded-md">
                     <Facebook className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      {profileData?.socialMedia?.facebook ||
-                        profile?.socialMedia?.facebook ||
-                        ""}
-                    </span>
+                    <span>{profileData?.socialMedia?.facebook}</span>
                   </div>
                 )}
               </div>
@@ -462,26 +413,16 @@ export function ProfileManagement() {
               <div className="space-y-2">
                 <Label htmlFor="youtube">YouTube</Label>
                 {isEditing ? (
-                  <Input
-                    id="youtube"
-                    value={
-                      profileData?.socialMedia?.youtube ||
-                      profile?.socialMedia?.youtube ||
-                      ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange("socialMedia.youtube", e.target.value)
-                    }
-                    placeholder="Channel name"
-                  />
+                <Input
+                  id="youtube"
+                  value={profileData?.socialMedia?.youtube || ''}
+                  onChange={(e) => handleInputChange('socialMedia.youtube', e.target.value)}
+                  placeholder="Channel name"
+                />
                 ) : (
                   <div className="flex items-center space-x-2 p-2 bg-muted-foreground rounded-md">
                     <Youtube className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      {profileData?.socialMedia?.youtube ||
-                        profile?.socialMedia?.youtube ||
-                        ""}
-                    </span>
+                    <span>{(profile as any)?.socialMedia?.youtube}</span>
                   </div>
                 )}
               </div>
