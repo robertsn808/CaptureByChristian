@@ -41,6 +41,8 @@ A comprehensive photography business management platform built with modern web t
 - **Database**: PostgreSQL with Drizzle ORM
 - **UI**: Tailwind CSS + shadcn/ui components
 - **AI**: OpenAI API integration
+- **Payments**: Stripe API integration
+- **Accounting**: QuickBooks API integration
 - **Deployment**: Vercel (recommended) or Docker
 
 ## 📋 Prerequisites
@@ -259,6 +261,8 @@ A comprehensive photography business management platform built with modern web t
 - **Database**: PostgreSQL with Drizzle ORM
 - **UI**: Tailwind CSS + shadcn/ui components
 - **AI**: OpenAI API integration
+- **Payments**: Stripe API integration
+- **Accounting**: QuickBooks API integration
 - **Deployment**: Vercel (recommended) or Docker
 
 ## 📋 Prerequisites

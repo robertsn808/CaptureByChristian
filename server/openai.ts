@@ -159,6 +159,131 @@ Please provide a helpful, personalized response as the AI booking assistant for 
   }
 }
 
+// Generate comprehensive availability and booking time responses
+function generateComprehensiveAvailabilityResponse(serviceType: string, message: string, bookingData: any): string {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+  
+  // Determine optimal booking windows and peak seasons
+  const isPeakSeason = (currentMonth >= 12 || currentMonth <= 4) || (currentMonth >= 6 && currentMonth <= 8);
+  const isWeekend = message.includes('weekend') || message.includes('saturday') || message.includes('sunday');
+  const isHoliday = message.includes('holiday') || message.includes('christmas') || message.includes('new year') || message.includes('valentine');
+  
+  // Get specific month/season info if mentioned
+  let specificTimeframe = '';
+  const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+  const foundMonth = months.find(month => message.toLowerCase().includes(month));
+  
+  if (foundMonth) {
+    specificTimeframe = foundMonth.charAt(0).toUpperCase() + foundMonth.slice(1);
+  } else if (message.includes('summer')) {
+    specificTimeframe = 'Summer (June-August)';
+  } else if (message.includes('winter')) {
+    specificTimeframe = 'Winter (December-February)';
+  } else if (message.includes('spring')) {
+    specificTimeframe = 'Spring (March-May)';
+  } else if (message.includes('fall') || message.includes('autumn')) {
+    specificTimeframe = 'Fall (September-November)';
+  }
+
+  // Base response based on service type
+  let baseResponse = '';
+  switch (serviceType) {
+    case 'wedding':
+      baseResponse = "🌺 **WEDDING PHOTOGRAPHY AVAILABILITY** 🌺\n\n";
+      break;
+    case 'portrait':
+      baseResponse = "📸 **PORTRAIT SESSION AVAILABILITY** 📸\n\n";
+      break;
+    default:
+      baseResponse = "📅 **PHOTOGRAPHY SESSION AVAILABILITY** 📅\n\n";
+  }
+
+  // Build comprehensive availability information
+  let response = baseResponse;
+
+  // Current booking window
+  response += "📋 **CURRENT BOOKING WINDOW:**\n";
+  if (serviceType === 'wedding') {
+    response += "• Standard bookings: 6-12 weeks in advance\n";
+    response += "• Peak season bookings: 10-16 weeks in advance\n";
+    response += "• Rush bookings: Available with $200 expedite fee\n\n";
+  } else {
+    response += "• Standard bookings: 2-4 weeks in advance\n";
+    response += "• Same-week bookings: Subject to availability\n";
+    response += "• Rush bookings: Available with $200 expedite fee\n\n";
+  }
+
+  // Peak season information
+  response += "🌟 **SEASONAL AVAILABILITY:**\n";
+  response += "• **PEAK SEASON** (Dec-Apr, Jun-Aug): Higher demand, book early\n";
+  response += "• **SHOULDER SEASON** (May, Sep-Nov): Great availability & weather\n";
+  response += "• **OPTIMAL MONTHS**: April-May, September-October (perfect weather, fewer crowds)\n\n";
+
+  // Specific timeframe if mentioned
+  if (specificTimeframe) {
+    response += `🗓️ **${specificTimeframe.toUpperCase()} SPECIFIC INFO:**\n`;
+    if (specificTimeframe.includes('December') || specificTimeframe.includes('Winter')) {
+      response += "• Peak season - book 12-16 weeks ahead\n• Holiday surcharges may apply\n• Amazing clear skies for drone work\n";
+    } else if (specificTimeframe.includes('June') || specificTimeframe.includes('July') || specificTimeframe.includes('August') || specificTimeframe.includes('Summer')) {
+      response += "• Peak tourist season - book early\n• Best weather for outdoor shoots\n• Golden hour extends later in evening\n";
+    } else if (specificTimeframe.includes('April') || specificTimeframe.includes('May') || specificTimeframe.includes('September') || specificTimeframe.includes('October')) {
+      response += "• IDEAL MONTHS - excellent availability\n• Perfect weather conditions\n• Fewer tourist crowds\n• Best value for locations\n";
+    }
+    response += "\n";
+  }
+
+  // Day of week preferences
+  response += "📅 **WEEKLY SCHEDULE:**\n";
+  if (isWeekend) {
+    response += "• **WEEKENDS**: Most popular, book 4-6 weeks ahead\n";
+    response += "• Saturday: Premium day (high demand)\n";
+    response += "• Sunday: Great alternative to Saturday\n";
+  } else {
+    response += "• **WEEKDAYS**: Better availability, often preferred pricing\n";
+    response += "• Tuesday-Thursday: Best availability\n";
+    response += "• Monday/Friday: Good options with easier scheduling\n";
+  }
+  response += "\n";
+
+  // Optimal timing recommendations
+  response += "⏰ **OPTIMAL TIMING RECOMMENDATIONS:**\n";
+  if (serviceType === 'wedding') {
+    response += "• **Golden Hour Ceremonies**: 1-2 hours before sunset\n";
+    response += "• **All-Day Coverage**: 8+ hours from prep to reception\n";
+    response += "• **Drone Sessions**: Best in calmer morning/evening winds\n";
+  } else {
+    response += "• **Golden Hour Sessions**: 1 hour before sunset (most popular)\n";
+    response += "• **Sunrise Sessions**: Fewer crowds, soft lighting\n";
+    response += "• **Midday**: Available for urgent bookings\n";
+  }
+  response += "\n";
+
+  // Weather and backup planning
+  response += "🌤️ **WEATHER & BACKUP PLANNING:**\n";
+  response += "• Hawaii has year-round great weather\n";
+  response += "• Rain backup plans included at no extra cost\n";
+  response += "• Indoor/covered location alternatives ready\n";
+  response += "• Drone flights weather-dependent (safety first)\n\n";
+
+  // Booking process
+  response += "🎯 **NEXT STEPS TO SECURE YOUR DATE:**\n";
+  response += "1. Share your preferred date(s) and backup options\n";
+  response += "2. FREE consultation to discuss your vision\n";
+  response += "3. Contract & 50% deposit secures your booking\n";
+  response += "4. Final planning 1-2 weeks before session\n\n";
+
+  // Call to action based on urgency
+  if (isPeakSeason || isHoliday || isWeekend) {
+    response += "⚡ **BOOK SOON!** Peak season/weekend dates fill up quickly. What specific dates are you considering? I'll check real-time availability and provide immediate confirmation options!";
+  } else {
+    response += "✨ **GREAT TIMING!** You're looking at an excellent booking window. What dates work best for you? I can check availability and provide multiple options to choose from!";
+  }
+
+  return response;
+}
+
 // Advanced intelligent response generator  
 function generateIntelligentResponse(lastMessage: string, conversationHistory: any[], bookingData: any): string {
   // Check conversation history for context
@@ -169,6 +294,21 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
   // Use existing booking data if available
   const clientName = bookingData?.clientName ? `, ${bookingData.clientName}` : '';
   const preferredDate = bookingData?.date ? ` for ${new Date(bookingData.date).toLocaleDateString()}` : '';
+  
+  // PRIORITY: Check for availability queries first (regardless of service type)
+  const availabilityKeywords = ['available', 'availability', 'book', 'booking', 'schedule', 'when', 'date', 'calendar', 'open', 'free'];
+  const hasAvailabilityKeyword = availabilityKeywords.some(keyword => lastMessage.toLowerCase().includes(keyword));
+  
+  if (hasAvailabilityKeyword) {
+    // Determine service type from context
+    let serviceType = 'general';
+    if (lastMessage.includes('wedding') || lastMessage.includes('marry') || lastMessage.includes('bride') || lastMessage.includes('groom')) {
+      serviceType = 'wedding';
+    } else if (lastMessage.includes('portrait') || lastMessage.includes('family') || lastMessage.includes('couple') || lastMessage.includes('engagement') || lastMessage.includes('maternity')) {
+      serviceType = 'portrait';
+    }
+    return generateComprehensiveAvailabilityResponse(serviceType, lastMessage, bookingData);
+  }
   
   // Wedding photography responses
   if (lastMessage.includes('wedding') || lastMessage.includes('marry') || lastMessage.includes('bride') || lastMessage.includes('groom')) {
@@ -183,9 +323,6 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
         ? `As we discussed${clientName}, we cover all of Hawaii! ` 
         : `We shoot weddings all across Hawaii! Popular venues include beachfront locations like Lanikai and Kailua, mountain settings at Diamond Head and Makapuu Lighthouse, resort venues in Waikiki, and private estates. `;
       return response + "Each location offers unique opportunities for both ground and aerial photography. Do you have a specific venue in mind, or would you like location recommendations?";
-    }
-    if (lastMessage.includes('available') || lastMessage.includes('date') || lastMessage.includes('when')) {
-      return "I'd love to check availability for your wedding! What date are you considering? We typically book 2-4 weeks in advance, but peak season (December-April, June-August) may require more lead time. We can also discuss backup plans for weather, which is always included in our service.";
     }
     return "Wedding photography is our specialty! Our comprehensive package includes 8 hours of coverage, FAA-certified drone shots, and 500+ edited photos for $2,500. We capture everything from getting ready moments to the final dance, with a focus on Hawaii's stunning natural lighting. What aspects of wedding photography are most important to you?";
   }
@@ -209,11 +346,6 @@ function generateIntelligentResponse(lastMessage: string, conversationHistory: a
   // Pricing inquiries
   if (lastMessage.includes('price') || lastMessage.includes('cost') || lastMessage.includes('how much') || lastMessage.includes('budget')) {
     return "Here's our complete pricing:\n\n📸 PACKAGES:\n• Wedding Photography: $2,500 (8 hrs, drone, 500+ photos)\n• Portrait Sessions: $450 (1-2 hrs, 50+ photos)\n• Aerial Photography: $350 (drone coverage)\n• Event Photography: $200/hour\n\n✨ ADD-ONS:\n• Extra drone coverage: +$350\n• Extended hours: +$150/hour\n• Rush editing (48-72 hrs): +$200\n• Travel outside Oahu: +$0.50/mile\n\nAll packages include professional editing and online gallery access. Which service interests you most?";
-  }
-  
-  // Availability and scheduling
-  if (lastMessage.includes('available') || lastMessage.includes('book') || lastMessage.includes('schedule') || lastMessage.includes('when') || lastMessage.includes('date')) {
-    return "I'd be happy to check availability! I typically book 2-4 weeks in advance, though rush bookings are possible with a $200 expedite fee. Peak seasons (December-April, June-August) tend to fill up faster. What date and type of session are you considering? I can also provide weather backup options since we're in beautiful Hawaii!";
   }
   
   // Location-specific inquiries

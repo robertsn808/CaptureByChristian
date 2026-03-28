@@ -25,6 +25,8 @@ npm install
 ### AI & External Services
 - **openai**: ^5.9.0 - OpenAI API integration
 - **twilio**: ^5.7.3 - SMS communication service
+- **stripe**: ^18.3.0 - Stripe API integration
+- **axios**: ^1.5.0 - HTTP client
 
 ### UI & Styling
 - **@radix-ui/react-***: Accessible UI components

@@ -8,11 +8,15 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ 
+// PostgreSQL only - no SQLite support for production
+const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
+  ssl: { rejectUnauthorized: false }
 });
 
-export const db = drizzle(pool, { schema });
+const db = drizzle(pool, { schema });
+
+export { db, pool };

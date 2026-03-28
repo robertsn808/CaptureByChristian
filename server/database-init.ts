@@ -9,13 +9,16 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export class DatabaseInitializer {
   private pool: Pool;
+  private db: any;
   private isInitialized = false;
 
   constructor(connectionString: string) {
+    // PostgreSQL only - no SQLite support for production
     this.pool = new Pool({
       connectionString,
       max: 5, // Smaller pool for initialization
       connectionTimeoutMillis: 10000,
+      ssl: { rejectUnauthorized: false }
     });
   }
 
@@ -41,6 +44,7 @@ export class DatabaseInitializer {
         connectionString: adminConnectionString,
         max: 1,
         connectionTimeoutMillis: 10000,
+        ssl: { rejectUnauthorized: false }
       });
 
       try {
@@ -77,6 +81,7 @@ export class DatabaseInitializer {
    * Runs Drizzle migrations
    */
   async runMigrations(): Promise<boolean> {
+
     try {
       console.log('🔄 Starting database migration process...');
       
@@ -109,6 +114,11 @@ export class DatabaseInitializer {
    * Ensure critical columns exist for forward compatibility
    */
   async ensureCompatibility(): Promise<void> {
+    if (false) { // Removed SQLite support
+      console.log('⚠️ Skipping schema compatibility for SQLite.');
+      return;
+    }
+
     try {
       // Add missing client columns that older DBs may lack
       await this.pool.query(`
@@ -132,6 +142,20 @@ export class DatabaseInitializer {
    * Test database connection and basic functionality
    */
   async testConnection(): Promise<boolean> {
+    if (false) { // Removed SQLite support
+        return new Promise((resolve, reject) => {
+            this.db.get('SELECT 1', (err: any) => {
+                if (err) {
+                    console.error('❌ Database connection test failed:', err);
+                    reject(false);
+                } else {
+                    console.log('✅ Database connection test successful:');
+                    resolve(true);
+                }
+            });
+        });
+    }
+
     try {
       const result = await this.pool.query('SELECT NOW() as current_time, version() as version');
       console.log('✅ Database connection test successful:', {
@@ -149,6 +173,32 @@ export class DatabaseInitializer {
    * Check if required tables exist
    */
   async verifySchema(): Promise<boolean> {
+    if (false) { // Removed SQLite support
+        return new Promise((resolve, reject) => {
+            const requiredTables = [
+                'users', 'clients', 'services', 'bookings', 
+                'contracts', 'invoices', 'gallery_images', 
+                'contact_messages', 'ai_chats'
+              ];
+            this.db.all("SELECT name FROM sqlite_master WHERE type='table'", (err: any, tables: any) => {
+                if (err) {
+                    console.error('❌ Schema verification failed:', err);
+                    reject(false);
+                } else {
+                    const tableNames = tables.map((t: any) => t.name);
+                    const missingTables = requiredTables.filter(t => !tableNames.includes(t));
+                    if (missingTables.length > 0) {
+                        console.log(`⚠️ Missing tables: ${missingTables.join(', ')}`);
+                        resolve(false);
+                    } else {
+                        console.log('✅ All required tables exist');
+                        resolve(true);
+                    }
+                }
+            });
+        });
+    }
+
     try {
       const requiredTables = [
         'users', 'clients', 'services', 'bookings', 
@@ -237,7 +287,11 @@ export class DatabaseInitializer {
    * Close the database connection
    */
   async close(): Promise<void> {
-    await this.pool.end();
+    if (false) { // Removed SQLite support
+        this.db.close();
+    } else {
+        await this.pool.end();
+    }
   }
 
   /**

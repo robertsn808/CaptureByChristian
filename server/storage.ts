@@ -176,16 +176,32 @@ export class DatabaseStorage implements IStorage {
   // Bookings
   async getBookings(): Promise<(Booking & { client: Client; service: Service })[]> {
     return await db
-      .select()
+      .select({
+        id: bookings.id,
+        clientId: bookings.clientId,
+        serviceId: bookings.serviceId,
+        date: bookings.date,
+        duration: bookings.duration,
+        location: bookings.location,
+        totalPrice: bookings.totalPrice,
+        depositPaid: bookings.depositPaid,
+        status: bookings.status,
+        notes: bookings.notes,
+        addOns: bookings.addOns,
+        createdAt: bookings.createdAt,
+        client: clients,
+        service: services,
+      })
       .from(bookings)
       .leftJoin(clients, eq(bookings.clientId, clients.id))
       .leftJoin(services, eq(bookings.serviceId, services.id))
       .orderBy(desc(bookings.date))
       .then(rows => 
         rows.map(row => ({
-          ...row.bookings,
-          client: row.clients!,
-          service: row.services!,
+          ...row,
+          id: row.id,
+          client: row.client!,
+          service: row.service!,
         }))
       );
   }
