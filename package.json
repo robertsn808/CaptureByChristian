@@ -59,7 +59,7 @@
     "@types/cookie-parser": "^1.4.9",
     "@types/express-session": "^1.18.2",
     "@types/multer": "^2.0.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.2.0",
     "@types/pg": "^8.15.4",
     "@types/supertest": "^6.0.3",
     "@types/twilio": "^3.19.3",
